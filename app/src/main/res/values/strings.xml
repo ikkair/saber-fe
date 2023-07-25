@@ -15,6 +15,8 @@
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
+    <string name="head_title_log_in_form_huge">Selamat Datang Kembali</string>
+    <string name="head_title_log_in_form_small">Masuk dengan akun mu</string>
     <string name="foot_title_huge">Selamat Datang di SABER</string>
     <string name="foot_title_small">Aplikasi buang sampah menjadi menyenangkan</string>
 </resources>

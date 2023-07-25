@@ -65,7 +65,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void doLogInBtnClick(){
-        System.out.println(this.toString());
+        Intent logInActivityIntent = new Intent(getApplicationContext(), LoginActivity.class);
+        startActivity(logInActivityIntent);
     }
 
     private void doSignUpBtnClick(){
