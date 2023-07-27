@@ -70,42 +70,27 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"/>
 
-            <EditText
-                android:textColor="@color/white"
-                android:background="@null"
-                android:layout_gravity="center"
-                android:inputType="text"
-                android:padding="0dp"
-                android:textSize="14sp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+            <EditText style="@style/cyan_field_form_data_text_input"/>
 
         </LinearLayout>
 
         <LinearLayout
+            android:padding="11dp"
             android:layout_marginTop="15dp"
             android:background="@drawable/transparent_field_form_data_bg"
             android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="40dp">
+            android:layout_height="wrap_content">
 
             <ImageView
-                android:layout_marginStart="20dp"
                 android:layout_marginEnd="20dp"
                 android:layout_gravity="center"
                 android:layout_width="20dp"
                 android:layout_height="20dp"/>
 
-            <EditText
-                android:layout_gravity="center"
-                android:inputType="text"
-                android:textSize="14sp"
-                android:layout_margin="10dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+            <EditText style="@style/cyan_field_form_data_text_input"/>
 
         </LinearLayout>
-
 
     </LinearLayout>
 
