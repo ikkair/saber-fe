@@ -39,12 +39,28 @@
     <style name="cyan_field_form_data_text_input" parent="Widget.AppCompat.EditText">
         <item name="android:layout_gravity">center</item>
         <item name="android:background">@null</item>
-        <item name="android:inputType">text</item>
-        <item name="android:textSize">15sp</item>
+        <item name="android:textSize">14sp</item>
         <item name="android:textStyle">normal</item>
         <item name="android:layout_margin">5dp</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColorHint">@color/white_transparent</item>
+    </style>
+
+    <style name="wrapper_field_input_cyan_border">
+        <item name="android:padding">10dp</item>
+        <item name="android:layout_marginTop">15dp</item>
+        <item name="android:background">@drawable/transparent_field_form_data_bg</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="small_title_14sp_white" parent="TextAppearance.AppCompat">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/white</item>
     </style>
 </resources>

@@ -4,4 +4,5 @@
     <color name="white">#FFFFFFFF</color>
     <color name="skyBlue">#1DBEE1</color>
     <color name="green">#15EA1E</color>
+    <color name="white_transparent">#85FFFFFF</color>
 </resources>

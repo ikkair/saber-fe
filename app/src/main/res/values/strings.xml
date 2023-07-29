@@ -19,4 +19,12 @@
     <string name="head_title_log_in_form_small">Masuk dengan akun mu</string>
     <string name="foot_title_huge">Selamat Datang di SABER</string>
     <string name="foot_title_small">Aplikasi buang sampah menjadi menyenangkan</string>
+    <string name="remember_me">Ingatkan saya</string>
+    <string name="forgot_password">Lupa password ?</string>
+    <string name="unregister_account_title">Belum punya akun ?</string>
+    <string name="title_hint_input_text_email_or_name">Masukan Nama Depan atau E-mail</string>
+    <string name="title_hint_input_text_password">Password</string>
+    <string name="log_in_alternative_title">Atau Login dengan ?</string>
+    <string name="google_account_title">Akun Google anda</string>
+    <string name="google_title_logo">G</string>
 </resources>

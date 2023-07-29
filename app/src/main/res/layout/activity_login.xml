@@ -23,12 +23,12 @@
 
     <LinearLayout
         android:paddingTop="15dp"
-        android:paddingBottom="15dp"
+        android:paddingBottom="75dp"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
         android:layout_margin="10dp"
         android:orientation="vertical"
-        android:background="@drawable/transparent_form_data_bg"
+        android:id="@+id/formDataTransparentContainer"
         android:layout_gravity="center"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -56,39 +56,160 @@
 
         </LinearLayout>
 
-        <LinearLayout
-            android:padding="11dp"
-            android:layout_marginTop="15dp"
-            android:background="@drawable/transparent_field_form_data_bg"
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+        <LinearLayout style="@style/wrapper_field_input_cyan_border">
 
             <ImageView
-                android:layout_marginEnd="20dp"
+                android:id="@+id/userInputEmailIcon"
+                android:layout_marginEnd="15dp"
+                android:layout_marginStart="15dp"
                 android:layout_gravity="center"
-                android:layout_width="20dp"
-                android:layout_height="20dp"/>
+                android:layout_width="30dp"
+                android:layout_height="30dp"/>
 
-            <EditText style="@style/cyan_field_form_data_text_input"/>
+            <EditText
+                android:hint="@string/title_hint_input_text_email_or_name"
+                android:inputType="text"
+                android:id="@+id/fieldInputEmailLogIn"
+                style="@style/cyan_field_form_data_text_input"/>
 
         </LinearLayout>
 
-        <LinearLayout
-            android:padding="11dp"
-            android:layout_marginTop="15dp"
-            android:background="@drawable/transparent_field_form_data_bg"
+        <LinearLayout style="@style/wrapper_field_input_cyan_border">
+
+            <ImageView
+                android:id="@+id/userInputPasswordIcon"
+                android:layout_marginEnd="15dp"
+                android:layout_marginStart="15dp"
+                android:layout_gravity="center"
+                android:layout_width="30dp"
+                android:layout_height="30dp"/>
+
+            <EditText
+                android:hint="@string/title_hint_input_text_password"
+                android:labelFor="@id/fieldInputPasswordLogIn"
+                android:autofillHints="password"
+                android:inputType="textPassword"
+                android:id="@+id/fieldInputPasswordLogIn"
+                style="@style/cyan_field_form_data_text_input"/>
+
+        </LinearLayout>
+
+        <FrameLayout
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:paddingTop="10dp"
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <ImageView
-                android:layout_marginEnd="20dp"
-                android:layout_gravity="center"
-                android:layout_width="20dp"
-                android:layout_height="20dp"/>
+            <LinearLayout
+                android:layout_gravity="start|center"
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
 
-            <EditText style="@style/cyan_field_form_data_text_input"/>
+                <CheckBox
+                    android:id="@+id/rememberMeCheckBox"
+                    app:buttonTint="@color/white"
+                    android:layout_gravity="center"
+                    android:layout_marginEnd="7dp"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"/>
+
+                <TextView
+                    style="@style/small_title_14sp_white"
+                    android:labelFor="@id/rememberMeCheckBox"
+                    android:layout_gravity="center"
+                    android:text="@string/remember_me"/>
+
+            </LinearLayout>
+
+            <TextView
+                style="@style/small_title_14sp_white"
+                android:text="@string/forgot_password"
+                android:layout_gravity="end|center"/>
+
+        </FrameLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/logInBtnWithCredential"
+                android:layout_gravity="center"
+                style="@style/button_style_1"
+                android:text="@string/button_login"
+                android:layout_width="130dp"
+                android:layout_height="wrap_content"/>
+
+            <LinearLayout
+                android:layout_gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    style="@style/small_title_14sp_white"
+                    android:layout_gravity="center"
+                    android:text="@string/unregister_account_title"/>
+
+                <TextView
+                    android:id="@+id/titleTextSignUpClickable"
+                    android:textColor="@color/white"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:layout_marginStart="7dp"
+                    android:layout_gravity="center"
+                    android:text="@string/action_sign_up"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_marginBottom="30dp"
+        android:layout_gravity="center|bottom"
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_gravity="center"
+            android:layout_margin="10dp"
+            style="@style/small_title_14sp_white"
+            android:text="@string/log_in_alternative_title"/>
+
+        <LinearLayout
+            android:paddingStart="15dp"
+            android:paddingEnd="15dp"
+            android:orientation="horizontal"
+            android:background="@drawable/gradient_color_bg_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:textColor="@color/white"
+                android:text="@string/google_title_logo"
+                android:textSize="30sp"
+                android:layout_marginEnd="8dp"
+                android:layout_gravity="center"
+                android:fontFamily="@font/relish_pro_bold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:layout_gravity="center"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:text="@string/google_account_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
 
         </LinearLayout>
 

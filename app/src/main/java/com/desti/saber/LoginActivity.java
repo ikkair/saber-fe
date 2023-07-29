@@ -2,21 +2,17 @@ package com.desti.saber;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.res.AssetManager;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
+import com.desti.saber.utils.ImageSetterFromStream;
 
 import org.json.JSONArray;
-
-import java.io.InputStream;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -25,15 +21,11 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        try{
-            AssetManager asm = getAssets();
-            InputStream ism = asm.open("logIn_picture_decoration.png");
-            ImageView imageViewDecoration = findViewById(R.id.logInPictureDecoration);
-            imageViewDecoration.setImageDrawable(Drawable.createFromStream(ism, null));
-
-        }catch (Exception err){
-            System.out.println(err);
-        }
+        ImageSetterFromStream imageSetter = new ImageSetterFromStream(this);
+        imageSetter.setAsImageDrawable("logIn_picture_decoration.png", R.id.logInPictureDecoration);
+        imageSetter.setAsImageBackground("transparent_form_data_bg.png", R.id.formDataTransparentContainer);
+        imageSetter.setAsImageDrawable("user_icon.png", R.id.userInputEmailIcon);
+        imageSetter.setAsImageDrawable("password_icon.png", R.id.userInputPasswordIcon);
     }
 
     public void loginButtonHandler(View v){
