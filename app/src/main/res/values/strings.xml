@@ -22,8 +22,14 @@
     <string name="remember_me">Ingatkan saya</string>
     <string name="forgot_password">Lupa password ?</string>
     <string name="unregister_account_title">Belum punya akun ?</string>
+    <string name="has_register_account_title">Sudah punya akun ?</string>
     <string name="title_hint_input_text_email_or_name">Masukan Nama Depan atau E-mail</string>
     <string name="title_hint_input_text_password">Password</string>
+    <string name="title_hint_input_text_first_name">Nama Depan</string>
+    <string name="title_hint_input_text_address">Alamat</string>
+    <string name="title_hint_input_text_phone">Telepon</string>
+    <string name="title_hint_input_text_email">E-mail</string>
+    <string name="title_hint_input_text_password_confirm">Konfirmasi Password</string>
     <string name="log_in_alternative_title">Atau Login dengan ?</string>
     <string name="google_account_title">Akun Google anda</string>
     <string name="google_title_logo">G</string>

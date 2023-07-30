@@ -44,12 +44,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void doLogInBtnClick(){
-        Intent logInActivityIntent = new Intent(getApplicationContext(), LoginActivity.class);
+        Intent logInActivityIntent = new Intent(this, LoginActivity.class);
         startActivity(logInActivityIntent);
     }
 
     private void doSignUpBtnClick(){
-        System.out.println(this.toString());
+        Intent signUpActivityIntent = new Intent(this, RegisterActivity.class);
+        startActivity(signUpActivityIntent);
     }
 
 }
