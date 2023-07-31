@@ -33,4 +33,6 @@
     <string name="log_in_alternative_title">Atau Login dengan ?</string>
     <string name="google_account_title">Akun Google anda</string>
     <string name="google_title_logo">G</string>
+    <string name="dashboard_title_greeting_text">Buat sampah mu lebih berarti !!</string>
+    <string name="dashboard_greeting_text">Aplikasi SABER adalah solusi untuk mengatasi masalah sosial tentang kebersihan lingkungan.</string>
 </resources>
