@@ -81,7 +81,9 @@ public class LoginActivity extends AppCompatActivity {
         String passwordValue = password.getText().toString();
         String emailOrNickNameValue = emailOrNickName.getText().toString();
 
-        System.out.println(passwordValue + " " + emailOrNickNameValue + " " + rememberMeStatus);
+        //refer to dashboard if credential valid
+        Intent intentDashboard = new Intent(this, DashboardActivity.class);
+        startActivity(intentDashboard);
     }
 
     private  void  signUpOnClicked(){
