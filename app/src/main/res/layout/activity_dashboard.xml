@@ -88,6 +88,7 @@
             </LinearLayout>
 
             <FrameLayout
+                android:id="@+id/iam"
                 android:layout_gravity="center"
                 android:padding="20dp"
                 android:background="@drawable/white_rounded_bg"
