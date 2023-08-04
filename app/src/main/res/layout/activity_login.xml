@@ -1,52 +1,167 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical"
     tools:context=".LoginActivity">
+    
+    <LinearLayout
+        android:layout_marginTop="180dp"
+        android:background="@drawable/gradient_color_bg_log_in"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+    
+    <ImageView
+        android:id="@+id/logInPictureDecoration"
+        android:layout_gravity="top|center"
+        android:layout_width="320dp"
+        android:layout_height="320dp"/>
 
-    <Button
-        android:id="@+id/button"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="10dp"
-        android:onClick="loginButtonHandler"
-        android:text="@string/button_login"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextTextPassword" />
+    <LinearLayout
+        android:paddingTop="15dp"
+        android:paddingBottom="75dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:layout_margin="10dp"
+        android:orientation="vertical"
+        android:id="@+id/formDataTransparentContainer"
+        android:layout_gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <EditText
-        android:id="@+id/editTextTextEmailAddress"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="276dp"
-        android:layout_marginEnd="10dp"
-        android:ems="10"
-        android:hint="@string/prompt_email"
-        android:inputType="textEmailAddress"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        <LinearLayout
+            android:layout_marginBottom="40dp"
+            android:layout_gravity="top|center"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-    <EditText
-        android:id="@+id/editTextTextPassword"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="10dp"
-        android:ems="10"
-        android:hint="@string/prompt_password"
-        android:inputType="textPassword"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.502"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextTextEmailAddress" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+            <TextView
+                style="@style/huge_tittle_text"
+                android:layout_gravity="center"
+                android:text="@string/head_title_log_in_form_huge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                style="@style/small_tittle_text"
+                android:layout_gravity="center"
+                android:text="@string/head_title_log_in_form_small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
+        <LinearLayout style="@style/wrapper_field_input_cyan_border">
+
+            <ImageView
+                style="@style/text_edit_icon"
+                android:id="@+id/userInputEmailIcon"/>
+
+            <EditText
+                android:hint="@string/title_hint_input_text_email_or_name"
+                android:inputType="text"
+                android:id="@+id/fieldInputEmailLogIn"
+                style="@style/cyan_field_form_data_text_input"/>
+
+        </LinearLayout>
+
+        <LinearLayout style="@style/wrapper_field_input_cyan_border">
+
+            <ImageView
+                style="@style/text_edit_icon"
+                android:id="@+id/userInputPasswordIcon"/>
+
+            <EditText
+                android:hint="@string/title_hint_input_text_password"
+                android:labelFor="@id/fieldInputPasswordLogIn"
+                android:autofillHints="password"
+                android:inputType="textPassword"
+                android:id="@+id/fieldInputPasswordLogIn"
+                style="@style/cyan_field_form_data_text_input"/>
+
+        </LinearLayout>
+
+        <FrameLayout
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:paddingTop="10dp"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_gravity="start|center"
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <CheckBox
+                    android:id="@+id/rememberMeCheckBox"
+                    app:buttonTint="@color/white"
+                    android:layout_gravity="center"
+                    android:layout_marginEnd="7dp"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"/>
+
+                <TextView
+                    style="@style/small_title_14sp_white"
+                    android:labelFor="@id/rememberMeCheckBox"
+                    android:layout_gravity="center"
+                    android:text="@string/remember_me"/>
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/titleTextForgotPasswordClickable"
+                style="@style/small_title_14sp_white"
+                android:text="@string/forgot_password"
+                android:layout_gravity="end|center"/>
+
+        </FrameLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/logInBtnWithCredential"
+                android:layout_gravity="center"
+                style="@style/button_style_1"
+                android:text="@string/button_login"
+                android:layout_width="130dp"
+                android:layout_height="wrap_content"/>
+
+            <LinearLayout
+                android:layout_gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    style="@style/small_title_14sp_white"
+                    android:layout_gravity="center"
+                    android:text="@string/unregister_account_title"/>
+
+                <TextView
+                    android:id="@+id/titleTextSignUpClickable"
+                    android:textColor="@color/white"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:layout_marginStart="7dp"
+                    android:layout_gravity="center"
+                    android:text="@string/action_sign_up"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</FrameLayout>

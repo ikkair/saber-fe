@@ -5,6 +5,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
+
+import com.desti.saber.utils.ImageSetterFromStream;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -12,15 +15,42 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        ImageSetterFromStream imageSetter = new ImageSetterFromStream(this);
+        Button signUpBtn = findViewById(R.id.signUpBtn);
+        Button logInBtn = findViewById(R.id.logInBtn);
+
+        //Looping for background image btn circle
+        for (int i = 1; i <= 5; i++){
+            String viewXmlId = "image_btn_" + i;
+            String imageName = "img_btn_" + i + ".png";
+            int resourceId = getResources().getIdentifier(viewXmlId, "id", getPackageName());
+            imageSetter.setAsImageDrawable(imageName, resourceId);
+        }
+
+        signUpBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                doSignUpBtnClick();
+            }
+        });
+
+        logInBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                doLogInBtnClick();
+            }
+        });
     }
 
-    public void loginButtonHandler(View v){
-        Intent loginActivityIntent = new Intent(this, LoginActivity.class);
-        startActivity(loginActivityIntent);
+    private void doLogInBtnClick(){
+        Intent logInActivityIntent = new Intent(this, LoginActivity.class);
+        startActivity(logInActivityIntent);
     }
 
-    public void registerButtonHandler(View v){
-        Intent registerActivityIntent = new Intent(this, RegisterActivity.class);
-        startActivity(registerActivityIntent);
+    private void doSignUpBtnClick(){
+        Intent signUpActivityIntent = new Intent(this, RegisterActivity.class);
+        startActivity(signUpActivityIntent);
     }
+
 }
