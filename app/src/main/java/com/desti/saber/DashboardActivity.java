@@ -37,7 +37,7 @@ public class DashboardActivity extends AppCompatActivity {
         LinearLayout pinPointLocClickable = findViewById(R.id.pinPointLocClickable);
 
         //change user name
-        this.setUserNameTittle("Example User Name");
+        this.setUserNameTittle("Example User Name Example User Name Example User Name");
         //set pinpoint loc title
         this.setPinPointLocTitle("Jl. Bukit Cimanggu City Raya Jl. Sholeh Iskandar No.1, RT.01/RW.13, Cibadak, Kec. Tanah Sereal, Kota Bogor, Jawa Barat 16168");
         //set image profile
@@ -96,7 +96,9 @@ public class DashboardActivity extends AppCompatActivity {
         this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                ((TextView) findViewById(R.id.userNameLabel)).setText(userName);
+                int maxUserNameLength = 25;
+                String newUserName = (userName.length() > maxUserNameLength) ? userName.substring(0, maxUserNameLength) + "..." : userName;
+                ((TextView) findViewById(R.id.userNameLabel)).setText(newUserName);
             }
         });
     }
@@ -105,7 +107,8 @@ public class DashboardActivity extends AppCompatActivity {
         this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                String newLocation = (location.length() > 20) ? location.substring(0, 35) + "..." : location;
+                int maxLocLength = 35;
+                String newLocation = (location.length() > maxLocLength) ? location.substring(0, maxLocLength) + "..." : location;
                 ((TextView) findViewById(R.id.pinPointLocTitle)).setText(newLocation);
             }
         });
