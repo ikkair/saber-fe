@@ -18,7 +18,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.desti.saber.utils.ImageSetterFromStream;
 import com.desti.saber.utils.constant.PathUrl;
-import com.desti.saber.utils.dto.LoginJsonDTO;
+import com.desti.saber.utils.dto.ResponseGlobalJsonDTO;
 
 import com.google.gson.Gson;
 
@@ -100,7 +100,7 @@ public class LoginActivity extends AppCompatActivity {
                 (Request.Method.POST, PathUrl.ENP_LOGIN_USER, payload, new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        LoginJsonDTO loginResponseObject = new Gson().fromJson(response.toString(), LoginJsonDTO.class);
+                        ResponseGlobalJsonDTO loginResponseObject = new Gson().fromJson(response.toString(), ResponseGlobalJsonDTO.class);
 
 //                        System.out.println(response.toString());
 //                        Toast.makeText(LoginActivity.this, response.toString(), Toast.LENGTH_SHORT).show();
