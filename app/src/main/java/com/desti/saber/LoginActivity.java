@@ -16,9 +16,13 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.desti.saber.utils.ImageSetterFromStream;
+import com.desti.saber.utils.constant.PathUrl;
 
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -78,12 +82,32 @@ public class LoginActivity extends AppCompatActivity {
         //TODO : if logIn button on clicked
         EditText password = findViewById(R.id.fieldInputPasswordLogIn);
         EditText emailOrNickName = findViewById(R.id.fieldInputEmailLogIn);
+
         String passwordValue = password.getText().toString();
         String emailOrNickNameValue = emailOrNickName.getText().toString();
+        JSONObject payload = new JSONObject();
+        try {
+            payload.put("email", emailOrNickNameValue );
+            payload.put("password", passwordValue );
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
 
-        //refer to dashboard if credential valid
-        Intent intentDashboard = new Intent(this, DashboardActivity.class);
-        startActivity(intentDashboard);
+        JsonObjectRequest request = new JsonObjectRequest
+                (Request.Method.POST, PathUrl.ENP_LOGIN_USER, payload, new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        System.out.println(response.toString());
+                     Toast.makeText(LoginActivity.this, response.toString(), Toast.LENGTH_SHORT).show();
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        System.out.println(error.toString());
+                        Toast.makeText(LoginActivity.this, error.toString(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+        QuerySingleton.getInstance(this).addToRequestQueue(request);
     }
 
     private  void  signUpOnClicked(){
@@ -95,22 +119,4 @@ public class LoginActivity extends AppCompatActivity {
         //TODO : if the title forgot password on clicked
     }
 
-
-    public void loginButtonHandler(View v){
-        String url = "http://";
-
-        JsonArrayRequest request = new JsonArrayRequest(Request.Method.POST, url, null, new Response.Listener<JSONArray>() {
-            @Override
-            public void onResponse(JSONArray response) {
-                Toast.makeText(LoginActivity.this, "Toast Login berhasil", Toast.LENGTH_SHORT).show();
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(LoginActivity.this, "Toast Login Gagal", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        QuerySingleton.getInstance(this).addToRequestQueue(request);
-    }
 }
