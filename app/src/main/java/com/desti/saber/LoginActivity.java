@@ -82,10 +82,12 @@ public class LoginActivity extends AppCompatActivity {
         //TODO : if logIn button on clicked
         EditText password = findViewById(R.id.fieldInputPasswordLogIn);
         EditText emailOrNickName = findViewById(R.id.fieldInputEmailLogIn);
-
         String passwordValue = password.getText().toString();
         String emailOrNickNameValue = emailOrNickName.getText().toString();
         JSONObject payload = new JSONObject();
+        Intent intent = new Intent(getApplicationContext(), DashboardActivity.class);
+        startActivity(intent);
+
         try {
             payload.put("email", emailOrNickNameValue );
             payload.put("password", passwordValue );
@@ -98,7 +100,7 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONObject response) {
                         System.out.println(response.toString());
-                     Toast.makeText(LoginActivity.this, response.toString(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this, response.toString(), Toast.LENGTH_SHORT).show();
                     }
                 }, new Response.ErrorListener() {
                     @Override
