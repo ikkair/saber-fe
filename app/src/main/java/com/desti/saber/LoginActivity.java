@@ -19,6 +19,8 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.desti.saber.utils.ImageSetterFromStream;
 import com.desti.saber.utils.constant.PathUrl;
+import com.desti.saber.utils.dto.LoginJsonDTO;
+import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -99,8 +101,10 @@ public class LoginActivity extends AppCompatActivity {
                 (Request.Method.POST, PathUrl.ENP_LOGIN_USER, payload, new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        System.out.println(response.toString());
-                        Toast.makeText(LoginActivity.this, response.toString(), Toast.LENGTH_SHORT).show();
+                        LoginJsonDTO loginResponseObject = new Gson().fromJson(response.toString(), LoginJsonDTO.class);
+
+//                        System.out.println(response.toString());
+//                        Toast.makeText(LoginActivity.this, response.toString(), Toast.LENGTH_SHORT).show();
                     }
                 }, new Response.ErrorListener() {
                     @Override
@@ -110,6 +114,8 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 });
         QuerySingleton.getInstance(this).addToRequestQueue(request);
+
+
     }
 
     private  void  signUpOnClicked(){
