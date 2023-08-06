@@ -1,6 +1,6 @@
 package com.desti.saber.utils.dto;
 
-public class LoginJsonDTO {
+public class ResponseGlobalJsonDTO {
     private String status;
     private Integer statusCode;
     private DataLogInDTO[] data;
