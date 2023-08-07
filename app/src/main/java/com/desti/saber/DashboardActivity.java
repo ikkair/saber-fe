@@ -1,5 +1,6 @@
 package com.desti.saber;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Outline;
 import android.graphics.Rect;
@@ -77,7 +78,8 @@ public class DashboardActivity extends AppCompatActivity {
     }
 
     private void withdrawLabelOnClick(){
-        Toast.makeText(this, "With Draw On Click", Toast.LENGTH_SHORT).show();
+        Intent withDrawIntent = new Intent(getApplicationContext(), WithdrawActivity.class);
+        startActivity(withDrawIntent);
     }
 
     private void detailAccountOnClick(){
