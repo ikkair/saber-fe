@@ -2,14 +2,8 @@ package com.desti.saber;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Outline;
-import android.graphics.Rect;
-import android.media.Image;
 import android.os.Bundle;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewOutlineProvider;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -18,8 +12,6 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.desti.saber.utils.ImageSetterFromStream;
-import com.google.android.material.snackbar.BaseTransientBottomBar;
-import com.google.android.material.snackbar.Snackbar;
 
 public class DashboardActivity extends AppCompatActivity {
 
@@ -78,7 +70,7 @@ public class DashboardActivity extends AppCompatActivity {
     }
 
     private void withdrawLabelOnClick(){
-        Intent withDrawIntent = new Intent(getApplicationContext(), WithdrawActivity.class);
+        Intent withDrawIntent = new Intent(getApplicationContext(), BalanceActivity.class);
         startActivity(withDrawIntent);
     }
 
