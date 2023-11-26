@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -12,18 +13,22 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.desti.saber.utils.ImageSetterFromStream;
 import com.desti.saber.utils.constant.PathUrl;
 import com.desti.saber.utils.dto.ResponseGlobalJsonDTO;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.IOError;
+import java.io.IOException;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -85,36 +90,27 @@ public class LoginActivity extends AppCompatActivity {
         EditText emailOrNickName = findViewById(R.id.fieldInputEmailLogIn);
         String passwordValue = password.getText().toString();
         String emailOrNickNameValue = emailOrNickName.getText().toString();
-        JSONObject payload = new JSONObject();
-        Intent intent = new Intent(getApplicationContext(), DashboardActivity.class);
-        startActivity(intent);
 
+        // Creating JSON for payload
+        JsonObject loginPayload = new JsonObject();
+        loginPayload.addProperty("email", emailOrNickNameValue);
+        loginPayload.addProperty("password", passwordValue);
+        loginPayload.toString();
+
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url("http://192.168.100.2:4000/users")
+                .build();
         try {
-            payload.put("email", emailOrNickNameValue );
-            payload.put("password", passwordValue );
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
+            Response response = client.newCall(request).execute();
+            Log.d("Login", response.body().toString());
+        } catch (IOException e){
+            Log.e("Login", e.getMessage());
         }
 
-        JsonObjectRequest request = new JsonObjectRequest
-                (Request.Method.POST, PathUrl.ENP_LOGIN_USER, payload, new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        ResponseGlobalJsonDTO loginResponseObject = new Gson().fromJson(response.toString(), ResponseGlobalJsonDTO.class);
 
-//                        System.out.println(response.toString());
-//                        Toast.makeText(LoginActivity.this, response.toString(), Toast.LENGTH_SHORT).show();
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        System.out.println(error.toString());
-                        Toast.makeText(LoginActivity.this, error.toString(), Toast.LENGTH_SHORT).show();
-                    }
-                });
-        QuerySingleton.getInstance(this).addToRequestQueue(request);
-
-
+//        Intent intent = new Intent(getApplicationContext(), DashboardActivity.class);
+//        startActivity(intent);
     }
 
     private  void  signUpOnClicked(){
