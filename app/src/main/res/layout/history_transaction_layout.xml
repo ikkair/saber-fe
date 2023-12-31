@@ -5,9 +5,20 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/test"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:id="@+id/rootParentTrxList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <include android:visibility="gone" layout="@layout/single_transaction_list_layout"/>
+
+        </LinearLayout>
+
+    </ScrollView>
 
 </LinearLayout>

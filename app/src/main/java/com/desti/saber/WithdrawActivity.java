@@ -1,19 +1,29 @@
 package com.desti.saber;
 
+import android.content.Context;
+import android.content.res.XmlResourceParser;
+import android.util.AttributeSet;
+import android.util.Xml;
+import android.view.LayoutInflater;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.View;
+import android.view.LayoutInflater;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.constraintlayout.widget.Group;
 import com.desti.saber.utils.ImageSetterFromStream;
 
+import java.lang.reflect.Method;
 import java.text.NumberFormat;
 import java.util.Currency;
+import java.util.zip.Inflater;
 
 public class WithdrawActivity extends AppCompatActivity {
 
@@ -54,9 +64,12 @@ public class WithdrawActivity extends AppCompatActivity {
 
     private void setHistoryTrx(){
         clearRecentLayout();
+
         View inflateHistoryTrx = getLayoutInflater().inflate(R.layout.history_transaction_layout, findViewById(R.id.rootWithDrawActivity));
-        TextView as = inflateHistoryTrx.findViewById(R.id.test);
-        as.setText(String.valueOf(Math.floor(Math.random()*100000)));
+        ViewGroup rootParentTrxList = inflateHistoryTrx.findViewById(R.id.rootParentTrxList);
+
+        XmlResourceParser parser = getResources().getLayout(R.layout.single_transaction_list_layout);
+        AttributeSet attrs = Xml.asAttributeSet(parser);
     }
 
     private void setUserNameTittle(String userName){

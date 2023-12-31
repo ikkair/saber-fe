@@ -144,8 +144,8 @@ public class LoginActivity extends AppCompatActivity {
                         editor.putString("token", loginData[0].getToken());
                         editor.putString("role", loginData[0].getRole());
                         editor.apply();
-                        Intent signUpIntent = new Intent(context, UserActivity.class);
-                        startActivity(signUpIntent);
+                        Intent dashboard = new Intent(context, DashboardActivity.class);
+                        startActivity(dashboard);
                         break;
                     case 3:
                     case 4:
