@@ -37,42 +37,17 @@
 
             <ImageView
                 style="@style/text_edit_icon"
-                android:id="@+id/userInputFirstNameIcon" />
+                android:id="@+id/userInputNameIcon" />
 
             <EditText
-                android:hint="@string/title_hint_input_text_first_name"
+                android:hint="@string/title_hint_input_text_name"
                 android:inputType="text"
-                android:id="@+id/fieldInputFirstNameRegister"
+                android:id="@+id/fieldInputNameRegister"
                 style="@style/cyan_field_form_data_text_input"/>
 
         </LinearLayout>
 
-        <LinearLayout style="@style/wrapper_field_input_cyan_border">
 
-            <ImageView
-                android:id="@+id/userInputAddressIcon"
-                style="@style/text_edit_icon"/>
-
-            <EditText
-                android:hint="@string/title_hint_input_text_address"
-                android:id="@+id/fieldInputAddressRegister"
-                style="@style/cyan_field_form_data_text_input"/>
-
-        </LinearLayout>
-
-        <LinearLayout style="@style/wrapper_field_input_cyan_border">
-
-            <ImageView
-                android:id="@+id/userInputPhoneIcon"
-                style="@style/text_edit_icon"/>
-
-            <EditText
-                android:hint="@string/title_hint_input_text_phone"
-                android:inputType="phone"
-                android:id="@+id/fieldInputPhoneRegister"
-                style="@style/cyan_field_form_data_text_input"/>
-
-        </LinearLayout>
 
         <LinearLayout style="@style/wrapper_field_input_cyan_border">
 
@@ -99,20 +74,6 @@
                 android:autofillHints="password"
                 android:inputType="textPassword"
                 android:id="@+id/fieldInputPasswordRegister"
-                style="@style/cyan_field_form_data_text_input"/>
-
-        </LinearLayout>
-
-        <LinearLayout style="@style/wrapper_field_input_cyan_border">
-
-            <ImageView
-                android:id="@+id/userInputConfirmPasswordIcon"
-                style="@style/text_edit_icon"/>
-
-            <EditText
-                android:hint="@string/title_hint_input_text_password_confirm"
-                android:inputType="textPassword"
-                android:id="@+id/fieldInputPasswordConfirmRegister"
                 style="@style/cyan_field_form_data_text_input"/>
 
         </LinearLayout>

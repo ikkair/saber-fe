@@ -41,12 +41,8 @@ public class RegisterActivity extends AppCompatActivity {
 
         isfs.setAsImageDrawable("logIn_picture_decoration.png", R.id.logInPictureDecoration);
         isfs.setAsImageBackground("transparent_form_data_bg_long.png", R.id.formDataTransparentContainer);
-        isfs.setAsImageDrawable("user_icon.png", R.id.userInputFirstNameIcon);
-        isfs.setAsImageDrawable("phone_icon.png", R.id.userInputAddressIcon);
-        isfs.setAsImageDrawable("phone_icon.png", R.id.userInputPhoneIcon);
         isfs.setAsImageDrawable("email_icon.png", R.id.userInputEmailIcon);
         isfs.setAsImageDrawable("password_icon.png", R.id.userInputPasswordIcon);
-        isfs.setAsImageDrawable("password_icon.png", R.id.userInputConfirmPasswordIcon);
 
         signInTextViewButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -66,20 +62,14 @@ public class RegisterActivity extends AppCompatActivity {
     private void onClickedButtonSignUpRegister(){
         // TODO : if button signup clicked
         EditText email = findViewById(R.id.fieldInputEmailRegister);
-        EditText address = findViewById(R.id.fieldInputAddressRegister);
         EditText password = findViewById(R.id.fieldInputPasswordRegister);
-        EditText phoneNumber = findViewById(R.id.fieldInputPhoneRegister);
-        EditText firstName = findViewById(R.id.fieldInputFirstNameRegister);
-        EditText passwordConfirm = findViewById(R.id.fieldInputPasswordConfirmRegister);
-        String passwordConfirmValue = passwordConfirm.getText().toString();
-        String phoneNumberValue = phoneNumber.getText().toString();
-        String firstNameValue = firstName.getText().toString();
+        EditText Name = findViewById(R.id.fieldInputNameRegister);
+        String NameValue = Name.getText().toString();
         String passwordValue = password.getText().toString();
-        String addressValue = address.getText().toString();
         String emailValue = email.getText().toString();
 
     JsonObject registerPayload = new JsonObject();
-        registerPayload.addProperty("name", firstNameValue);
+        registerPayload.addProperty("name", NameValue);
         registerPayload.addProperty("email", emailValue);
         registerPayload.addProperty("password", passwordValue);
         RequestBody requestBody = RequestBody.create(
