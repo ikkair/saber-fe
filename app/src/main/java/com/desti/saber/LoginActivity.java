@@ -1,5 +1,6 @@
 package com.desti.saber;
 
+import android.os.StrictMode;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -39,12 +40,14 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         ImageSetterFromStream imageSetter = new ImageSetterFromStream(this);
         CheckBox rememberMe = findViewById(R.id.rememberMeCheckBox);
         Button logInButton = findViewById(R.id.logInBtnWithCredential);
         TextView titleSignUpClickable = findViewById(R.id.titleTextSignUpClickable);
         TextView titleForgotPasswordClickable = findViewById(R.id.titleTextForgotPasswordClickable);
 
+        StrictMode.setThreadPolicy(policy);
         imageSetter.setAsImageBackground("transparent_form_data_bg.png", R.id.formDataTransparentContainer);
         imageSetter.setAsImageDrawable("logIn_picture_decoration.png", R.id.logInPictureDecoration);
         imageSetter.setAsImageDrawable("password_icon.png", R.id.userInputPasswordIcon);
@@ -97,20 +100,19 @@ public class LoginActivity extends AppCompatActivity {
         loginPayload.addProperty("password", passwordValue);
         loginPayload.toString();
 
-        OkHttpClient client = new OkHttpClient();
-        Request request = new Request.Builder()
-                .url("http://192.168.100.2:4000/users")
-                .build();
-        try {
-            Response response = client.newCall(request).execute();
-            Log.d("Login", response.body().toString());
-        } catch (IOException e){
-            Log.e("Login", e.getMessage());
-        }
+//        OkHttpClient client = new OkHttpClient();
+//        Request request = new Request.Builder()
+//                .url("http://192.168.100.2:4000/users")
+//                .build();
+//        try {
+//            Response response = client.newCall(request).execute();
+//            Log.d("Login", response.body().toString());
+//        } catch (IOException e){
+//            Log.e("Login", e.getMessage());
+//        }
 
-
-//        Intent intent = new Intent(getApplicationContext(), DashboardActivity.class);
-//        startActivity(intent);
+        Intent intent = new Intent(getApplicationContext(), DashboardActivity.class);
+        startActivity(intent);
     }
 
     private  void  signUpOnClicked(){

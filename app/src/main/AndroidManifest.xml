@@ -20,9 +20,6 @@
             android:name=".WithdrawActivity"
             android:exported="false" />
         <activity
-            android:name=".BalanceActivity"
-            android:exported="false" />
-        <activity
             android:name=".CourierActivity"
             android:exported="false"
             android:screenOrientation="portrait" />

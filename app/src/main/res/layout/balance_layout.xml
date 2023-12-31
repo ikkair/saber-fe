@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/balanceLayout"
+        android:orientation="vertical">
+
+    <FrameLayout
+            android:id="@+id/balanceWrapper"
+            android:layout_margin="10dp"
+            android:paddingStart="13dp"
+            android:paddingEnd="13dp"
+            android:paddingTop="15dp"
+            android:paddingBottom="18dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        <TextView
+                android:layout_gravity="start|center"
+                style="@style/huge_tittle_text_black"
+                android:text="@string/your_balance_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+        <TextView
+                android:textStyle="normal"
+                android:layout_gravity="end|center"
+                android:id="@+id/balanceTitle"
+                style="@style/small_tittle_text_black"
+                android:text="@string/your_balance_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+    </FrameLayout>
+
+    <android.widget.Button
+            android:id="@+id/withdrawBtn"
+            android:layout_gravity="center"
+            style="@style/button_style_1"
+            android:text="@string/withdraw_label"
+            android:layout_width="130dp"
+            android:layout_height="wrap_content"/>
+
+</LinearLayout>

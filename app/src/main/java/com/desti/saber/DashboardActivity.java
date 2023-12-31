@@ -70,7 +70,7 @@ public class DashboardActivity extends AppCompatActivity {
     }
 
     private void withdrawLabelOnClick(){
-        Intent withDrawIntent = new Intent(getApplicationContext(), BalanceActivity.class);
+        Intent withDrawIntent = new Intent(getApplicationContext(), WithdrawActivity.class);
         startActivity(withDrawIntent);
     }
 

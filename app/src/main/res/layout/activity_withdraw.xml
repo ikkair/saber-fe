@@ -5,36 +5,72 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:id="@+id/rootWithDrawActivity"
     tools:context=".WithdrawActivity">
 
     <FrameLayout
         android:background="@drawable/gradient_3_color_bg_top_global_deco"
         android:layout_width="match_parent"
-        android:layout_height="75dp">
+        android:layout_height="120dp">
 
-
-        <LinearLayout
-            android:layout_marginBottom="10dp"
-            android:layout_gravity="bottom|start"
-            android:orientation="vertical"
-            android:layout_width="wrap_content"
+        <FrameLayout
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="15dp"
+            android:layout_gravity="center|bottom"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <android.widget.Button
-                android:padding="0dp"
-                android:layout_margin="0dp"
-                android:layout_width="30dp"
-                android:layout_height="30dp"/>
-
-            <TextView
-                android:text="TES TEST EDTE TDE"
-                style="@style/huge_tittle_text"
-                android:id="@+id/userNameLabel"
+            <LinearLayout
+                android:layout_gravity="center|start"
+                android:orientation="vertical"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content">
 
-        </LinearLayout>
+                <TextView
+                    style="@style/huge_tittle_text"
+                    android:id="@+id/userNameLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    style="@style/huge_tittle_text_s2"
+                    android:id="@+id/pinPointLocTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+            </LinearLayout>
+
+            <ImageView
+                android:layout_gravity="end|center"
+                android:id="@+id/profileImage"
+                android:layout_width="50dp"
+                android:layout_height="50dp"/>
+
+        </FrameLayout>
 
     </FrameLayout>
+
+    <LinearLayout
+        android:background="@drawable/white_bg_with_shadow"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:paddingBottom="4dp"
+        android:layout_height="40dp">
+
+        <android.widget.Button
+            android:id="@+id/balanceNavBtn"
+            android:background="@drawable/white_rs_btn"
+            style="@style/button_top_split"
+            android:text="@string/balance_title"/>
+
+        <android.widget.Button
+            android:id="@+id/historyTransactionNavBtn"
+            android:background="@drawable/white_ls_btn"
+            android:text="@string/history_title"
+            style="@style/button_top_split"/>
+
+    </LinearLayout>
 
 </LinearLayout>
