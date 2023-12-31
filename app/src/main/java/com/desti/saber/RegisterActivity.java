@@ -41,12 +41,8 @@ public class RegisterActivity extends AppCompatActivity {
 
         isfs.setAsImageDrawable("logIn_picture_decoration.png", R.id.logInPictureDecoration);
         isfs.setAsImageBackground("transparent_form_data_bg_long.png", R.id.formDataTransparentContainer);
-        isfs.setAsImageDrawable("user_icon.png", R.id.userInputFirstNameIcon);
-        isfs.setAsImageDrawable("phone_icon.png", R.id.userInputAddressIcon);
-        isfs.setAsImageDrawable("phone_icon.png", R.id.userInputPhoneIcon);
         isfs.setAsImageDrawable("email_icon.png", R.id.userInputEmailIcon);
         isfs.setAsImageDrawable("password_icon.png", R.id.userInputPasswordIcon);
-        isfs.setAsImageDrawable("password_icon.png", R.id.userInputConfirmPasswordIcon);
 
         signInTextViewButton.setOnClickListener(new View.OnClickListener() {
             @Override
