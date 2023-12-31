@@ -1,9 +1,9 @@
 package com.desti.saber.utils.dto;
 
-public class ResponseGlobalJsonDTO {
+public class ResponseGlobalJsonDTO<T> {
     private String status;
     private Integer statusCode;
-    private DataLogInDTO[] data;
+    private T[] data;
     private String message;
 
     public String getStatus() {
@@ -22,11 +22,11 @@ public class ResponseGlobalJsonDTO {
         this.statusCode = statusCode;
     }
 
-    public DataLogInDTO[] getData() {
+    public T[] getData() {
         return data;
     }
 
-    public void setData(DataLogInDTO[] data) {
+    public void setData(T[] data) {
         this.data = data;
     }
 

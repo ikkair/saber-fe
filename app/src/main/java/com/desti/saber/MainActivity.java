@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -18,10 +19,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        // Initialize shared preferences
-        sharedPreferences = getSharedPreferences("UserData", Context.MODE_PRIVATE);
-
-
 
         ImageSetterFromStream imageSetter = new ImageSetterFromStream(this);
         Button signUpBtn = findViewById(R.id.signUpBtn);
@@ -33,6 +30,11 @@ public class MainActivity extends AppCompatActivity {
             String imageName = "img_btn_" + i + ".png";
             int resourceId = getResources().getIdentifier(viewXmlId, "id", getPackageName());
             imageSetter.setAsImageDrawable(imageName, resourceId);
+        }
+
+        SharedPreferences sharedPreferences = getSharedPreferences("LoginInfo", Context.MODE_PRIVATE);
+        if (sharedPreferences.contains("token")){
+            Log.d("Token Exist", "Token still exist");
         }
 
         signUpBtn.setOnClickListener(new View.OnClickListener() {

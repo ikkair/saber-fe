@@ -9,7 +9,6 @@ public class DataLogInDTO {
      private String photo;
      private Long balance;
      private String token;
-     private String refreshToken;
 
     public String getId() {
         return id;
@@ -75,11 +74,4 @@ public class DataLogInDTO {
         this.token = token;
     }
 
-    public String getRefreshToken() {
-        return refreshToken;
-    }
-
-    public void setRefreshToken(String refreshToken) {
-        this.refreshToken = refreshToken;
-    }
 }

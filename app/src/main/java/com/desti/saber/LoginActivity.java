@@ -3,7 +3,9 @@ package com.desti.saber;
 import android.os.StrictMode;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -16,10 +18,12 @@ import android.widget.Toast;
 
 import com.desti.saber.utils.ImageSetterFromStream;
 import com.desti.saber.utils.constant.PathUrl;
+import com.desti.saber.utils.dto.DataLogInDTO;
 import com.desti.saber.utils.dto.ResponseGlobalJsonDTO;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -27,8 +31,10 @@ import org.json.JSONObject;
 import java.io.IOError;
 import java.io.IOException;
 
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class LoginActivity extends AppCompatActivity {
@@ -88,6 +94,8 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void logInBtnOnClicked(){
+
+
         //TODO : if logIn button on clicked
         EditText password = findViewById(R.id.fieldInputPasswordLogIn);
         EditText emailOrNickName = findViewById(R.id.fieldInputEmailLogIn);
@@ -98,21 +106,75 @@ public class LoginActivity extends AppCompatActivity {
         JsonObject loginPayload = new JsonObject();
         loginPayload.addProperty("email", emailOrNickNameValue);
         loginPayload.addProperty("password", passwordValue);
-        loginPayload.toString();
+        RequestBody requestBody = RequestBody.create(
+                loginPayload.toString(),
+                MediaType.parse("application/json")
+        );
 
-//        OkHttpClient client = new OkHttpClient();
-//        Request request = new Request.Builder()
-//                .url("http://192.168.100.2:4000/users")
-//                .build();
-//        try {
-//            Response response = client.newCall(request).execute();
-//            Log.d("Login", response.body().toString());
-//        } catch (IOException e){
-//            Log.e("Login", e.getMessage());
-//        }
+        OkHttpHandler okHttpHandler = new OkHttpHandler();
 
-        Intent intent = new Intent(getApplicationContext(), DashboardActivity.class);
-        startActivity(intent);
+        Request request = new Request
+                .Builder()
+                .url(PathUrl.ENP_LOGIN_USER)
+                .post(requestBody)
+                .build();
+
+        okHttpHandler.requestAsync(this, request, new OkHttpHandler.MyCallback() {
+            @Override
+            public void onSuccess(Context context, Response response) {
+                int responseType = response.code()/100;
+
+                SharedPreferences sharedPreferences = getSharedPreferences("LoginInfo", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+
+                ResponseGlobalJsonDTO globalResponse = null;
+                DataLogInDTO[] loginData = null;
+                try {
+                    Gson gson = new Gson();
+                    TypeToken<ResponseGlobalJsonDTO<DataLogInDTO>> resToken = new TypeToken<ResponseGlobalJsonDTO<DataLogInDTO>>(){};
+                    globalResponse = gson.fromJson(response.body().string(), resToken.getType());
+                    loginData = (DataLogInDTO[]) globalResponse.getData();
+
+                } catch (Exception e){
+                    Log.e("Parsing Login Error", e.getMessage());
+                }
+                switch (responseType){
+                    case 2:
+                        editor.putString("username", loginData[0].getName());
+                        editor.putString("token", loginData[0].getToken());
+                        editor.putString("role", loginData[0].getRole());
+                        editor.apply();
+                        Intent signUpIntent = new Intent(context, UserActivity.class);
+                        startActivity(signUpIntent);
+                        break;
+                    case 3:
+                    case 4:
+                    case 5:
+                        try {
+                            ResponseGlobalJsonDTO finalGlobalResponse = globalResponse;
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(getApplicationContext(), "Login Failed: ".concat(finalGlobalResponse.getMessage()), Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        } catch (Exception e){
+                            Log.e("Login Toast Error", e.getMessage());
+                        }
+                        break;
+                }
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
     }
 
     private  void  signUpOnClicked(){
@@ -125,3 +187,4 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 }
+
