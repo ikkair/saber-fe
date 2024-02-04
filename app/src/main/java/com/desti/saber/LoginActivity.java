@@ -53,6 +53,16 @@ public class LoginActivity extends AppCompatActivity {
         imageSetter.setAsImageDrawable("password_icon.png", R.id.userInputPasswordIcon);
         imageSetter.setAsImageDrawable("user_icon.png", R.id.userInputEmailIcon);
 
+        SharedPreferences rememberLogin = getSharedPreferences("InputLoginInfo", Context.MODE_PRIVATE);
+        if(rememberLogin.contains("username") && rememberLogin.contains("password")){
+            EditText password = findViewById(R.id.fieldInputPasswordLogIn);
+            EditText emailOrNickName = findViewById(R.id.fieldInputEmailLogIn);
+            password.setText(rememberLogin.getString("password", ""));
+            emailOrNickName.setText(rememberLogin.getString("username", ""));
+            rememberMe.setChecked(true);
+            rememberMeOnChecked(true);
+        }
+
         rememberMe.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -87,6 +97,19 @@ public class LoginActivity extends AppCompatActivity {
         this.rememberMeStatus = checkStatus;
     }
 
+    private void rememberMeData(String email, String password){
+        SharedPreferences rememberLogin = getSharedPreferences("InputLoginInfo", Context.MODE_PRIVATE);
+        SharedPreferences.Editor rememberLoginEditor = rememberLogin.edit();
+        if(this.rememberMeStatus){
+            rememberLoginEditor.putString("username", email);
+            rememberLoginEditor.putString("password", password);
+            rememberLoginEditor.apply();
+        } else {
+            rememberLoginEditor.clear();
+            rememberLoginEditor.commit();
+        }
+    }
+
     private void logInBtnOnClicked(){
 
 
@@ -118,8 +141,8 @@ public class LoginActivity extends AppCompatActivity {
             public void onSuccess(Context context, Response response) {
                 int responseType = response.code()/100;
 
-                SharedPreferences sharedPreferences = getSharedPreferences("LoginInfo", Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPreferences.edit();
+                SharedPreferences loginInfo = getSharedPreferences("LoginInfo", Context.MODE_PRIVATE);
+                SharedPreferences.Editor loginInfoEditor = loginInfo.edit();
 
                 ResponseGlobalJsonDTO globalResponse = null;
                 DataLogInDTO[] loginData = null;
@@ -134,12 +157,15 @@ public class LoginActivity extends AppCompatActivity {
                 }
                 switch (responseType){
                     case 2:
-                        editor.putString("username", loginData[0].getName());
-                        editor.putString("token", loginData[0].getToken());
-                        editor.putString("role", loginData[0].getRole());
-                        editor.apply();
+                        loginInfoEditor.putString("username", loginData[0].getName());
+                        loginInfoEditor.putString("token", loginData[0].getToken());
+                        loginInfoEditor.putString("role", loginData[0].getRole());
+                        loginInfoEditor.apply();
+                        rememberMeData(emailOrNickNameValue, passwordValue);
+
                         Intent dashboard = new Intent(context, DashboardActivity.class);
                         startActivity(dashboard);
+                        finish();
                         break;
                     case 3:
                     case 4:
@@ -174,6 +200,7 @@ public class LoginActivity extends AppCompatActivity {
     private  void  signUpOnClicked(){
         Intent signUpIntent = new Intent(this, RegisterActivity.class);
         startActivity(signUpIntent);
+        finish();
     }
 
     private void forgotPasswordOnClicked(){

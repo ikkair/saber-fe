@@ -47,6 +47,7 @@ public class RegisterActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent logIn = new Intent(getApplicationContext(), LoginActivity.class);
                 startActivity(logIn);
+                finish();
             }
         });
         signUpBtn.setOnClickListener(new View.OnClickListener() {

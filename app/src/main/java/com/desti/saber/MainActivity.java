@@ -10,6 +10,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import com.auth0.android.jwt.DecodeException;
+import com.auth0.android.jwt.JWT;
 import com.desti.saber.utils.ImageSetterFromStream;
 
 public class MainActivity extends AppCompatActivity {
@@ -23,6 +25,23 @@ public class MainActivity extends AppCompatActivity {
         ImageSetterFromStream imageSetter = new ImageSetterFromStream(this);
         Button signUpBtn = findViewById(R.id.signUpBtn);
         Button logInBtn = findViewById(R.id.logInBtn);
+
+        SharedPreferences loginInfo = getSharedPreferences("LoginInfo", Context.MODE_PRIVATE);
+        String jwtToken = loginInfo.getString("token", "");
+        try{
+            JWT jwt = new JWT(jwtToken);
+            if (!jwt.isExpired(0)){
+                String role = loginInfo.getString("role", "");
+                if (role.equals("user")){
+                    Intent dashboard = new Intent(this, DashboardActivity.class);
+                    startActivity(dashboard);
+                    finish();
+                }
+            }
+        } catch (DecodeException err){
+            loginInfo.edit().clear();
+            loginInfo.edit().apply();
+        }
 
         //Looping for background image btn circle
         for (int i = 1; i <= 5; i++){

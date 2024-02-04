@@ -1,6 +1,8 @@
 package com.desti.saber;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.View;
@@ -28,9 +30,10 @@ public class DashboardActivity extends AppCompatActivity {
         LinearLayout detailAccountClickable = findViewById(R.id.detailAccountClickable);
         LinearLayout trashDeliverClickable = findViewById(R.id.trashDeliverClickable);
         LinearLayout pinPointLocClickable = findViewById(R.id.pinPointLocClickable);
+        SharedPreferences loginInfo = getSharedPreferences("LoginInfo", Context.MODE_PRIVATE);
 
         //change user name
-        this.setUserNameTittle("Example User Name Example User Name Example User Name");
+        this.setUserNameTittle(loginInfo.getString("username", "Cannot get the name"));
         //set pinpoint loc title
         this.setPinPointLocTitle("Jl. Bukit Cimanggu City Raya Jl. Sholeh Iskandar No.1, RT.01/RW.13, Cibadak, Kec. Tanah Sereal, Kota Bogor, Jawa Barat 16168");
         //set image profile

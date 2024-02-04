@@ -1,7 +1,7 @@
 package com.desti.saber.utils.constant;
 
 public class PathUrl {
-    private static final String ROOT_HOST = "http://192.168.43.148:4000";
+    private static final String ROOT_HOST = "http://192.168.100.49:4000";
     public static final String ROOT_PATH_USER = ROOT_HOST + "/users";
     public static final String ROOT_PATH_TRASH = ROOT_HOST + "/trashes";
     public static final String ROOT_PATH_TRASH_TYPE = ROOT_HOST + "/trash_types";
