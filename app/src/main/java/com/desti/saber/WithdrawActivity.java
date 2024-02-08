@@ -1,6 +1,7 @@
 package com.desti.saber;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.*;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -21,40 +22,39 @@ import java.util.Currency;
 public class WithdrawActivity extends AppCompatActivity {
 
     private ImageSetterFromStream imageSetterFromStream;
+    private View balanceLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_withdraw);
-
         imageSetterFromStream = new ImageSetterFromStream(this);
-        Button balanceButton  = findViewById(R.id.balanceNavBtn);
-        Button historyTrxButton = findViewById(R.id.historyTransactionNavBtn);
+        setBalanceLayout();
 
-        this.setUserNameTittle("Example User Name");
-        this.setPinPointLocTitle("Desa Bojonggede");
-        this.setBalance();
+        Button balanceNavButton  = findViewById(R.id.balanceNavBtn);
+        Button historyTrxNavButton = findViewById(R.id.historyTransactionNavBtn);
 
-        balanceButton.setOnClickListener(new View.OnClickListener() {
+        balanceNavButton.setOnClickListener(new View.OnClickListener() {
+            //initial Set Balance Value
             @Override
             public void onClick(View v) {
-                setBalance();
+                setBalanceLayout();
             }
         });
-
-        historyTrxButton.setOnClickListener(new View.OnClickListener() {
+        historyTrxNavButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 setHistoryTrx();
             }
         });
+
+        //section For calling endpoint profile
+        this.setUserNameTittle("Example User Name");
+        this.setPinPointLocTitle("Desa Bojonggede");
+        //this.setImageProfile();
     }
 
-    private void setBalance(){
-        //Please Calling Endpoint Here
-        this.setBalanceValue(100000000000L);
-    }
-
+    //Section For Calling endpoint and Set List Trx History
     private void setHistoryTrx(){
         clearRecentLayout();
         View inflateHistoryTrx = getLayoutInflater().inflate(R.layout.history_transaction_layout, findViewById(R.id.rootWithDrawActivity));
@@ -65,8 +65,7 @@ public class WithdrawActivity extends AppCompatActivity {
         this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-
-                for(int i =0; i < 100; i++){
+                for(int i =0; i < 5; i++){
                     ParentSingleListViewGroup parentSingleList = new ParentSingleListViewGroup(context);
                     parentSingleList.setUserName("Susu Aku Ada " + String.valueOf(i));
                     parentSingleList.setDate(new Date(System.currentTimeMillis()).toString());
@@ -81,9 +80,29 @@ public class WithdrawActivity extends AppCompatActivity {
                     });
                     rootParentTrxList.addView(parentSingleList);
                 }
-
             }
         });
+    }
+
+    //Section For Calling endpoint and Set Balance Value
+    private void setBalanceLayout(){
+        clearRecentLayout();
+
+        ViewGroup rootActivity = findViewById(R.id.rootWithDrawActivity);
+        this.balanceLayout = getLayoutInflater().inflate(R.layout.balance_layout, rootActivity);
+        Button withdrawButton = balanceLayout.findViewById(R.id.withdrawBtn);
+
+        withdrawButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), BankTransferActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+
+        //section for set balance after successfully calling  endpoint
+        this.setBalanceValue(10000000L);
     }
 
     private void setUserNameTittle(String userName){
@@ -124,13 +143,8 @@ public class WithdrawActivity extends AppCompatActivity {
         this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                clearRecentLayout();
-
-                ViewGroup rootActivity = findViewById(R.id.rootWithDrawActivity);
-                View balanceLayout = getLayoutInflater().inflate(R.layout.balance_layout, rootActivity);
                 int balanceWrapper = balanceLayout.findViewById(R.id.balanceWrapper).getId();
                 TextView balanceTextView = balanceLayout.findViewById(R.id.balanceTitle);
-
                 imageSetterFromStream.setAsImageBackground("balance_bg.png", balanceWrapper);
 
                 if(balance == null){
@@ -146,7 +160,6 @@ public class WithdrawActivity extends AppCompatActivity {
         if(findViewById(R.id.balanceLayout) != null){
             ((ViewGroup) findViewById(R.id.balanceLayout).getParent()).removeView(findViewById(R.id.balanceLayout));
         }
-
         if(findViewById(R.id.historyTransactionLayout) != null){
             ((ViewGroup) findViewById(R.id.historyTransactionLayout).getParent()).removeView(findViewById(R.id.historyTransactionLayout));
         }
