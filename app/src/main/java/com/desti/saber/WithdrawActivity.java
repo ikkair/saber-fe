@@ -1,29 +1,22 @@
 package com.desti.saber;
 
 import android.content.Context;
-import android.content.res.XmlResourceParser;
-import android.util.AttributeSet;
-import android.util.Xml;
-import android.view.LayoutInflater;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
+import android.view.*;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.view.View;
-import android.view.LayoutInflater;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.constraintlayout.widget.Group;
+import com.desti.saber.LayoutHelper.SingleTrxListLayout.OnClickActionActivity;
+import com.desti.saber.LayoutHelper.SingleTrxListLayout.ParentSingleListViewGroup;
 import com.desti.saber.utils.ImageSetterFromStream;
 
-import java.lang.reflect.Method;
+import java.sql.Date;
 import java.text.NumberFormat;
 import java.util.Currency;
-import java.util.zip.Inflater;
 
 public class WithdrawActivity extends AppCompatActivity {
 
@@ -64,12 +57,33 @@ public class WithdrawActivity extends AppCompatActivity {
 
     private void setHistoryTrx(){
         clearRecentLayout();
-
         View inflateHistoryTrx = getLayoutInflater().inflate(R.layout.history_transaction_layout, findViewById(R.id.rootWithDrawActivity));
         ViewGroup rootParentTrxList = inflateHistoryTrx.findViewById(R.id.rootParentTrxList);
+        Context context = rootParentTrxList.getContext();
 
-        XmlResourceParser parser = getResources().getLayout(R.layout.single_transaction_list_layout);
-        AttributeSet attrs = Xml.asAttributeSet(parser);
+        //section for looping list trx history
+        this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+
+                for(int i =0; i < 100; i++){
+                    ParentSingleListViewGroup parentSingleList = new ParentSingleListViewGroup(context);
+                    parentSingleList.setUserName("Susu Aku Ada " + String.valueOf(i));
+                    parentSingleList.setDate(new Date(System.currentTimeMillis()).toString());
+                    parentSingleList.setActivity("Penarikan Tunai " + i, "Rp. 999.999.999.999");
+                    parentSingleList.setDescription("Buat Beli " + i + " Toke Rp. " + i);
+                    parentSingleList.setActivityStatus("Berhasil", new OnClickActionActivity() {
+                        @Override
+                        public void onClick() {
+                            //use syntax at below if you get callback from server successfully delete history
+                            rootParentTrxList.removeView(parentSingleList);
+                        }
+                    });
+                    rootParentTrxList.addView(parentSingleList);
+                }
+
+            }
+        });
     }
 
     private void setUserNameTittle(String userName){

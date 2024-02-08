@@ -28,6 +28,15 @@ public class ImageSetterFromStream {
         }
     }
 
+    public void setAsImageDrawable(String imageName, ImageView imageView){
+        try{
+            InputStream ism = asm.open(imageName);
+            imageView.setImageDrawable(Drawable.createFromStream(ism, null));
+        }catch (Exception err){
+            System.out.println(err.getLocalizedMessage());
+        }
+    }
+
     public void setAsImageBackground(String imageName, int viewGroupComponent){
         try{
             InputStream ism = asm.open(imageName);

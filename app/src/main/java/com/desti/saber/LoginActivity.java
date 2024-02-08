@@ -136,65 +136,70 @@ public class LoginActivity extends AppCompatActivity {
                 .post(requestBody)
                 .build();
 
-        okHttpHandler.requestAsync(this, request, new OkHttpHandler.MyCallback() {
-            @Override
-            public void onSuccess(Context context, Response response) {
-                int responseType = response.code()/100;
+        //bypass calling endpoint
+        Intent dashboard = new Intent(this.getApplication().getApplicationContext(), DashboardActivity.class);
+        startActivity(dashboard);
+        finish();
 
-                SharedPreferences loginInfo = getSharedPreferences("LoginInfo", Context.MODE_PRIVATE);
-                SharedPreferences.Editor loginInfoEditor = loginInfo.edit();
-
-                ResponseGlobalJsonDTO globalResponse = null;
-                DataLogInDTO[] loginData = null;
-                try {
-                    Gson gson = new Gson();
-                    TypeToken<ResponseGlobalJsonDTO<DataLogInDTO>> resToken = new TypeToken<ResponseGlobalJsonDTO<DataLogInDTO>>(){};
-                    globalResponse = gson.fromJson(response.body().string(), resToken.getType());
-                    loginData = (DataLogInDTO[]) globalResponse.getData();
-
-                } catch (Exception e){
-                    Log.e("Parsing Login Error", e.getMessage());
-                }
-                switch (responseType){
-                    case 2:
-                        loginInfoEditor.putString("username", loginData[0].getName());
-                        loginInfoEditor.putString("token", loginData[0].getToken());
-                        loginInfoEditor.putString("role", loginData[0].getRole());
-                        loginInfoEditor.apply();
-                        rememberMeData(emailOrNickNameValue, passwordValue);
-
-                        Intent dashboard = new Intent(context, DashboardActivity.class);
-                        startActivity(dashboard);
-                        finish();
-                        break;
-                    case 3:
-                    case 4:
-                    case 5:
-                        try {
-                            ResponseGlobalJsonDTO finalGlobalResponse = globalResponse;
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Toast.makeText(getApplicationContext(), "Login Failed: ".concat(finalGlobalResponse.getMessage()), Toast.LENGTH_SHORT).show();
-                                }
-                            });
-                        } catch (Exception e){
-                            Log.e("Login Toast Error", e.getMessage());
-                        }
-                        break;
-                }
-            }
-
-            @Override
-            public void onFailure(Exception e) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
-        });
+//        okHttpHandler.requestAsync(this, request, new OkHttpHandler.MyCallback() {
+//            @Override
+//            public void onSuccess(Context context, Response response) {
+//                int responseType = response.code()/100;
+//
+//                SharedPreferences loginInfo = getSharedPreferences("LoginInfo", Context.MODE_PRIVATE);
+//                SharedPreferences.Editor loginInfoEditor = loginInfo.edit();
+//
+//                ResponseGlobalJsonDTO globalResponse = null;
+//                DataLogInDTO[] loginData = null;
+//                try {
+//                    Gson gson = new Gson();
+//                    TypeToken<ResponseGlobalJsonDTO<DataLogInDTO>> resToken = new TypeToken<ResponseGlobalJsonDTO<DataLogInDTO>>(){};
+//                    globalResponse = gson.fromJson(response.body().string(), resToken.getType());
+//                    loginData = (DataLogInDTO[]) globalResponse.getData();
+//
+//                } catch (Exception e){
+//                    Log.e("Parsing Login Error", e.getMessage());
+//                }
+//                switch (responseType){
+//                    case 2:
+//                        loginInfoEditor.putString("username", loginData[0].getName());
+//                        loginInfoEditor.putString("token", loginData[0].getToken());
+//                        loginInfoEditor.putString("role", loginData[0].getRole());
+//                        loginInfoEditor.apply();
+//                        rememberMeData(emailOrNickNameValue, passwordValue);
+//
+//                        Intent dashboard = new Intent(context, DashboardActivity.class);
+//                        startActivity(dashboard);
+//                        finish();
+//                        break;
+//                    case 3:
+//                    case 4:
+//                    case 5:
+//                        try {
+//                            ResponseGlobalJsonDTO finalGlobalResponse = globalResponse;
+//                            runOnUiThread(new Runnable() {
+//                                @Override
+//                                public void run() {
+//                                    Toast.makeText(getApplicationContext(), "Login Failed: ".concat(finalGlobalResponse.getMessage()), Toast.LENGTH_SHORT).show();
+//                                }
+//                            });
+//                        } catch (Exception e){
+//                            Log.e("Login Toast Error", e.getMessage());
+//                        }
+//                        break;
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Exception e) {
+//                runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+//                    }
+//                });
+//            }
+//        });
     }
 
     private  void  signUpOnClicked(){

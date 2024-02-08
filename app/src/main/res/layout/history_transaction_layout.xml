@@ -13,11 +13,7 @@
             android:orientation="vertical"
             android:id="@+id/rootParentTrxList"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <include android:visibility="gone" layout="@layout/single_transaction_list_layout"/>
-
-        </LinearLayout>
+            android:layout_height="wrap_content"/>
 
     </ScrollView>
 

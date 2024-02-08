@@ -108,4 +108,43 @@
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">match_parent</item>
     </style>
+
+    <style name="single_layout_list_trx_history">
+        <item name="android:layout_margin">15dp</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="date_text_trx_list" parent="TextAppearance.AppCompat">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/calmBlack</item>
+        <item name="android:textAlignment">center</item>
+        <item name="fontWeight">10</item>
+    </style>
+
+    <style name="activity_text_trx_list" parent="TextAppearance.AppCompat">
+        <item name="android:textSize">15sp</item>
+        <item name="android:textColor">@color/calmBlack</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="activity_result_text_trx_list" parent="TextAppearance.AppCompat">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/calmBlack</item>
+        <item name="android:layout_gravity">end</item>
+    </style>
+
+    <style name="activity_date_text_trx_list" parent="TextAppearance.AppCompat">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textAlignment">center</item>
+    </style>
+
+    <style name="activity_status_text_trx_list">
+        <item name="android:textSize">15sp</item>
+        <item name="android:textColor">@color/red</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:textStyle">bold</item>
+    </style>
 </resources>
