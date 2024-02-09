@@ -45,4 +45,437 @@
     <string name="dashboard_greeting_text">Aplikasi SABER adalah solusi untuk mengatasi masalah sosial tentang
         kebersihan lingkungan.
     </string>
+    <string name="trf_to_bank_label">Transfer ke Bank</string>
+    <string name="new_trf_bank_label">Transfer terbaru</string>
+    <string name="trf_bank_label">Transfer Bank</string>
+    <string name="account_number_archived">Rekening Tersimpan</string>
+    <string name="add_new_account_number">Tambah Rekening Baru</string>
+    <string name="change">Ubah</string>
+    <string name="bank_name_label">Nama Bank</string>
+    <string name="account_or_Va_number">No. Rek/Virtual Account</string>
+    <string name="placeholder_Va_or_Ac">Masukan No. Rek/Virtual Account</string>
+    <string name="stored_account_number">Simpan Rekening Bank</string>
+    <string name="continue_label">Lanjutkan</string>
+    <string name="warn_info_empyt_bank_data">Silahkan Isi Seluruh Bidang Data Yang Tersedia</string>
+    <string name="bank_data_not_found">Nomor Rekening / Virtual Akun Tidak Ditemukan</string>
+    <string name="transfer_amount_label">Jumlah Transfer</string>
+    <string name="id_curr">Rp</string>
+    <string name="balance_available_transfer">Saldo yang Dapat Ditransfer :</string>
+    
+    <string-array name="bank_name_list">
+        <item id="pb">Pilih Bank</item>
+        <item>PT.BRI (PERSERO) TBK.</item>
+        <item>PT. BANK MANDIRI (PERSERO) TBK</item>
+        <item>PT. BANK NEGARA INDONESIA (PERSERO),TBK</item>
+        <item>PT. BANK DANAMON INDONESIA</item>
+        <item>PT. BANK PERMATA TBK.</item>
+        <item>PT. BANK CENTRAL ASIA, TBK.</item>
+        <item>Bank Maybank Indonesia</item>
+        <item>Bank Panin</item>
+        <item>PT. BANK CIMB  NIAGA</item>
+        <item>PT. BANK UOB INDONESIA</item>
+        <item>PT. BANK OCBC NISP TBK</item>
+        <item>CITIBANK N.A.</item>
+        <item>KC JPMORGAN CHASE BANK, N.A.</item>
+        <item>BANK OF AMERICA, N.A.</item>
+        <item>Bank China Construction Bank (Ex-Bank Windu Kentjana)</item>
+        <item>PT.BANK ARTHA GRAHA INT\'L,TBK</item>
+        <item>BANGKOK BANK  PUBLIC CO.LTD.</item>
+        <item>MUFG Bank</item>
+        <item>PT. BANK DBS INDONESIA</item>
+        <item>PT. BANK RESONA PERDANIA</item>
+        <item>PT.BANK MIZUHO INDONESIA</item>
+        <item>STANDARD CHARTERED BANK</item>
+        <item>PT. BANK CAPITAL INDONESIA</item>
+        <item>PT. BANK BNP PARIBAS INDONESIA</item>
+        <item>PT. BANK ANZ INDONESIA</item>
+        <item>Bank Of China Indonesia</item>
+        <item>PT. BANK BUMI  ARTA</item>
+        <item>PT Bank HSBC Indonesia</item>
+        <item>PT BANK JTRUST INDONESIA</item>
+        <item>PT.BANK MAYAPADA INTER\'L, TBK</item>
+        <item>PT. BANK JABAR BANTEN (BJB)</item>
+        <item>PT. BANK DKI</item>
+        <item>PT. BPD YOGYAKARTA (DIY)</item>
+        <item>PT.BPD JAWA TENGAH</item>
+        <item>BPD JAWA TIMUR (JATIM)</item>
+        <item>PT.BPD JAMBI</item>
+        <item>PT. BPD ACEH</item>
+        <item>PT.BANK SUMUT (BPD SUMUT)</item>
+        <item>Bank Nagari (BPD Sumatera Barat)</item>
+        <item>PT BPD RIAU KEPRI</item>
+        <item>PT BPD SUMATERA SELATAN DAN  BANGKA BELITUNG</item>
+        <item>PT.BPD LAMPUNG</item>
+        <item>PT. BPD KALIMANTAN SELATAN</item>
+        <item>PT.BPD KALIMANTAN BARAT</item>
+        <item>BPD KALIMANTAN TIMUR</item>
+        <item>PT.BPD KALIMANTAN TENGAH</item>
+        <item>PT. BPD SULAWESI SELATAN DAN SULAWESI  BARAT</item>
+        <item>PT. BANK SULUT</item>
+        <item>PT.BPD NUSA TENGGARA BARAT</item>
+        <item>PT.BPD BALI</item>
+        <item>PT. BPD NUSA TENGGARA TIMUR</item>
+        <item>PT.BPD MALUKU</item>
+        <item>PT.BPD PAPUA</item>
+        <item>BPD BENGKULU</item>
+        <item>PT.BPD SULAWESI TENGAH</item>
+        <item>PT. BPD SULAWESI TENGGARA</item>
+        <item>PT. BANK NUSANTARA PARAHYANGAN</item>
+        <item>Bank Banten</item>
+        <item>PT. BANK OF INDIA INDONESIA, TBK</item>
+        <item>PT.BANK MUAMALAT INDONESIA,TBK.</item>
+        <item>PT. BANK MESTIKA DHARMA</item>
+        <item>Bank Shinhan</item>
+        <item>PT. BANK SINAR MAS</item>
+        <item>PT. BANK MASPION INDONESIA</item>
+        <item>PT. BANK GANESHA</item>
+        <item>PT. BANK ICBC INDONESIA</item>
+        <item>PT. BANK QNB KESAWAN, TBK.</item>
+        <item>PT. BANK TABUNGAN NEGARA (PERSERO).TBK</item>
+        <item>PT. BANK WOORI SAUDARA INDONESIA 1906,  TBK</item>
+        <item>PT.BANK TABUNGAN PENSIUNAN NAS</item>
+        <item>PT. BANK VICTORIA  SYARIAH</item>
+        <item>PT BANK JABAR BANTEN SYARIAH</item>
+        <item>PT.BANK MEGA TBK</item>
+        <item>Bank KB Bukopin</item>
+        <item>Bank Syariah Indonesia (Ex-Bank Syariah Mandiri,BRI Syariah, BNI Syariah)</item>
+        <item>PT. BANK JASA JAKARTA</item>
+        <item>PT BANK KEB HANA</item>
+        <item>PT BANK MNC INTERNASIONAL</item>
+        <item>Bank Neo Commerce (Ex-Bank Yudha Bhakti)</item>
+        <item>PT. BANK RAKYAT INDONESIA AGRONIAGA TBK.</item>
+        <item>PT. BANK SBI INDONESIA</item>
+        <item>Bank Digital BCA (Ex-Bank Royal)</item>
+        <item>PT. BANK NATIONALNOBU</item>
+        <item>PT.BANK SYARIAH MEGA INDONESIA</item>
+        <item>PT. BANK INA PERDANA</item>
+        <item>Bank Panin Dubai Syariah</item>
+        <item>PT. PRIMA MASTER BANK</item>
+        <item>PT. BANK SYARIAH BUKOPIN</item>
+        <item>PT. BANK SAHABAT SAMPOERNA</item>
+        <item>Bank Oke Indonesia (Ex-Bank Dinar)</item>
+        <item>SEA Bank (Ex-Bank Kesejahteraan Ekonomi)</item>
+        <item>PT BANK BCA SYARIAH</item>
+        <item>Bank Jago (Ex-Bank Artos)</item>
+        <item>BTPN Syariah</item>
+        <item>PT. BANK MULTI  ARTA SENTOSA</item>
+        <item>PT. BANK MAYORA</item>
+        <item>PT. BANK INDEX SELINDO</item>
+        <item>Bank Mantap</item>
+        <item>PT.BANK VICTORIA INTERNASIONAL</item>
+        <item>ALLO BANK (ex PT. BANK HARDA INTERNASIONAL)</item>
+        <item>BPR Supra</item>
+        <item>BPR KS</item>
+        <item>IMkas</item>
+        <item>BPR Eka</item>
+        <item>LinkAja</item>
+        <item>Bank IBK Indonesia (Ex-Bank Agris)</item>
+        <item>Bank Aladin Syariah</item>
+        <item>PT. BANK CTBC INDONESIA</item>
+        <item>PT. BANK COMMONWEALTH</item>
+    </string-array>
+    <string-array name="beneficiary_bank_mock">
+        <item>29489889|60</item>
+        <item>82559650|15</item>
+        <item>71143968|107</item>
+        <item>77517712|1</item>
+        <item>37007117|78</item>
+        <item>28310411|94</item>
+        <item>44294622|26</item>
+        <item>26668300|35</item>
+        <item>66670014|40</item>
+        <item>63125282|11</item>
+        <item>3260747|54</item>
+        <item>34886241|18</item>
+        <item>56637105|72</item>
+        <item>87526669|87</item>
+        <item>94938688|77</item>
+        <item>6867909|44</item>
+        <item>3888938|22</item>
+        <item>9395631|72</item>
+        <item>78403738|108</item>
+        <item>47727671|52</item>
+        <item>92613320|62</item>
+        <item>34409883|100</item>
+        <item>35928430|107</item>
+        <item>70557265|85</item>
+        <item>33655207|37</item>
+        <item>43706847|45</item>
+        <item>38774292|78</item>
+        <item>75165580|81</item>
+        <item>99836486|19</item>
+        <item>64890535|46</item>
+        <item>74290827|7</item>
+        <item>10611826|28</item>
+        <item>70564282|90</item>
+        <item>96895580|30</item>
+        <item>2281321|3</item>
+        <item>33851981|40</item>
+        <item>18384616|27</item>
+        <item>19241217|28</item>
+        <item>10645872|27</item>
+        <item>42150535|10</item>
+        <item>80001560|21</item>
+        <item>1852622|68</item>
+        <item>82987787|28</item>
+        <item>87866497|75</item>
+        <item>54770345|78</item>
+        <item>32896497|88</item>
+        <item>74170271|92</item>
+        <item>80804750|103</item>
+        <item>64786066|35</item>
+        <item>98972295|104</item>
+        <item>13736158|86</item>
+        <item>45530793|106</item>
+        <item>92428027|98</item>
+        <item>84520117|31</item>
+        <item>21654158|97</item>
+        <item>28878980|30</item>
+        <item>83582955|2</item>
+        <item>5450709|13</item>
+        <item>26030920|13</item>
+        <item>46341419|49</item>
+        <item>67758660|41</item>
+        <item>55772617|35</item>
+        <item>18228963|96</item>
+        <item>15106628|15</item>
+        <item>99912928|24</item>
+        <item>25386048|23</item>
+        <item>67256325|41</item>
+        <item>46224217|100</item>
+        <item>73060819|95</item>
+        <item>42232524|61</item>
+        <item>42344548|98</item>
+        <item>58703794|52</item>
+        <item>85586693|5</item>
+        <item>2633952|72</item>
+        <item>60307436|58</item>
+        <item>34313334|61</item>
+        <item>72675697|7</item>
+        <item>79924241|46</item>
+        <item>82573722|93</item>
+        <item>53424337|33</item>
+        <item>27392618|15</item>
+        <item>43371176|24</item>
+        <item>35712662|30</item>
+        <item>39458068|13</item>
+        <item>43674378|39</item>
+        <item>76905734|32</item>
+        <item>18822286|62</item>
+        <item>92319250|48</item>
+        <item>10865659|96</item>
+        <item>60320608|85</item>
+        <item>91325834|39</item>
+        <item>9660585|80</item>
+        <item>77415470|90</item>
+        <item>64369178|83</item>
+        <item>5522713|92</item>
+        <item>78903520|77</item>
+        <item>79965729|55</item>
+        <item>15590794|27</item>
+        <item>59666027|91</item>
+        <item>72647700|80</item>
+        <item>3301229|0</item>
+        <item>6707645|80</item>
+        <item>99389609|107</item>
+        <item>95433591|73</item>
+        <item>96493614|29</item>
+        <item>64083108|94</item>
+        <item>87983174|42</item>
+        <item>10779785|49</item>
+        <item>21060302|26</item>
+        <item>35001003|52</item>
+        <item>99315044|27</item>
+        <item>23998523|46</item>
+        <item>48072556|3</item>
+        <item>24419635|95</item>
+        <item>61127668|98</item>
+        <item>8499993|91</item>
+        <item>52885183|82</item>
+        <item>93374117|108</item>
+        <item>90981923|17</item>
+        <item>41128030|97</item>
+        <item>78523634|106</item>
+        <item>29344970|19</item>
+        <item>22302014|91</item>
+        <item>55526856|31</item>
+        <item>51752553|59</item>
+        <item>12680493|19</item>
+        <item>13773483|84</item>
+        <item>31620465|87</item>
+        <item>39463086|51</item>
+        <item>32554998|58</item>
+        <item>71772719|108</item>
+        <item>13993451|15</item>
+        <item>27254596|90</item>
+        <item>50964479|84</item>
+        <item>92557072|36</item>
+        <item>92293900|18</item>
+        <item>86949647|7</item>
+        <item>73905808|52</item>
+        <item>48620478|93</item>
+        <item>82736194|71</item>
+        <item>75269430|90</item>
+        <item>65155171|5</item>
+        <item>1920303|85</item>
+        <item>21363446|103</item>
+        <item>72010102|21</item>
+        <item>29955852|93</item>
+        <item>25606840|64</item>
+        <item>16936436|41</item>
+        <item>22798769|90</item>
+        <item>3445127|63</item>
+    </string-array>
+    <string-array name="beneficiary_name_mock">
+        <item>I Ramanta Cardinata</item>
+        <item>Fauzan Cahyani</item>
+        <item>Asyrafi Satrio</item>
+        <item>Abdullah Rudiatin</item>
+        <item>Aufa Maydina</item>
+        <item>Priyohadi Oktaviani</item>
+        <item>Mubarak Krishti</item>
+        <item>Thomas Larashaty</item>
+        <item>Surya Isnandri</item>
+        <item>Adisdi Puspitasari</item>
+        <item>Ficky Dufay</item>
+        <item>Fakhrul Nugroho</item>
+        <item>Cardito Ainina</item>
+        <item>Givan Nurullah</item>
+        <item>Dhika Saniyati</item>
+        <item>Juno Kresno</item>
+        <item>Rifqy Reksa Syahputra</item>
+        <item>Hizkia Aziz</item>
+        <item>Radja Ulfania</item>
+        <item>Yutama Mandarasari</item>
+        <item>Syarief Laurensia</item>
+        <item>Ariyadi Djiddy</item>
+        <item>Bob Tubagus Ciptasari</item>
+        <item>Fajri Sabrina</item>
+        <item>Azmi Kharisma</item>
+        <item>Allen Naenggolan</item>
+        <item>Aulia Zahaira</item>
+        <item>Humam Firdaus Yati</item>
+        <item>Lendy Mubarak</item>
+        <item>Adhim Suheryanto</item>
+        <item>Deka Lesihantika</item>
+        <item>Banni Edy Widyaningtias</item>
+        <item>Satrya Rahadian</item>
+        <item>Muhammad Hernando</item>
+        <item>Romario Amira</item>
+        <item>Beckley Khansa</item>
+        <item>Fitra Indra</item>
+        <item>Miftachul Antoni</item>
+        <item>Arie Suputra</item>
+        <item>Rio Ayuriza</item>
+        <item>Syaibatul Rozi</item>
+        <item>Rutwan Febrian</item>
+        <item>Ferhat Qonita</item>
+        <item>Andi Suandhini</item>
+        <item>Julius Mediarrahman</item>
+        <item>Fajar Tiara</item>
+        <item>Dikposa Widihastuti</item>
+        <item>Sujendro Rialdhie</item>
+        <item>Ogie Hendy</item>
+        <item>Alvino Nezarani</item>
+        <item>Fahdnul Hutauruk</item>
+        <item>Andhicha Sundah</item>
+        <item>Okky Hafizh</item>
+        <item>Aditya Lintang Ervya</item>
+        <item>Achmad Afwika</item>
+        <item>Edwin Ramadhan</item>
+        <item>Mirza Utami</item>
+        <item>Andrie Mariana</item>
+        <item>Ari Allen Herlin</item>
+        <item>Muhamad Lendy Yahya</item>
+        <item>Herdaru Prayogi</item>
+        <item>Aldi Ardiansyah</item>
+        <item>Rutwan Abdul Djiddy</item>
+        <item>Ferhat Aldi Hidayah</item>
+        <item>Asyrafi Pambudi</item>
+        <item>Hudzaifah Jordy</item>
+        <item>Sugraha Usra</item>
+        <item>Yandra Amrullah</item>
+        <item>Dwiki Octaza</item>
+        <item>Adam Bayhacki</item>
+        <item>Romario Hutria</item>
+        <item>Thomas Ainina</item>
+        <item>Azmi Bagir</item>
+        <item>Fariz Adiwijaya</item>
+        <item>Lendy Alvianingrum</item>
+        <item>Yuda Larasati</item>
+        <item>Rendy P</item>
+        <item>Ilyas Labas</item>
+        <item>Fadhlir Indriany</item>
+        <item>Firas Rizal</item>
+        <item>Yudha Idrus</item>
+        <item>Sebastian Oklita</item>
+        <item>Nicolas Ramadhany</item>
+        <item>Mustafid Dimarzio</item>
+        <item>Mubarak Giarini</item>
+        <item>Surya Zwestyningrum</item>
+        <item>Sujendro Kevin</item>
+        <item>Edy Nuraini</item>
+        <item>Fauzan Tika</item>
+        <item>Adrian Sabrina</item>
+        <item>Adisdi Haddad</item>
+        <item>Aulia Mulyanti</item>
+        <item>Mohammad Mustafid Mukaffi</item>
+        <item>Jhon Sakinah</item>
+        <item>Imam Amalia</item>
+        <item>Aburachman Rinno Yati</item>
+        <item>Arthur Marvel Noviyanti</item>
+        <item>Timothy Deviyanto</item>
+        <item>Jeremiah Fachria</item>
+        <item>Bob Tabriiz</item>
+        <item>Nabilah Chaerunnisa</item>
+        <item>Dwi Rahma</item>
+        <item>Theresia Chairinaya Yuliasti</item>
+        <item>Arrum Usra</item>
+        <item>Fildzhah Randhika</item>
+        <item>Rahmigina Asriandari</item>
+        <item>Fernanda Hasudungan</item>
+        <item>Arini Isham</item>
+        <item>Dita Adiwijaya</item>
+        <item>Stefanny Priyanto</item>
+        <item>Alvira Wahyuningtias</item>
+        <item>Anggita Choirunnisa Kassa</item>
+        <item>Dian Kasta</item>
+        <item>Agustin Maulina</item>
+        <item>Tresna Farandy</item>
+        <item>Gracia Wiratmansyah</item>
+        <item>Jenifer June Suryo</item>
+        <item>Nita Nuraini</item>
+        <item>Permata Septian</item>
+        <item>Valerie Naomi</item>
+        <item>Elza Destrya</item>
+        <item>Labaika Isnaini</item>
+        <item>Chitra Yahya</item>
+        <item>Ruthcharuni Triashafira</item>
+        <item>Maharani Heriansyah</item>
+        <item>Agnes Sjukri</item>
+        <item>Shabrina Qonita</item>
+        <item>Dwira Andrianto</item>
+        <item>Janiar Nabila Azhari</item>
+        <item>Nika Atiyasari</item>
+        <item>Fildzah Hanifah</item>
+        <item>Lisna Oklita</item>
+        <item>Riski Galuh Nizliandry</item>
+        <item>Sulalah Ahugrah</item>
+        <item>Ulfi Handoko</item>
+        <item>Alika Atarita</item>
+        <item>Tasya Fachrully</item>
+        <item>Irmha Mawarni</item>
+        <item>Astrid Noor</item>
+        <item>Mutiara Listyani</item>
+        <item>Mustika Deviyanto</item>
+        <item>Evany Pasha</item>
+        <item>Adelia Oktaviani</item>
+        <item>Ayudyah Theresia Arfianti</item>
+        <item>Chusnur Azhar</item>
+        <item>Derisa Arrum Dinanti</item>
+        <item>Ghina Iqbal</item>
+        <item>Anastasia Akbar</item>
+        <item>Risma Rugaya</item>
+        <item>Iga Shella</item>
+    </string-array>
 </resources>

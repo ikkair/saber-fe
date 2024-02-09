@@ -11,7 +11,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.desti.saber.LayoutHelper.SingleTrxListLayout.OnClickActionActivity;
+import com.desti.saber.LayoutHelper.SingleTrxListLayout.OnClickActionSingleListActivity;
 import com.desti.saber.LayoutHelper.SingleTrxListLayout.ParentSingleListViewGroup;
 import com.desti.saber.utils.ImageSetterFromStream;
 
@@ -71,7 +71,7 @@ public class WithdrawActivity extends AppCompatActivity {
                     parentSingleList.setDate(new Date(System.currentTimeMillis()).toString());
                     parentSingleList.setActivity("Penarikan Tunai " + i, "Rp. 999.999.999.999");
                     parentSingleList.setDescription("Buat Beli " + i + " Toke Rp. " + i);
-                    parentSingleList.setActivityStatus("Berhasil", new OnClickActionActivity() {
+                    parentSingleList.setActivityStatus("Berhasil", new OnClickActionSingleListActivity() {
                         @Override
                         public void onClick() {
                             //use syntax at below if you get callback from server successfully delete history

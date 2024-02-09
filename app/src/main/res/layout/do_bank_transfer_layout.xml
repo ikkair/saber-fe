@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
+
+    <LinearLayout
+        style="@style/options_bank_tf_lst"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_gravity="center"
+            android:layout_width="50dp"
+            android:layout_height="50dp"/>
+
+        <LinearLayout
+            android:layout_gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/beneficiaryName"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                style="@style/activity_date_text_trx_list"/>
+
+            <TextView
+                android:id="@+id/accountNumberView"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                style="@style/activity_date_text_trx_list"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        style="@style/options_bank_tf_lst"
+        android:orientation="vertical">
+
+        <TextView
+            style="@style/smallest_label"
+            android:text="@string/transfer_amount_label"/>
+
+        <TextView
+            style="@style/smallest_label_green"
+            android:text="@string/id_curr"/>
+
+        <TextView
+            android:text="@string/balance_available_transfer"/>
+
+    </LinearLayout>
+
+</LinearLayout>

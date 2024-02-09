@@ -2,7 +2,6 @@ package com.desti.saber.LayoutHelper.SingleTrxListLayout;
 
 import android.content.Context;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import com.desti.saber.R;
 
@@ -47,9 +46,9 @@ public class ParentSingleListViewGroup extends LinearLayout {
         addView(activityDescription);
     }
 
-    public void setActivityStatus(String activityStatusText, OnClickActionActivity onClickActionActivity){
+    public void setActivityStatus(String activityStatusText, OnClickActionSingleListActivity onClickActionSingleListActivity){
         ActivityTitleTrxList activityStatus = new ActivityTitleTrxList(getContext());
-        activityStatus.setActivityStatus(activityStatusText, onClickActionActivity);
+        activityStatus.setActivityStatus(activityStatusText, onClickActionSingleListActivity);
         addView(activityStatus);
     }
 }

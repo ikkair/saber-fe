@@ -43,7 +43,7 @@ public class ActivityTitleTrxList extends FrameLayout {
         addView(textView);
     }
 
-    public void setActivityStatus(String activityValue, OnClickActionActivity onClickActionActivity){
+    public void setActivityStatus(String activityValue, OnClickActionSingleListActivity onClickActionSingleListActivity){
         ImageView trashButton = new ImageView(getContext());
         SingleTrxViewText activityStatus = new SingleTrxViewText(getContext());
         FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -60,7 +60,7 @@ public class ActivityTitleTrxList extends FrameLayout {
         trashButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                onClickActionActivity.onClick();
+                onClickActionSingleListActivity.onClick();
             }
         });
     }

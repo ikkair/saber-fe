@@ -1,5 +1,5 @@
 package com.desti.saber.LayoutHelper.SingleTrxListLayout;
 
-public interface OnClickActionActivity {
+public interface OnClickActionSingleListActivity {
     void onClick();
 }

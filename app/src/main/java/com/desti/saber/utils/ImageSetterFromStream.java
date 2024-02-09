@@ -46,4 +46,13 @@ public class ImageSetterFromStream {
             System.out.println(err.getLocalizedMessage());
         }
     }
+
+    public void setAsImageBackground(String imageName, ViewGroup viewGroupComponent){
+        try{
+            InputStream ism = asm.open(imageName);
+            viewGroupComponent.setBackground(Drawable.createFromStream(ism, null));
+        }catch (Exception err){
+            System.out.println(err.getLocalizedMessage());
+        }
+    }
 }
