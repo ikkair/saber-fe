@@ -19,9 +19,11 @@ import com.desti.saber.LayoutHelper.WindowPopUp.CustomWindowPopUp;
 import com.desti.saber.LayoutHelper.WindowPopUp.OnClickPopUpBtn;
 import com.desti.saber.utils.ImageSetterFromStream;
 import com.desti.saber.utils.constant.PropsConstantUtil;
+import com.desti.saber.utils.dto.DetailTrfDto;
 import com.google.gson.Gson;
 
 import java.io.IOException;
+import java.sql.Date;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -382,21 +384,23 @@ public class BankTransferActivity extends AppCompatActivity {
                 if(transferAmount <= 0 || transferAmount > availableBalance || trfDesc.getText().length() > 100){
                     Toast.makeText(getApplicationContext(), R.string.reached_limit_amount, Toast.LENGTH_SHORT).show();
                 }else{
-                    HashMap<String, Object> objectDataSending = new HashMap<>();
+                    DetailTrfDto detailTrfDto = new DetailTrfDto();
+                    detailTrfDto.setUserFullName("User Login");
+                    detailTrfDto.setTransferAmount(transferAmount);
+                    detailTrfDto.setBeneficiaryName(beneficiaryName);
+                    detailTrfDto.setSaveBankInfo(storeInfBeneficiaryBank);
+                    detailTrfDto.setBeneficiaryBankId(beneficiaryBankNameId);
+                    detailTrfDto.setBeneficiaryBankName(beneficiaryBankName);
+                    detailTrfDto.setAccountOrVaNumberBeneficiary(accountOrVaNumber);
+                    detailTrfDto.setTransferDescription(trfDesc.getText().toString());
+                    detailTrfDto.setTransactionDate(new Date(System.currentTimeMillis()).toString());
 
-                    objectDataSending.put("userFullName", beneficiaryName);
-                    objectDataSending.put("transferAmount", transferAmount);
-                    objectDataSending.put("saveBankInfo", storeInfBeneficiaryBank);
-                    objectDataSending.put("beneficiaryBankId", beneficiaryBankNameId);
-                    objectDataSending.put("beneficiaryBankName", beneficiaryBankName);
-                    objectDataSending.put("accountOrVaNumberBeneficiary", accountOrVaNumber);
-                    objectDataSending.put("transferDescription", trfDesc.getText().toString());
 
                     //section for sending data
-                    String jsonDataSending = new Gson().toJson(objectDataSending);
+                    String jsonDataSending = new Gson().toJson(detailTrfDto);
                     System.out.println(jsonDataSending);
 
-                    //Start show popUp
+                    //Start show popUp if trf success
                     CustomWindowPopUp popUp = new CustomWindowPopUp(getLayoutInflater(), getResources());
                     popUp.setMessages(R.string.success_trf_notification);
                     popUp.setLabelRightButton(R.string.show_detail);
