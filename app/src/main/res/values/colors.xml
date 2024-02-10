@@ -10,4 +10,9 @@
     <color name="calmBlack">#222222</color>
     <color name="red">#DB1F1F</color>
     <color name="grey">#D1D0D0</color>
+    <color name="dark_grey">#4D4B4B</color>
+    <color name="soft_green">#84EBA3</color>
+    <color name="grey2">#7B7B7B</color>
+    <color name="orange">#FF9800</color>
+    <color name="transparent_blue_dark">#80021422</color>
 </resources>

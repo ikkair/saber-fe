@@ -46,6 +46,7 @@
         kebersihan lingkungan.
     </string>
     <string name="trf_to_bank_label">Transfer ke Bank</string>
+    <string name="trf_to_label">Transfer ke</string>
     <string name="new_trf_bank_label">Transfer terbaru</string>
     <string name="trf_bank_label">Transfer Bank</string>
     <string name="account_number_archived">Rekening Tersimpan</string>
@@ -56,12 +57,25 @@
     <string name="placeholder_Va_or_Ac">Masukan No. Rek/Virtual Account</string>
     <string name="stored_account_number">Simpan Rekening Bank</string>
     <string name="continue_label">Lanjutkan</string>
-    <string name="warn_info_empyt_bank_data">Silahkan Isi Seluruh Bidang Data Yang Tersedia</string>
+    <string name="warn_info_empty_bank_data">Silahkan Isi Seluruh Bidang Data Yang Tersedia</string>
     <string name="bank_data_not_found">Nomor Rekening / Virtual Akun Tidak Ditemukan</string>
     <string name="transfer_amount_label">Jumlah Transfer</string>
     <string name="id_curr">Rp</string>
+    <string name="zero_balance">0</string>
+    <string name="desc_trf">Deskripsi</string>
+    <string name="desc_length_count">0/100</string>
+    <string name="grand_total_amount_tf">Total jumlah yang ditransfer</string>
+    <string name="desc_trf_field_hint">Masukan Deskripsi</string>
+    <string name="invalid_amount">Silahkan Masukan Nilai Transfer Yang Sah, (0–9, 1 hingga 19 digit)</string>
     <string name="balance_available_transfer">Saldo yang Dapat Ditransfer :</string>
-    
+    <string name="reached_limit_amount">Pemindahan Dana Dapat Dilakukan Dengan Nilai lebih dari 0 dan Tidak Melebihi
+        Saldo Tersedia
+    </string>
+    <string name="success_trf_notification">Transfer Berhasil</string>
+    <string name="back_to_dashboard">Kembali ke Branda</string>
+    <string name="show_detail">Lihat Rincian</string>
+    <string name="greeting_text_bottom">Salam bersih Saber\nMenanti Sampah Mu</string>
+
     <string-array name="bank_name_list">
         <item id="pb">Pilih Bank</item>
         <item>PT.BRI (PERSERO) TBK.</item>
@@ -80,7 +94,7 @@
         <item>BANK OF AMERICA, N.A.</item>
         <item>Bank China Construction Bank (Ex-Bank Windu Kentjana)</item>
         <item>PT.BANK ARTHA GRAHA INT\'L,TBK</item>
-        <item>BANGKOK BANK  PUBLIC CO.LTD.</item>
+        <item>BANGKOK BANK PUBLIC CO.LTD.</item>
         <item>MUFG Bank</item>
         <item>PT. BANK DBS INDONESIA</item>
         <item>PT. BANK RESONA PERDANIA</item>
@@ -275,7 +289,7 @@
         <item>15590794|27</item>
         <item>59666027|91</item>
         <item>72647700|80</item>
-        <item>3301229|0</item>
+        <item>3301229|1</item>
         <item>6707645|80</item>
         <item>99389609|107</item>
         <item>95433591|73</item>
@@ -315,16 +329,16 @@
         <item>73905808|52</item>
         <item>48620478|93</item>
         <item>82736194|71</item>
-        <item>75269430|90</item>
+        <item>75269430|9</item>
         <item>65155171|5</item>
-        <item>1920303|85</item>
-        <item>21363446|103</item>
-        <item>72010102|21</item>
-        <item>29955852|93</item>
-        <item>25606840|64</item>
-        <item>16936436|41</item>
-        <item>22798769|90</item>
-        <item>3445127|63</item>
+        <item>1920303|8</item>
+        <item>21363446|7</item>
+        <item>72010102|6</item>
+        <item>29955852|5</item>
+        <item>25606840|4</item>
+        <item>16936436|3</item>
+        <item>22798769|2</item>
+        <item>3445127|1</item>
     </string-array>
     <string-array name="beneficiary_name_mock">
         <item>I Ramanta Cardinata</item>

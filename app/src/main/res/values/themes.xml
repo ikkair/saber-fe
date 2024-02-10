@@ -2,7 +2,15 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.Saber" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
-         <item name="colorPrimary">#D71DBEE1</item>
+        <item name="colorPrimary">#D71DBEE1</item>
+
+        <item name="android:spinnerItemStyle">
+            @style/spinnerStyle
+        </item>
+
+        <item name="android:spinnerDropDownItemStyle">
+            @style/spinnerItemStyle
+        </item>
     </style>
 
     <style name="Theme.Saber" parent="Base.Theme.Saber" />
@@ -152,29 +160,35 @@
         <item name="android:textStyle">bold</item>
     </style>
 
-    <style name="options_bank_tf_lst">
+    <style name="options_bank_tf_lst_parent">
         <item name="android:background">@drawable/rectagle_bank_trf</item>
         <item name="android:paddingStart">13dp</item>
         <item name="android:paddingEnd">13dp</item>
         <item name="android:paddingTop">5dp</item>
         <item name="android:paddingBottom">5dp</item>
+    </style>
+
+    <style name="options_bank_tf_lst" parent="options_bank_tf_lst_parent">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">45dp</item>
     </style>
 
-    <style name="field_input_va">
-        <item name="android:layout_gravity">center|end</item>
-        <item name="android:layout_width">220dp</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:hint">@string/placeholder_Va_or_Ac</item>
-        <item name="android:textSize">14sp</item>
+    <style name="field_input_parent">
         <item name="android:background">@null</item>
+    </style>
+
+    <style name="field_input_va" parent="field_input_parent">
+        <item name="android:hint">@string/placeholder_Va_or_Ac</item>
         <item name="android:inputType">number|textNoSuggestions</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:layout_gravity">center|end</item>
+        <item name="android:layout_width">185dp</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:visibility">gone</item>
     </style>
 
     <style name="smallest_label_parent">
-        <item name="android:textSize">11sp</item>
+        <item name="android:textSize">13sp</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
     </style>
@@ -185,5 +199,41 @@
 
     <style name="smallest_label_green" parent="smallest_label_parent">
         <item name="android:textColor">@color/green</item>
+    </style>
+
+    <style name="smallest_label_grey" parent="smallest_label_parent">
+        <item name="android:textColor">@color/dark_grey</item>
+    </style>
+
+    <style name="bottom_trf_detail">
+        <item name="android:textColor">@color/grey2</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center|end</item>
+    </style>
+
+    <style name="spinnerStyle">
+        <item name="android:padding">0dp</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/grey2</item>
+    </style>
+
+    <style name="spinnerItemStyle">
+        <item name="android:padding">1dp</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">#FFFFFF</item>
+    </style>
+
+    <style name="popUpBtn" parent="TextAppearance.AppCompat.Button">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:paddingStart">10dp</item>
+        <item name="android:paddingEnd">10dp</item>
+        <item name="android:paddingTop">3dp</item>
+        <item name="android:paddingBottom">3dp</item>
+        <item name="android:background">@drawable/gradient_3_color_bg_top_global_deco</item>
     </style>
 </resources>

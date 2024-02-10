@@ -5,51 +5,144 @@
               android:orientation="vertical">
 
     <LinearLayout
-        style="@style/options_bank_tf_lst"
+        style="@style/options_bank_tf_lst_parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="horizontal">
 
         <ImageView
+            android:id="@+id/bankIconsFinalTrf"
             android:layout_gravity="center"
             android:layout_width="50dp"
             android:layout_height="50dp"/>
 
         <LinearLayout
+            android:layout_marginStart="10dp"
             android:layout_gravity="center"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/beneficiaryName"
+                android:id="@+id/beneficiaryNameTv"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 style="@style/activity_date_text_trx_list"/>
 
-            <TextView
-                android:id="@+id/accountNumberView"
+            <LinearLayout
+                android:layout_gravity="center"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                style="@style/activity_date_text_trx_list"/>
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/bankNameBeneficiaryTv"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    style="@style/activity_date_text_trx_list"/>
+
+                <TextView
+                    android:layout_marginStart="5dp"
+                    android:id="@+id/accountOrVaNumberTv"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    style="@style/activity_date_text_trx_list"/>
+
+            </LinearLayout>
 
         </LinearLayout>
 
     </LinearLayout>
 
     <LinearLayout
-        style="@style/options_bank_tf_lst"
+        style="@style/options_bank_tf_lst_parent"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical">
 
         <TextView
             style="@style/smallest_label"
             android:text="@string/transfer_amount_label"/>
 
-        <TextView
-            style="@style/smallest_label_green"
-            android:text="@string/id_curr"/>
+        <LinearLayout
+            android:layout_marginTop="3dp"
+            android:layout_marginBottom="15dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
-        <TextView
-            android:text="@string/balance_available_transfer"/>
+            <TextView
+                style="@style/smallest_label_green"
+                android:text="@string/id_curr"/>
+
+            <EditText
+                android:id="@+id/amountTransferEt"
+                android:inputType="number|textNoSuggestions"
+                android:layout_marginStart="3dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:gravity="center_vertical"
+                style="@style/field_input_parent"
+                android:hint="@string/zero_balance"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/smallest_label_grey"
+                android:text="@string/balance_available_transfer"/>
+
+            <TextView
+                android:id="@+id/balanceReadyToTransferTv"
+                android:layout_marginStart="4dp"
+                style="@style/smallest_label_grey"
+                android:hint="@string/zero_balance"/>
+
+        </LinearLayout>
 
     </LinearLayout>
 
+    <LinearLayout
+        style="@style/options_bank_tf_lst_parent"
+        android:layout_marginTop="3dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:layout_marginBottom="30dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:gravity="start|center_vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/desc_trf"/>
+
+            <TextView
+                android:id="@+id/descTrfLengthCounting"
+                android:gravity="end|center_vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/desc_length_count"/>
+
+        </FrameLayout>
+
+        <EditText
+            android:id="@+id/trfDesc"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textSize="12sp"
+            android:gravity="center_vertical"
+            style="@style/field_input_parent"
+            android:hint="@string/desc_trf_field_hint"/>
+
+    </LinearLayout>
 </LinearLayout>

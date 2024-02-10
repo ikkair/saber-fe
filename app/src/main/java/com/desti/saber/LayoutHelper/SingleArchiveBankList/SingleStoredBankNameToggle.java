@@ -1,6 +1,7 @@
 package com.desti.saber.LayoutHelper.SingleArchiveBankList;
 
 import android.content.Context;
+import android.util.LayoutDirection;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,13 +20,19 @@ public class SingleStoredBankNameToggle extends FrameLayout {
         switchButton = new Switch(context);
         labelToggle = new TextView(context);
 
-        LayoutParams layParamFl = new LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT
+        FrameLayout.LayoutParams layParamFl = new LayoutParams(
+            FrameLayout.LayoutParams.MATCH_PARENT,
+            FrameLayout.LayoutParams.WRAP_CONTENT
         );
-        LayoutParams layParamSb = new LayoutParams(
+        ViewGroup.LayoutParams layParamSb = new LayoutParams(
             ViewGroup.LayoutParams.WRAP_CONTENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            Gravity.END | Gravity.CENTER
+        );
+        ViewGroup.LayoutParams layParamLb = new LayoutParams(
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            Gravity.START | Gravity.CENTER
         );
 
         layParamFl.setMargins(
@@ -43,10 +50,11 @@ public class SingleStoredBankNameToggle extends FrameLayout {
         setBackgroundResource(R.drawable.rectagle_bank_trf);
         setLayoutParams(layParamFl);
 
-        labelToggle.setLayoutParams(layParamSb);
+        switchButton.setLayoutParams(layParamSb);
+
+        labelToggle.setLayoutParams(layParamLb);
         labelToggle.setText(R.string.stored_account_number);
         labelToggle.setTextAppearance(R.style.activity_result_text_trx_list);
-        labelToggle.setGravity(Gravity.getAbsoluteGravity(Gravity.CENTER_VERTICAL, Gravity.START));
     }
 
     public void setSwitchButton(OnClickSwitchSaved switchButtonOnClick){
