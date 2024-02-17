@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.res.AssetManager;
 import android.graphics.drawable.Drawable;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import java.io.InputStream;
@@ -47,10 +48,17 @@ public class ImageSetterFromStream {
         }
     }
 
-    public void setAsImageBackground(String imageName, ViewGroup viewGroupComponent){
+    public void setAsImageBackground(String imageName, Object viewGroupComponent){
         try{
+
             InputStream ism = asm.open(imageName);
-            viewGroupComponent.setBackground(Drawable.createFromStream(ism, null));
+            Drawable imgDraw = Drawable.createFromStream(ism, null);
+            if(viewGroupComponent instanceof Button){
+            System.out.println("kodok ");
+                ((Button) viewGroupComponent).setBackground(imgDraw);
+            }else if (viewGroupComponent instanceof ViewGroup){
+                ((ViewGroup) viewGroupComponent).setBackground(imgDraw);
+            }
         }catch (Exception err){
             System.out.println(err.getLocalizedMessage());
         }

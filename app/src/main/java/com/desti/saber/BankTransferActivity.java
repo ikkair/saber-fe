@@ -77,6 +77,8 @@ public class BankTransferActivity extends AppCompatActivity {
         transferActivityActionLabel = findViewById(R.id.transferActivityActionLabel);
 
         setLatestBankTransferTrx();
+
+        //Set Back Trace Menu at below
         backTopButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -120,6 +122,8 @@ public class BankTransferActivity extends AppCompatActivity {
         this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
+
+                //for set bac trace menu
                 bankActivityNav.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -163,6 +167,8 @@ public class BankTransferActivity extends AppCompatActivity {
         this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
+
+                //set back trace manu at below
                 bankActivityNav.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -245,6 +251,7 @@ public class BankTransferActivity extends AppCompatActivity {
             }
         });
 
+        //section for mock hardcode to db
         nexTrfActionBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -279,6 +286,7 @@ public class BankTransferActivity extends AppCompatActivity {
                             System.out.println("Bank Icon Not Available");
                         }
 
+                        //call this for successfuly inquiry
                         closeFloatingKeyboard();
                         doTransferBalance();
                     }else{
@@ -321,7 +329,7 @@ public class BankTransferActivity extends AppCompatActivity {
         bankNameBeneficiaryTv.setText(beneficiaryBankName);
 
         //user balance available, set at below
-        long availableBalance = 1000000L;
+        long availableBalance = 10007670L;
         balanceReadyToTransferTv.setText(String.valueOf(availableBalance));
 
         transferAmountEt.setOnKeyListener(new View.OnKeyListener() {

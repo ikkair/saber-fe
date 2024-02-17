@@ -156,7 +156,7 @@ public class LoginActivity extends AppCompatActivity {
 //                    TypeToken<ResponseGlobalJsonDTO<DataLogInDTO>> resToken = new TypeToken<ResponseGlobalJsonDTO<DataLogInDTO>>(){};
 //                    globalResponse = gson.fromJson(response.body().string(), resToken.getType());
 //                    loginData = (DataLogInDTO[]) globalResponse.getData();
-//
+
 //                } catch (Exception e){
 //                    Log.e("Parsing Login Error", e.getMessage());
 //                }

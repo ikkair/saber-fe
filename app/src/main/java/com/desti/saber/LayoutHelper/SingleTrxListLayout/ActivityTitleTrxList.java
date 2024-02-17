@@ -5,6 +5,7 @@ import android.content.Context;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -44,16 +45,22 @@ public class ActivityTitleTrxList extends FrameLayout {
     }
 
     public void setActivityStatus(String activityValue, OnClickActionSingleListActivity onClickActionSingleListActivity){
-        ImageView trashButton = new ImageView(getContext());
+        Button trashButton = new Button(getContext());
         SingleTrxViewText activityStatus = new SingleTrxViewText(getContext());
-        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(50, 60);
+        FrameLayout.LayoutParams lp2 = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        int gravity =  Gravity.CENTER;
 
-        layoutParams.gravity = Gravity.END;
+        layoutParams.gravity = Gravity.END | gravity;
+        lp2.gravity = Gravity.START | gravity;
+
         trashButton.setLayoutParams(layoutParams);
-        activityStatus.setActivityStatus(activityValue);
-        imageSetterFromStream.setAsImageDrawable("waste_icon.png", trashButton);
+        imageSetterFromStream.setAsImageBackground("waste_icon.png", trashButton);
 
-        setPadding(0, 15, 0, 0);
+        activityStatus.setActivityStatus(activityValue);
+        activityStatus.setLayoutParams(lp2);
+
+        setPadding(0, 5, 0, 5);
         addView(activityStatus);
         addView(trashButton);
 
