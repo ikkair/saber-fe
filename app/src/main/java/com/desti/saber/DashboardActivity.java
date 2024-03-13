@@ -1,24 +1,38 @@
 package com.desti.saber;
 
+import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.Path;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.os.StrictMode;
+import android.view.*;
+import android.widget.*;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.desti.saber.configs.OkHttpHandler;
 import com.desti.saber.utils.ImageSetterFromStream;
+import com.desti.saber.utils.constant.PathUrl;
+import com.desti.saber.utils.dto.ResponseGlobalJsonDTO;
+import com.desti.saber.utils.dto.TrashType;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import okhttp3.*;
+import org.jetbrains.annotations.NotNull;
+
+import java.io.IOException;
+import java.util.*;
 
 public class DashboardActivity extends AppCompatActivity {
 
     private ImageView profileImage;
     private TextView pinPointLocTitle;
+    private  Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +45,7 @@ public class DashboardActivity extends AppCompatActivity {
         LinearLayout trashDeliverClickable = findViewById(R.id.trashDeliverClickable);
         LinearLayout pinPointLocClickable = findViewById(R.id.pinPointLocClickable);
         SharedPreferences loginInfo = getSharedPreferences("LoginInfo", Context.MODE_PRIVATE);
+
 
         //change user name
         this.setUserNameTittle(loginInfo.getString("username", "Cannot get the name"));
@@ -70,6 +85,8 @@ public class DashboardActivity extends AppCompatActivity {
                 pinPointLocOnClick();
             }
         });
+
+        context = getApplicationContext();
     }
 
     private void withdrawLabelOnClick(){
@@ -86,7 +103,84 @@ public class DashboardActivity extends AppCompatActivity {
     }
 
     private void trashDeliverOnClick(){
-        Toast.makeText(this, "Trash On Click", Toast.LENGTH_SHORT).show();
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+        MediaType mediaType = MediaType.parse("application/json; charset=utf-8");
+        OkHttpClient okHttpClient = new OkHttpClient();
+        Request request = new Request.Builder().url(PathUrl.ROOT_PATH_TRASH_TYPE).get().build();
+        okHttpClient.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                System.out.println(e);
+                failedConnectToServer();
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                if(response.isSuccessful() && response.body() != null){
+                    Activity activity = DashboardActivity.this;
+                    ImageSetterFromStream imageSetterFromStream = new ImageSetterFromStream(activity);
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                Gson gson = new Gson();
+                                String bodyReponse = response.body().string();
+                                TypeToken<ResponseGlobalJsonDTO<TrashType>> trashTypeResponse =new TypeToken<ResponseGlobalJsonDTO<TrashType>>(){};
+                                ResponseGlobalJsonDTO finalResponse = gson.fromJson(bodyReponse, trashTypeResponse.getType());
+                                TrashType[] trashTypes = (TrashType[]) finalResponse.getData();
+                                List<String> trashTypeNames = new ArrayList<>();
+                                List<String> trashTypeAmount = new ArrayList<>();
+
+                                for(TrashType trashType : trashTypes){
+                                    trashTypeAmount.add(trashType.getAmount());
+                                    trashTypeNames.add(trashType.getType());
+                                }
+
+                                int wrapperParam = ViewGroup.LayoutParams.MATCH_PARENT;
+                                ViewGroup inflateTrashLay = (ViewGroup) LayoutInflater.from(activity).inflate(R.layout.store_trash_popup, null);
+                                PopupWindow  popupWindow = new PopupWindow(inflateTrashLay, wrapperParam, wrapperParam);
+
+                                ArrayAdapter<String> adapter = new ArrayAdapter<>(activity, R.layout.trash_list_dialog_drodown, trashTypeNames);
+                                Spinner listTrashType = inflateTrashLay.findViewById(R.id.trashTypeLists);
+                                TextView trashAmount = inflateTrashLay.findViewById(R.id.trashAmount);
+                                Button cancel = inflateTrashLay.findViewById(R.id.cancelTrashProcess);
+                                ImageView trashPhoto =inflateTrashLay.findViewById(R.id.trashPhoto);
+                                imageSetterFromStream.setAsImageDrawable("defImage.png", trashPhoto);
+
+                                cancel.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        popupWindow.dismiss();
+                                    }
+                                });
+
+                                listTrashType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                                    @Override
+                                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                                        trashAmount.setText(trashTypeAmount.get(position));
+                                    }
+
+                                    @Override
+                                    public void onNothingSelected(AdapterView<?> parent) {
+                                    }
+                                });
+
+                                listTrashType.setAdapter(adapter);
+                                popupWindow.setFocusable(true);
+                                popupWindow.showAtLocation(inflateTrashLay, Gravity.CENTER, 0, 0);
+                            }catch (Exception e){
+                                System.out.println(e);
+                                failedConnectToServer();
+                            }
+                        }
+                    });
+                }else{
+                    failedConnectToServer();
+                }
+            }
+        });
+
     }
 
     private void setUserNameTittle(String userName){
@@ -116,6 +210,19 @@ public class DashboardActivity extends AppCompatActivity {
             @Override
             public void run() {
                 ((ImageView) findViewById(R.id.profileImage)).setImageBitmap(imageProfile);
+            }
+        });
+    }
+
+    private void failedConnectToServer(){
+        DashboardActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(
+                    getApplication().getApplicationContext(),
+                "Gagal Tersambung ke Server ",
+                    Toast.LENGTH_LONG
+                ).show();
             }
         });
     }

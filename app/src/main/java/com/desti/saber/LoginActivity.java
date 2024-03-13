@@ -124,8 +124,8 @@ public class LoginActivity extends AppCompatActivity {
         loginPayload.addProperty("email", emailOrNickNameValue);
         loginPayload.addProperty("password", passwordValue);
         RequestBody requestBody = RequestBody.create(
-                loginPayload.toString(),
-                MediaType.parse("application/json")
+            loginPayload.toString(),
+            MediaType.parse("application/json")
         );
 
         OkHttpHandler okHttpHandler = new OkHttpHandler();
@@ -153,7 +153,7 @@ public class LoginActivity extends AppCompatActivity {
 //                DataLogInDTO[] loginData = null;
 //                try {
 //                    Gson gson = new Gson();
-//                    TypeToken<ResponseGlobalJsonDTO<DataLogInDTO>> resToken = new TypeToken<ResponseGlobalJsonDTO<DataLogInDTO>>(){};
+                    TypeToken<ResponseGlobalJsonDTO<DataLogInDTO>> resToken = new TypeToken<ResponseGlobalJsonDTO<DataLogInDTO>>(){};
 //                    globalResponse = gson.fromJson(response.body().string(), resToken.getType());
 //                    loginData = (DataLogInDTO[]) globalResponse.getData();
 

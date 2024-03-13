@@ -75,6 +75,12 @@
     <string name="back_to_dashboard">Kembali ke Branda</string>
     <string name="show_detail">Lihat Rincian</string>
     <string name="greeting_text_bottom">Salam bersih Saber\nMenanti Sampah Mu</string>
+    <string name="store_your_trash">Masukan Detail Sampah Kamu</string>
+    <string name="trash_description">Deskripsi Sampah atau Barang</string>
+    <string name="trash_weight">Berat Sampah atau Barang (Gram)</string>
+    <string name="trash_type">Type Sampah atau Barang</string>
+    <string name="continue_store_trash">Store Sampah</string>
+    <string name="cancel_store_trash">Batal</string>
 
     <string-array name="bank_name_list">
         <item id="pb">Pilih Bank</item>
