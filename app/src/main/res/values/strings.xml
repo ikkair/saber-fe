@@ -77,7 +77,7 @@
     <string name="greeting_text_bottom">Salam bersih Saber\nMenanti Sampah Mu</string>
     <string name="store_your_trash">Masukan Detail Sampah Kamu</string>
     <string name="trash_description">Deskripsi Sampah atau Barang</string>
-    <string name="trash_weight">Berat Sampah atau Barang (Gram)</string>
+    <string name="trash_weight">Berat Sampah atau Barang (Kilo Gram)</string>
     <string name="trash_type">Type Sampah atau Barang</string>
     <string name="continue_store_trash">Store Sampah</string>
     <string name="cancel_store_trash">Batal</string>

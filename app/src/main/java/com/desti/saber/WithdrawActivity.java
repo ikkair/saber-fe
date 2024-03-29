@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.desti.saber.LayoutHelper.SingleTrxListLayout.OnClickActionSingleListActivity;
 import com.desti.saber.LayoutHelper.SingleTrxListLayout.ParentSingleListViewGroup;
+import com.desti.saber.utils.IDRFormatCurr;
 import com.desti.saber.utils.ImageSetterFromStream;
 
 import java.sql.Date;
@@ -137,9 +138,6 @@ public class WithdrawActivity extends AppCompatActivity {
     }
 
     private void setBalanceValue(Long balance){
-        NumberFormat currNf = NumberFormat.getCurrencyInstance();
-        currNf.setMaximumFractionDigits(0);
-        currNf.setCurrency(Currency.getInstance("IDR"));
         this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -150,7 +148,7 @@ public class WithdrawActivity extends AppCompatActivity {
                 if(balance == null){
                     balanceTextView.setText(0);
                 }else{
-                    balanceTextView.setText(currNf.format(balance).replace("IDR", "Rp. "));
+                    balanceTextView.setText(IDRFormatCurr.currFormat(balance));
                 }
             }
         });

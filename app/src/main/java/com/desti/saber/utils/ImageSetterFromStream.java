@@ -54,7 +54,6 @@ public class ImageSetterFromStream {
             InputStream ism = asm.open(imageName);
             Drawable imgDraw = Drawable.createFromStream(ism, null);
             if(viewGroupComponent instanceof Button){
-            System.out.println("kodok ");
                 ((Button) viewGroupComponent).setBackground(imgDraw);
             }else if (viewGroupComponent instanceof ViewGroup){
                 ((ViewGroup) viewGroupComponent).setBackground(imgDraw);

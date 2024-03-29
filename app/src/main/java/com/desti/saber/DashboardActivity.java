@@ -12,9 +12,12 @@ import android.os.StrictMode;
 import android.view.*;
 import android.widget.*;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.desti.saber.configs.OkHttpHandler;
+import com.desti.saber.data.Result;
+import com.desti.saber.utils.IDRFormatCurr;
 import com.desti.saber.utils.ImageSetterFromStream;
 import com.desti.saber.utils.constant.PathUrl;
 import com.desti.saber.utils.dto.ResponseGlobalJsonDTO;
@@ -148,6 +151,23 @@ public class DashboardActivity extends AppCompatActivity {
                                 ImageView trashPhoto =inflateTrashLay.findViewById(R.id.trashPhoto);
                                 imageSetterFromStream.setAsImageDrawable("defImage.png", trashPhoto);
 
+                                trashPhoto.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        Intent imageChoserIntent = new Intent();
+
+                                        imageChoserIntent.setType("image/png");
+                                        imageChoserIntent.setAction(Intent.ACTION_GET_CONTENT);
+
+                                        startActivityForResult(
+                                            Intent.createChooser(
+                                                imageChoserIntent,
+                                                "Pilih Gambar Sampah Kamu"
+                                            ), 2
+                                        );
+                                    }
+                                });
+
                                 cancel.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
@@ -158,7 +178,7 @@ public class DashboardActivity extends AppCompatActivity {
                                 listTrashType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                                     @Override
                                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                                        trashAmount.setText(trashTypeAmount.get(position));
+                                        trashAmount.setText(IDRFormatCurr.currFormat(Long.valueOf(trashTypeAmount.get(position))) + " / Kilo Gram");
                                     }
 
                                     @Override
@@ -225,5 +245,17 @@ public class DashboardActivity extends AppCompatActivity {
                 ).show();
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable @org.jetbrains.annotations.Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode == RESULT_CANCELED){
+            finish();
+        }else{
+            if(data != null){
+                System.out.println(data.getData().toString());
+            }
+        }
     }
 }
