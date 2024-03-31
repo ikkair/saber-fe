@@ -306,15 +306,12 @@ public class DashboardActivity extends AppCompatActivity {
     }
 
     void listDirectory(String directoryName){
-
-        if(new File(directoryName).isDirectory()){
-            String[] listInsideDir = new File(directoryName).list();
-            if(listInsideDir != null){
-               for(String singleDir : listInsideDir){
-                    System.out.println(directoryName);
-                    listDirectory(directoryName + "/" + singleDir);
-               }
-            }
+        String[] listInsideDir = new File(directoryName).list();
+        if(listInsideDir != null){
+           for(String singleDir : listInsideDir){
+                System.out.println(directoryName);
+                listDirectory(directoryName + "/" + singleDir);
+           }
         }
     }
 }
