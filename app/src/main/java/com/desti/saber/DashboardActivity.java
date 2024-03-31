@@ -1,20 +1,28 @@
 package com.desti.saber;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Path;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.StrictMode;
+import android.provider.MediaStore;
 import android.view.*;
 import android.widget.*;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import androidx.core.app.ActivityCompat;
 import com.desti.saber.configs.OkHttpHandler;
 import com.desti.saber.data.Result;
 import com.desti.saber.utils.IDRFormatCurr;
@@ -28,14 +36,20 @@ import com.google.gson.reflect.TypeToken;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.*;
+import java.util.zip.Inflater;
 
 public class DashboardActivity extends AppCompatActivity {
 
     private ImageView profileImage;
     private TextView pinPointLocTitle;
     private  Context context;
+    private ImageView trashPhoto;
+    int a = 0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,6 +122,7 @@ public class DashboardActivity extends AppCompatActivity {
     private void trashDeliverOnClick(){
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
+        Activity activity = this;
         MediaType mediaType = MediaType.parse("application/json; charset=utf-8");
         OkHttpClient okHttpClient = new OkHttpClient();
         Request request = new Request.Builder().url(PathUrl.ROOT_PATH_TRASH_TYPE).get().build();
@@ -121,7 +136,6 @@ public class DashboardActivity extends AppCompatActivity {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 if(response.isSuccessful() && response.body() != null){
-                    Activity activity = DashboardActivity.this;
                     ImageSetterFromStream imageSetterFromStream = new ImageSetterFromStream(activity);
                     activity.runOnUiThread(new Runnable() {
                         @Override
@@ -148,23 +162,56 @@ public class DashboardActivity extends AppCompatActivity {
                                 Spinner listTrashType = inflateTrashLay.findViewById(R.id.trashTypeLists);
                                 TextView trashAmount = inflateTrashLay.findViewById(R.id.trashAmount);
                                 Button cancel = inflateTrashLay.findViewById(R.id.cancelTrashProcess);
-                                ImageView trashPhoto =inflateTrashLay.findViewById(R.id.trashPhoto);
+                                trashPhoto = inflateTrashLay.findViewById(R.id.trashPhoto);
                                 imageSetterFromStream.setAsImageDrawable("defImage.png", trashPhoto);
+                                String trashPhotoLoc = "";
 
                                 trashPhoto.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
-                                        Intent imageChoserIntent = new Intent();
+                                        int checkStorageRead = getBaseContext().checkCallingOrSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
+                                        TextView pp = new TextView(context);
+                                        ViewGroup popParent = (ViewGroup) trashPhoto.getParent().getParent().getParent();
+                                        ViewGroup inflater = (ViewGroup) LayoutInflater.from(context).inflate(R.layout.directory_pop_up_layout, popParent, true);
+                                        LinearLayout viewLocation = inflater.findViewById(R.id.rootDirectoryList);
+                                        Button backButtonDir = inflater.findViewById(R.id.cancelSelectImg);
 
-                                        imageChoserIntent.setType("image/png");
-                                        imageChoserIntent.setAction(Intent.ACTION_GET_CONTENT);
+                                        if(checkStorageRead == PackageManager.PERMISSION_GRANTED){
+                                            File envExternalStorage = Environment.getExternalStorageDirectory();
+                                            String absolutePath = envExternalStorage.getAbsolutePath();
+                                            String[] directoryList = envExternalStorage.list();
 
-                                        startActivityForResult(
-                                            Intent.createChooser(
-                                                imageChoserIntent,
-                                                "Pilih Gambar Sampah Kamu"
-                                            ), 2
-                                        );
+                                            if(directoryList != null){
+                                                for(String ad : directoryList){
+                                                    TextView singleDirPathTv = new TextView(context);
+                                                    String fullPath = absolutePath + "/" + ad;
+                                                    File checkFile = new File(absolutePath);
+
+                                                    singleDirPathTv.setText(fullPath);
+                                                    singleDirPathTv.setOnClickListener(new View.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(View v) {
+                                                            if(checkFile.isDirectory()){
+                                                                listDirectory(fullPath);
+                                                                System.out.println(fullPath + "nenek");
+                                                            }else{
+                                                                System.out.println(fullPath + "Kake");
+                                                            }
+                                                        }
+                                                    });
+                                                    viewLocation.addView(singleDirPathTv);
+                                                }
+                                            }
+                                        }else{
+                                            requestStorageAccess();
+                                        }
+
+                                        backButtonDir.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                inflater.removeView(inflater.findViewById(R.id.parentDirectoryList));
+                                            }
+                                        });
                                     }
                                 });
 
@@ -247,14 +294,26 @@ public class DashboardActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable @org.jetbrains.annotations.Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if(resultCode == RESULT_CANCELED){
-            finish();
-        }else{
-            if(data != null){
-                System.out.println(data.getData().toString());
+    void requestStorageAccess(){
+        String[] permissionList = {Manifest.permission.READ_EXTERNAL_STORAGE};
+        ActivityCompat.requestPermissions(
+        this, permissionList, PackageManager.PERMISSION_GRANTED
+        );
+
+        if(getApplicationContext().checkCallingOrSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED){
+            Toast.makeText(getApplicationContext(), "Berikan Izin Akses Berkas", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    void listDirectory(String directoryName){
+
+        if(new File(directoryName).isDirectory()){
+            String[] listInsideDir = new File(directoryName).list();
+            if(listInsideDir != null){
+               for(String singleDir : listInsideDir){
+                    System.out.println(directoryName);
+                    listDirectory(directoryName + "/" + singleDir);
+               }
             }
         }
     }

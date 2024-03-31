@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        android:id="@+id/parentDirectoryList"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
+        android:layout_margin="10dp"
+        android:padding="20dp"
+        android:layout_height="match_parent"
+        android:background="@drawable/white_rounded_bg"
+        android:layout_width="match_parent">
+
+    <ScrollView
+            android:layout_weight="1"
+            android:layout_height="0dp"
+            android:layout_margin="5dp"
+            android:layout_width="match_parent">
+
+        <LinearLayout
+                android:orientation="vertical"
+                android:id="@+id/rootDirectoryList"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+    </ScrollView>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/cancelSelectImg"
+        android:layout_gravity="center"
+        android:text="@string/cancel_store_trash"
+        style="@style/popUpBtn"/>
+
+</LinearLayout>
