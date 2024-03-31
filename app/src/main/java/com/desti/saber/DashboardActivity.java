@@ -25,6 +25,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import com.desti.saber.configs.OkHttpHandler;
 import com.desti.saber.data.Result;
+import com.desti.saber.utils.HelperListDirButton;
 import com.desti.saber.utils.IDRFormatCurr;
 import com.desti.saber.utils.ImageSetterFromStream;
 import com.desti.saber.utils.constant.PathUrl;
@@ -48,7 +49,7 @@ public class DashboardActivity extends AppCompatActivity {
     private TextView pinPointLocTitle;
     private  Context context;
     private ImageView trashPhoto;
-    int a = 0;
+    private String trashPathPhotoLoc;
 
 
     @Override
@@ -164,42 +165,66 @@ public class DashboardActivity extends AppCompatActivity {
                                 Button cancel = inflateTrashLay.findViewById(R.id.cancelTrashProcess);
                                 trashPhoto = inflateTrashLay.findViewById(R.id.trashPhoto);
                                 imageSetterFromStream.setAsImageDrawable("defImage.png", trashPhoto);
-                                String trashPhotoLoc = "";
 
                                 trashPhoto.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
                                         int checkStorageRead = getBaseContext().checkCallingOrSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
-                                        TextView pp = new TextView(context);
                                         ViewGroup popParent = (ViewGroup) trashPhoto.getParent().getParent().getParent();
                                         ViewGroup inflater = (ViewGroup) LayoutInflater.from(context).inflate(R.layout.directory_pop_up_layout, popParent, true);
-                                        LinearLayout viewLocation = inflater.findViewById(R.id.rootDirectoryList);
+                                        LinearLayout dirListLocationView = inflater.findViewById(R.id.rootDirectoryList);
                                         Button backButtonDir = inflater.findViewById(R.id.cancelSelectImg);
 
                                         if(checkStorageRead == PackageManager.PERMISSION_GRANTED){
                                             File envExternalStorage = Environment.getExternalStorageDirectory();
-                                            String absolutePath = envExternalStorage.getAbsolutePath();
-                                            String[] directoryList = envExternalStorage.list();
+                                            File[] lisFiles = envExternalStorage.listFiles();
 
-                                            if(directoryList != null){
-                                                for(String ad : directoryList){
+                                            if(lisFiles != null){
+                                                for(File sgFile : lisFiles){
                                                     TextView singleDirPathTv = new TextView(context);
-                                                    String fullPath = absolutePath + "/" + ad;
-                                                    File checkFile = new File(absolutePath);
+                                                    String fullPath = sgFile.getAbsolutePath();
 
                                                     singleDirPathTv.setText(fullPath);
                                                     singleDirPathTv.setOnClickListener(new View.OnClickListener() {
                                                         @Override
                                                         public void onClick(View v) {
-                                                            if(checkFile.isDirectory()){
-                                                                listDirectory(fullPath);
-                                                                System.out.println(fullPath + "nenek");
+                                                            String pathFromClicked = singleDirPathTv.getText().toString();
+                                                            if(new File(pathFromClicked).isDirectory()){
+                                                                File clickedExtendFiles = new File(pathFromClicked);
+                                                                File[] listFiles = clickedExtendFiles.listFiles();
+
+                                                                if(listFiles != null){
+                                                                    dirListLocationView.removeAllViews();
+                                                                    for(File sgFile : listFiles){
+                                                                        TextView sgTextView = new TextView(context);
+                                                                        sgTextView.setText(sgFile.getAbsolutePath());
+                                                                        sgTextView.setOnClickListener(new View.OnClickListener() {
+                                                                            @Override
+                                                                            public void onClick(View v) {
+                                                                                singleDirPathTv.setText(sgFile.getAbsolutePath());
+                                                                                singleDirPathTv.callOnClick();
+                                                                            }
+                                                                        });
+                                                                        dirListLocationView.addView(sgTextView);
+                                                                    }
+                                                                }
                                                             }else{
-                                                                System.out.println(fullPath + "Kake");
+                                                                try{
+                                                                    Bitmap bitmap = BitmapFactory.decodeFile(pathFromClicked);
+                                                                    if(bitmap != null){
+                                                                        trashPathPhotoLoc = pathFromClicked;
+                                                                        trashPhoto.setImageBitmap(bitmap);
+                                                                        inflater.removeView(inflater.findViewById(R.id.parentDirectoryList));
+                                                                    }else{
+                                                                        Toast.makeText(context,"Silahkan Pilih File Berformat PNG, JPG, GIF", Toast.LENGTH_LONG).show();
+                                                                    }
+                                                                }catch (Exception e){
+                                                                    Toast.makeText(context,"Gagal Melakukan Set Image", Toast.LENGTH_LONG).show();
+                                                                }
                                                             }
                                                         }
                                                     });
-                                                    viewLocation.addView(singleDirPathTv);
+                                                    dirListLocationView.addView(singleDirPathTv);
                                                 }
                                             }
                                         }else{
@@ -302,16 +327,6 @@ public class DashboardActivity extends AppCompatActivity {
 
         if(getApplicationContext().checkCallingOrSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED){
             Toast.makeText(getApplicationContext(), "Berikan Izin Akses Berkas", Toast.LENGTH_LONG).show();
-        }
-    }
-
-    void listDirectory(String directoryName){
-        String[] listInsideDir = new File(directoryName).list();
-        if(listInsideDir != null){
-           for(String singleDir : listInsideDir){
-                System.out.println(directoryName);
-                listDirectory(directoryName + "/" + singleDir);
-           }
         }
     }
 }
