@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -14,6 +15,7 @@ import android.graphics.Path;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Parcel;
 import android.os.StrictMode;
 import android.provider.MediaStore;
 import android.view.*;
@@ -23,6 +25,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import androidx.core.app.ActivityCompat;
+import com.desti.saber.LayoutHelper.ProgressBar.ProgressBarHelper;
 import com.desti.saber.configs.OkHttpHandler;
 import com.desti.saber.data.Result;
 import com.desti.saber.utils.HelperListDirButton;
@@ -50,6 +53,8 @@ public class DashboardActivity extends AppCompatActivity {
     private  Context context;
     private ImageView trashPhoto;
     private String trashPathPhotoLoc;
+    private String trashTypeSelectedId;
+    private String token;
 
 
     @Override
@@ -63,7 +68,7 @@ public class DashboardActivity extends AppCompatActivity {
         LinearLayout trashDeliverClickable = findViewById(R.id.trashDeliverClickable);
         LinearLayout pinPointLocClickable = findViewById(R.id.pinPointLocClickable);
         SharedPreferences loginInfo = getSharedPreferences("LoginInfo", Context.MODE_PRIVATE);
-
+        token = loginInfo.getString("token", null);
 
         //change user name
         this.setUserNameTittle(loginInfo.getString("username", "Cannot get the name"));
@@ -94,7 +99,7 @@ public class DashboardActivity extends AppCompatActivity {
         trashDeliverClickable.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                trashDeliverOnClick();
+                trashDeliverOnClick(v);
             }
         });
         pinPointLocClickable.setOnClickListener(new View.OnClickListener() {
@@ -120,27 +125,35 @@ public class DashboardActivity extends AppCompatActivity {
         Toast.makeText(this, "Pin Point OnClick", Toast.LENGTH_SHORT).show();
     }
 
-    private void trashDeliverOnClick(){
+    private void trashDeliverOnClick(View view){
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
         Activity activity = this;
         MediaType mediaType = MediaType.parse("application/json; charset=utf-8");
         OkHttpClient okHttpClient = new OkHttpClient();
         Request request = new Request.Builder().url(PathUrl.ROOT_PATH_TRASH_TYPE).get().build();
+
+        ProgressBarHelper.onProgress(getApplication(), view, true);
         okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                System.out.println(e);
-                failedConnectToServer();
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ProgressBarHelper.onProgress(activity.getApplication(), view, false);
+                    }
+                });
+                failedConnectToServer(R.string.failed_con_server);
             }
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                if(response.isSuccessful() && response.body() != null){
-                    ImageSetterFromStream imageSetterFromStream = new ImageSetterFromStream(activity);
-                    activity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
+                ImageSetterFromStream imageSetterFromStream = new ImageSetterFromStream(activity);
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ProgressBarHelper.onProgress(activity.getApplication(), view, false);
+                        if(response.isSuccessful() && response.body() != null){
                             try {
                                 Gson gson = new Gson();
                                 String bodyReponse = response.body().string();
@@ -148,11 +161,11 @@ public class DashboardActivity extends AppCompatActivity {
                                 ResponseGlobalJsonDTO finalResponse = gson.fromJson(bodyReponse, trashTypeResponse.getType());
                                 TrashType[] trashTypes = (TrashType[]) finalResponse.getData();
                                 List<String> trashTypeNames = new ArrayList<>();
-                                List<String> trashTypeAmount = new ArrayList<>();
+                                List<TrashType> trashBundle = new ArrayList<>();
 
                                 for(TrashType trashType : trashTypes){
-                                    trashTypeAmount.add(trashType.getAmount());
                                     trashTypeNames.add(trashType.getType());
+                                    trashBundle.add(trashType);
                                 }
 
                                 int wrapperParam = ViewGroup.LayoutParams.MATCH_PARENT;
@@ -212,14 +225,72 @@ public class DashboardActivity extends AppCompatActivity {
                                                                 try{
                                                                     Bitmap bitmap = BitmapFactory.decodeFile(pathFromClicked);
                                                                     if(bitmap != null){
+                                                                        Button storeTrashesButton = inflater.findViewById(R.id.processStoreTrash);
                                                                         trashPathPhotoLoc = pathFromClicked;
                                                                         trashPhoto.setImageBitmap(bitmap);
                                                                         inflater.removeView(inflater.findViewById(R.id.parentDirectoryList));
+
+                                                                        storeTrashesButton.setOnClickListener(new View.OnClickListener() {
+                                                                            @Override
+                                                                            public void onClick(View v) {
+                                                                                if(token == null){
+                                                                                    Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                                                                                    finishAffinity();
+                                                                                    finish();
+                                                                                    startActivity(intent);
+                                                                                    return;
+                                                                                }
+
+                                                                                File trashPhotoDetails = new File(pathFromClicked);
+                                                                                String trashDesc = String.valueOf(((EditText) inflater.findViewById(R.id.trashDesc)).getText());
+                                                                                String trashWeight = String.valueOf(((EditText)  inflater.findViewById(R.id.trashWeight)).getText());
+
+                                                                                if(trashDesc.equals("") || trashWeight.equals("") || trashTypeSelectedId == null){
+                                                                                    Toast.makeText(getApplicationContext(), R.string.empty_field, Toast.LENGTH_LONG).show();
+                                                                                    return;
+                                                                                }
+
+                                                                                RequestBody requestBody = new MultipartBody.Builder()
+                                                                                .setType(MultipartBody.FORM)
+                                                                                .addFormDataPart("photo",
+                                                                                    trashPhotoDetails.getName(),
+                                                                                    RequestBody.create(
+                                                                                        MediaType.parse("image/png"),
+                                                                                        trashPhotoDetails
+                                                                                    )
+                                                                                )
+                                                                                .addFormDataPart("type", trashTypeSelectedId)
+                                                                                .addFormDataPart("weight", trashWeight)
+                                                                                .addFormDataPart("pickup_id", "f64c6e7f-7abd-4d73-b256-9bdc98bc7077")
+                                                                                .addFormDataPart("description", trashDesc)
+                                                                                .build();
+
+                                                                                System.out.println(trashPhotoDetails.getName() + " " + trashTypeSelectedId + " " + trashWeight + " " + trashDesc);
+
+                                                                                Request uploadTrashRequest = new Request.Builder()
+                                                                                .header("Authorization", "Bearer " + token)
+                                                                                .post(requestBody)
+                                                                                .url(PathUrl.ROOT_PATH_TRASH)
+                                                                                .build();
+
+                                                                                okHttpClient.newCall(uploadTrashRequest).enqueue(new Callback() {
+                                                                                    @Override
+                                                                                    public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                                                                                        System.out.println(Arrays.toString(e.getStackTrace()));
+                                                                                    }
+
+                                                                                    @Override
+                                                                                    public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                                                                                        System.out.println(response.body().toString());
+                                                                                    }
+                                                                                });
+                                                                            }
+                                                                        });
                                                                     }else{
-                                                                        Toast.makeText(context,"Silahkan Pilih File Berformat PNG, JPG, GIF", Toast.LENGTH_LONG).show();
+                                                                        Toast.makeText(context,R.string.trash_photo_format, Toast.LENGTH_LONG).show();
                                                                     }
                                                                 }catch (Exception e){
-                                                                    Toast.makeText(context,"Gagal Melakukan Set Image", Toast.LENGTH_LONG).show();
+                                                                    Toast.makeText(context,R.string.fail_set_image, Toast.LENGTH_LONG).show();
                                                                 }
                                                             }
                                                         }
@@ -250,7 +321,10 @@ public class DashboardActivity extends AppCompatActivity {
                                 listTrashType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                                     @Override
                                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                                        trashAmount.setText(IDRFormatCurr.currFormat(Long.valueOf(trashTypeAmount.get(position))) + " / Kilo Gram");
+                                        TrashType singleTrashBySelected = trashBundle.get(position);
+                                        String trashPrice = IDRFormatCurr.currFormat(Long.valueOf(singleTrashBySelected.getAmount())) + " / Kilo Gram";
+                                        trashTypeSelectedId = singleTrashBySelected.getId();
+                                        trashAmount.setText(trashPrice);
                                     }
 
                                     @Override
@@ -262,14 +336,14 @@ public class DashboardActivity extends AppCompatActivity {
                                 popupWindow.setFocusable(true);
                                 popupWindow.showAtLocation(inflateTrashLay, Gravity.CENTER, 0, 0);
                             }catch (Exception e){
-                                System.out.println(e);
-                                failedConnectToServer();
+                                System.out.println(Arrays.toString(e.getStackTrace()));
+                                failedConnectToServer(R.string.failed_con_server);
                             }
+                        }else{
+                            failedConnectToServer(R.string.unavailable_service);
                         }
-                    });
-                }else{
-                    failedConnectToServer();
-                }
+                    }
+                });
             }
         });
 
@@ -306,13 +380,13 @@ public class DashboardActivity extends AppCompatActivity {
         });
     }
 
-    private void failedConnectToServer(){
+    private void failedConnectToServer(int messages){
         DashboardActivity.this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 Toast.makeText(
                     getApplication().getApplicationContext(),
-                "Gagal Tersambung ke Server ",
+                    R.string.failed_con_server,
                     Toast.LENGTH_LONG
                 ).show();
             }

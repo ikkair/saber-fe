@@ -53,6 +53,7 @@
                     android:layout_height="wrap_content"/>
 
                 <EditText
+                    android:id="@+id/trashDesc"
                     android:inputType="text"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"/>
@@ -72,6 +73,7 @@
                     android:layout_height="wrap_content"/>
 
                 <EditText
+                    android:id="@+id/trashWeight"
                     android:inputType="numberDecimal"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"/>

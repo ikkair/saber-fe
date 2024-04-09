@@ -81,6 +81,11 @@
     <string name="trash_type">Type Sampah atau Barang</string>
     <string name="continue_store_trash">Store Sampah</string>
     <string name="cancel_store_trash">Batal</string>
+    <string name="failed_con_server">Gagal Tersambung ke Server</string>
+    <string name="unavailable_service">Layanan Belum Tersedia Saat Ini</string>
+    <string name="trash_photo_format">"Silahkan Pilih File Berformat PNG, JPG, GIF"</string>
+    <string name="fail_set_image">Gagal Melakukan Set Image</string>
+    <string name="empty_field">Silahkan Isi Seluruh Field Yang Tersedia</string>
 
     <string-array name="bank_name_list">
         <item id="pb">Pilih Bank</item>

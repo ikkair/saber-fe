@@ -1,6 +1,9 @@
 package com.desti.saber;
 
+import android.opengl.Visibility;
 import android.os.StrictMode;
+import android.view.ViewGroup;
+import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
@@ -9,13 +12,8 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.Toast;
 
+import com.desti.saber.LayoutHelper.ProgressBar.ProgressBarHelper;
 import com.desti.saber.configs.OkHttpHandler;
 import com.desti.saber.utils.ImageSetterFromStream;
 import com.desti.saber.utils.constant.PathUrl;
@@ -33,7 +31,7 @@ import okhttp3.Response;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private Boolean rememberMeStatus;
+    private boolean rememberMeStatus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +46,7 @@ public class LoginActivity extends AppCompatActivity {
         TextView titleForgotPasswordClickable = findViewById(R.id.titleTextForgotPasswordClickable);
 
         StrictMode.setThreadPolicy(policy);
-        imageSetter.setAsImageBackground("transparent_form_data_bg.png", R.id.formDataTransparentContainer);
+        imageSetter.setAsImageDrawable("transparent_form_data_bg.png", R.id.formDataTransparentContainer);
         imageSetter.setAsImageDrawable("logIn_picture_decoration.png", R.id.logInPictureDecoration);
         imageSetter.setAsImageDrawable("password_icon.png", R.id.userInputPasswordIcon);
         imageSetter.setAsImageDrawable("user_icon.png", R.id.userInputEmailIcon);
@@ -73,7 +71,7 @@ public class LoginActivity extends AppCompatActivity {
         logInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                logInBtnOnClicked();
+                logInBtnOnClicked(v);
             }
         });
 
@@ -92,7 +90,7 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void rememberMeOnChecked(Boolean checkStatus){
+    private void rememberMeOnChecked(boolean checkStatus){
         //TODO : if remember me checked
         this.rememberMeStatus = checkStatus;
     }
@@ -100,6 +98,7 @@ public class LoginActivity extends AppCompatActivity {
     private void rememberMeData(String email, String password){
         SharedPreferences rememberLogin = getSharedPreferences("InputLoginInfo", Context.MODE_PRIVATE);
         SharedPreferences.Editor rememberLoginEditor = rememberLogin.edit();
+
         if(this.rememberMeStatus){
             rememberLoginEditor.putString("username", email);
             rememberLoginEditor.putString("password", password);
@@ -110,9 +109,7 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private void logInBtnOnClicked(){
-
-
+    private void logInBtnOnClicked(View view){
         //TODO : if logIn button on clicked
         EditText password = findViewById(R.id.fieldInputPasswordLogIn);
         EditText emailOrNickName = findViewById(R.id.fieldInputEmailLogIn);
@@ -131,75 +128,72 @@ public class LoginActivity extends AppCompatActivity {
         OkHttpHandler okHttpHandler = new OkHttpHandler();
 
         Request request = new Request
-                .Builder()
-                .url(PathUrl.ENP_LOGIN_USER)
-                .post(requestBody)
-                .build();
+        .Builder()
+        .url(PathUrl.ENP_LOGIN_USER)
+        .post(requestBody)
+        .build();
 
-        //bypass calling endpoint
-        Intent dashboard = new Intent(this.getApplication().getApplicationContext(), DashboardActivity.class);
-        startActivity(dashboard);
-        finish();
+        ProgressBarHelper.onProgress(getApplication(), view, true);
+        okHttpHandler.requestAsync(this, request, new OkHttpHandler.MyCallback() {
+            @Override
+            public void onSuccess(Context context, Response response) {
+                int responseType = response.code()/100;
 
-//        okHttpHandler.requestAsync(this, request, new OkHttpHandler.MyCallback() {
-//            @Override
-//            public void onSuccess(Context context, Response response) {
-//                int responseType = response.code()/100;
-//
-//                SharedPreferences loginInfo = getSharedPreferences("LoginInfo", Context.MODE_PRIVATE);
-//                SharedPreferences.Editor loginInfoEditor = loginInfo.edit();
-//
-//                ResponseGlobalJsonDTO globalResponse = null;
-//                DataLogInDTO[] loginData = null;
-//                try {
-//                    Gson gson = new Gson();
+                SharedPreferences loginInfo = getSharedPreferences("LoginInfo", Context.MODE_PRIVATE);
+                SharedPreferences.Editor loginInfoEditor = loginInfo.edit();
+
+                ResponseGlobalJsonDTO globalResponse = null;
+                DataLogInDTO[] loginData = null;
+                try {
+                    Gson gson = new Gson();
                     TypeToken<ResponseGlobalJsonDTO<DataLogInDTO>> resToken = new TypeToken<ResponseGlobalJsonDTO<DataLogInDTO>>(){};
-//                    globalResponse = gson.fromJson(response.body().string(), resToken.getType());
-//                    loginData = (DataLogInDTO[]) globalResponse.getData();
+                    globalResponse = gson.fromJson(response.body().string(), resToken.getType());
+                    loginData = (DataLogInDTO[]) globalResponse.getData();
 
-//                } catch (Exception e){
-//                    Log.e("Parsing Login Error", e.getMessage());
-//                }
-//                switch (responseType){
-//                    case 2:
-//                        loginInfoEditor.putString("username", loginData[0].getName());
-//                        loginInfoEditor.putString("token", loginData[0].getToken());
-//                        loginInfoEditor.putString("role", loginData[0].getRole());
-//                        loginInfoEditor.apply();
-//                        rememberMeData(emailOrNickNameValue, passwordValue);
-//
-//                        Intent dashboard = new Intent(context, DashboardActivity.class);
-//                        startActivity(dashboard);
-//                        finish();
-//                        break;
-//                    case 3:
-//                    case 4:
-//                    case 5:
-//                        try {
-//                            ResponseGlobalJsonDTO finalGlobalResponse = globalResponse;
-//                            runOnUiThread(new Runnable() {
-//                                @Override
-//                                public void run() {
-//                                    Toast.makeText(getApplicationContext(), "Login Failed: ".concat(finalGlobalResponse.getMessage()), Toast.LENGTH_SHORT).show();
-//                                }
-//                            });
-//                        } catch (Exception e){
-//                            Log.e("Login Toast Error", e.getMessage());
-//                        }
-//                        break;
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Exception e) {
-//                runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-//                    }
-//                });
-//            }
-//        });
+                } catch (Exception e){
+                    Log.e("Parsing Login Error", e.getMessage());
+                }
+                switch (responseType){
+                    case 2:
+                        loginInfoEditor.putString("username", loginData[0].getName());
+                        loginInfoEditor.putString("token", loginData[0].getToken());
+                        loginInfoEditor.putString("role", loginData[0].getRole());
+                        loginInfoEditor.apply();
+                        rememberMeData(emailOrNickNameValue, passwordValue);
+
+                        Intent dashboard = new Intent(context, DashboardActivity.class);
+                        startActivity(dashboard);
+                        finish();
+                        break;
+                    case 3:
+                    case 4:
+                    case 5:
+                        try {
+                            ResponseGlobalJsonDTO finalGlobalResponse = globalResponse;
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(getApplicationContext(), "Login Failed: ".concat(finalGlobalResponse.getMessage()), Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        } catch (Exception e){
+                            Log.e("Login Toast Error", e.getMessage());
+                        }
+                        break;
+                }
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ProgressBarHelper.onProgress(getApplication(), view, false);
+                        Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
     }
 
     private  void  signUpOnClicked(){

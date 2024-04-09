@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import java.io.InputStream;
 
@@ -42,6 +43,8 @@ public class ImageSetterFromStream {
         try{
             InputStream ism = asm.open(imageName);
             ViewGroup vgp = (ViewGroup) activity.findViewById(viewGroupComponent);
+            int originalWidth = vgp.getWidth();
+            int originalHeight = vgp.getHeight();
             vgp.setBackground(Drawable.createFromStream(ism, null));
         }catch (Exception err){
             System.out.println(err.getLocalizedMessage());
