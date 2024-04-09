@@ -148,200 +148,15 @@ public class DashboardActivity extends AppCompatActivity {
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                ImageSetterFromStream imageSetterFromStream = new ImageSetterFromStream(activity);
                 activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        ProgressBarHelper.onProgress(activity.getApplication(), view, false);
-                        if(response.isSuccessful() && response.body() != null){
-                            try {
-                                Gson gson = new Gson();
-                                String bodyReponse = response.body().string();
-                                TypeToken<ResponseGlobalJsonDTO<TrashType>> trashTypeResponse =new TypeToken<ResponseGlobalJsonDTO<TrashType>>(){};
-                                ResponseGlobalJsonDTO finalResponse = gson.fromJson(bodyReponse, trashTypeResponse.getType());
-                                TrashType[] trashTypes = (TrashType[]) finalResponse.getData();
-                                List<String> trashTypeNames = new ArrayList<>();
-                                List<TrashType> trashBundle = new ArrayList<>();
-
-                                for(TrashType trashType : trashTypes){
-                                    trashTypeNames.add(trashType.getType());
-                                    trashBundle.add(trashType);
-                                }
-
-                                int wrapperParam = ViewGroup.LayoutParams.MATCH_PARENT;
-                                ViewGroup inflateTrashLay = (ViewGroup) LayoutInflater.from(activity).inflate(R.layout.store_trash_popup, null);
-                                PopupWindow  popupWindow = new PopupWindow(inflateTrashLay, wrapperParam, wrapperParam);
-
-                                ArrayAdapter<String> adapter = new ArrayAdapter<>(activity, R.layout.trash_list_dialog_drodown, trashTypeNames);
-                                Spinner listTrashType = inflateTrashLay.findViewById(R.id.trashTypeLists);
-                                TextView trashAmount = inflateTrashLay.findViewById(R.id.trashAmount);
-                                Button cancel = inflateTrashLay.findViewById(R.id.cancelTrashProcess);
-                                trashPhoto = inflateTrashLay.findViewById(R.id.trashPhoto);
-                                imageSetterFromStream.setAsImageDrawable("defImage.png", trashPhoto);
-
-                                trashPhoto.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        int checkStorageRead = getBaseContext().checkCallingOrSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
-                                        ViewGroup popParent = (ViewGroup) trashPhoto.getParent().getParent().getParent();
-                                        ViewGroup inflater = (ViewGroup) LayoutInflater.from(context).inflate(R.layout.directory_pop_up_layout, popParent, true);
-                                        LinearLayout dirListLocationView = inflater.findViewById(R.id.rootDirectoryList);
-                                        Button backButtonDir = inflater.findViewById(R.id.cancelSelectImg);
-
-                                        if(checkStorageRead == PackageManager.PERMISSION_GRANTED){
-                                            File envExternalStorage = Environment.getExternalStorageDirectory();
-                                            File[] lisFiles = envExternalStorage.listFiles();
-
-                                            if(lisFiles != null){
-                                                for(File sgFile : lisFiles){
-                                                    TextView singleDirPathTv = new TextView(context);
-                                                    String fullPath = sgFile.getAbsolutePath();
-
-                                                    singleDirPathTv.setText(fullPath);
-                                                    singleDirPathTv.setOnClickListener(new View.OnClickListener() {
-                                                        @Override
-                                                        public void onClick(View v) {
-                                                            String pathFromClicked = singleDirPathTv.getText().toString();
-                                                            if(new File(pathFromClicked).isDirectory()){
-                                                                File clickedExtendFiles = new File(pathFromClicked);
-                                                                File[] listFiles = clickedExtendFiles.listFiles();
-
-                                                                if(listFiles != null){
-                                                                    dirListLocationView.removeAllViews();
-                                                                    for(File sgFile : listFiles){
-                                                                        TextView sgTextView = new TextView(context);
-                                                                        sgTextView.setText(sgFile.getAbsolutePath());
-                                                                        sgTextView.setOnClickListener(new View.OnClickListener() {
-                                                                            @Override
-                                                                            public void onClick(View v) {
-                                                                                singleDirPathTv.setText(sgFile.getAbsolutePath());
-                                                                                singleDirPathTv.callOnClick();
-                                                                            }
-                                                                        });
-                                                                        dirListLocationView.addView(sgTextView);
-                                                                    }
-                                                                }
-                                                            }else{
-                                                                try{
-                                                                    Bitmap bitmap = BitmapFactory.decodeFile(pathFromClicked);
-                                                                    if(bitmap != null){
-                                                                        Button storeTrashesButton = inflater.findViewById(R.id.processStoreTrash);
-                                                                        trashPathPhotoLoc = pathFromClicked;
-                                                                        trashPhoto.setImageBitmap(bitmap);
-                                                                        inflater.removeView(inflater.findViewById(R.id.parentDirectoryList));
-
-                                                                        storeTrashesButton.setOnClickListener(new View.OnClickListener() {
-                                                                            @Override
-                                                                            public void onClick(View v) {
-                                                                                if(token == null){
-                                                                                    Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-                                                                                    finishAffinity();
-                                                                                    finish();
-                                                                                    startActivity(intent);
-                                                                                    return;
-                                                                                }
-
-                                                                                File trashPhotoDetails = new File(pathFromClicked);
-                                                                                String trashDesc = String.valueOf(((EditText) inflater.findViewById(R.id.trashDesc)).getText());
-                                                                                String trashWeight = String.valueOf(((EditText)  inflater.findViewById(R.id.trashWeight)).getText());
-
-                                                                                if(trashDesc.equals("") || trashWeight.equals("") || trashTypeSelectedId == null){
-                                                                                    Toast.makeText(getApplicationContext(), R.string.empty_field, Toast.LENGTH_LONG).show();
-                                                                                    return;
-                                                                                }
-
-                                                                                RequestBody requestBody = new MultipartBody.Builder()
-                                                                                .setType(MultipartBody.FORM)
-                                                                                .addFormDataPart("photo",
-                                                                                    trashPhotoDetails.getName(),
-                                                                                    RequestBody.create(
-                                                                                        MediaType.parse("image/png"),
-                                                                                        trashPhotoDetails
-                                                                                    )
-                                                                                )
-                                                                                .addFormDataPart("type", trashTypeSelectedId)
-                                                                                .addFormDataPart("weight", trashWeight)
-                                                                                .addFormDataPart("pickup_id", "f64c6e7f-7abd-4d73-b256-9bdc98bc7077")
-                                                                                .addFormDataPart("description", trashDesc)
-                                                                                .build();
-
-                                                                                System.out.println(trashPhotoDetails.getName() + " " + trashTypeSelectedId + " " + trashWeight + " " + trashDesc);
-
-                                                                                Request uploadTrashRequest = new Request.Builder()
-                                                                                .header("Authorization", "Bearer " + token)
-                                                                                .post(requestBody)
-                                                                                .url(PathUrl.ROOT_PATH_TRASH)
-                                                                                .build();
-
-                                                                                okHttpClient.newCall(uploadTrashRequest).enqueue(new Callback() {
-                                                                                    @Override
-                                                                                    public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                                                                                        System.out.println(Arrays.toString(e.getStackTrace()));
-                                                                                    }
-
-                                                                                    @Override
-                                                                                    public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                                                                                        System.out.println(response.body().toString());
-                                                                                    }
-                                                                                });
-                                                                            }
-                                                                        });
-                                                                    }else{
-                                                                        Toast.makeText(context,R.string.trash_photo_format, Toast.LENGTH_LONG).show();
-                                                                    }
-                                                                }catch (Exception e){
-                                                                    Toast.makeText(context,R.string.fail_set_image, Toast.LENGTH_LONG).show();
-                                                                }
-                                                            }
-                                                        }
-                                                    });
-                                                    dirListLocationView.addView(singleDirPathTv);
-                                                }
-                                            }
-                                        }else{
-                                            requestStorageAccess();
-                                        }
-
-                                        backButtonDir.setOnClickListener(new View.OnClickListener() {
-                                            @Override
-                                            public void onClick(View v) {
-                                                inflater.removeView(inflater.findViewById(R.id.parentDirectoryList));
-                                            }
-                                        });
-                                    }
-                                });
-
-                                cancel.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        popupWindow.dismiss();
-                                    }
-                                });
-
-                                listTrashType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                                    @Override
-                                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                                        TrashType singleTrashBySelected = trashBundle.get(position);
-                                        String trashPrice = IDRFormatCurr.currFormat(Long.valueOf(singleTrashBySelected.getAmount())) + " / Kilo Gram";
-                                        trashTypeSelectedId = singleTrashBySelected.getId();
-                                        trashAmount.setText(trashPrice);
-                                    }
-
-                                    @Override
-                                    public void onNothingSelected(AdapterView<?> parent) {
-                                    }
-                                });
-
-                                listTrashType.setAdapter(adapter);
-                                popupWindow.setFocusable(true);
-                                popupWindow.showAtLocation(inflateTrashLay, Gravity.CENTER, 0, 0);
-                            }catch (Exception e){
-                                System.out.println(Arrays.toString(e.getStackTrace()));
-                                failedConnectToServer(R.string.failed_con_server);
-                            }
-                        }else{
-                            failedConnectToServer(R.string.unavailable_service);
-                        }
+                        onResponseTrashMenuSuccess(
+                            activity,
+                            response,
+                            view,
+                            okHttpClient
+                        );
                     }
                 });
             }
@@ -391,6 +206,200 @@ public class DashboardActivity extends AppCompatActivity {
                 ).show();
             }
         });
+    }
+
+    private void onResponseTrashMenuSuccess(Activity activity, Response response, View view, OkHttpClient okHttpClient){
+        ImageSetterFromStream imageSetterFromStream = new ImageSetterFromStream(activity);
+        ProgressBarHelper.onProgress(activity.getApplication(), view, false);
+        if(response.isSuccessful() && response.body() != null){
+            try {
+                Gson gson = new Gson();
+                String bodyReponse = response.body().string();
+                TypeToken<ResponseGlobalJsonDTO<TrashType>> trashTypeResponse =new TypeToken<ResponseGlobalJsonDTO<TrashType>>(){};
+                ResponseGlobalJsonDTO finalResponse = gson.fromJson(bodyReponse, trashTypeResponse.getType());
+                TrashType[] trashTypes = (TrashType[]) finalResponse.getData();
+                List<String> trashTypeNames = new ArrayList<>();
+                List<TrashType> trashBundle = new ArrayList<>();
+
+                for(TrashType trashType : trashTypes){
+                    trashTypeNames.add(trashType.getType());
+                    trashBundle.add(trashType);
+                }
+
+                int wrapperParam = ViewGroup.LayoutParams.MATCH_PARENT;
+                ViewGroup inflateTrashLay = (ViewGroup) LayoutInflater.from(activity).inflate(R.layout.store_trash_popup, null);
+                PopupWindow  popupWindow = new PopupWindow(inflateTrashLay, wrapperParam, wrapperParam);
+
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(activity, R.layout.trash_list_dialog_drodown, trashTypeNames);
+                Spinner listTrashType = inflateTrashLay.findViewById(R.id.trashTypeLists);
+                TextView trashAmount = inflateTrashLay.findViewById(R.id.trashAmount);
+                Button cancel = inflateTrashLay.findViewById(R.id.cancelTrashProcess);
+                trashPhoto = inflateTrashLay.findViewById(R.id.trashPhoto);
+                imageSetterFromStream.setAsImageDrawable("defImage.png", trashPhoto);
+
+                trashPhoto.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        int checkStorageRead = getBaseContext().checkCallingOrSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
+                        ViewGroup popParent = (ViewGroup) trashPhoto.getParent().getParent().getParent();
+                        ViewGroup inflater = (ViewGroup) LayoutInflater.from(context).inflate(R.layout.directory_pop_up_layout, popParent, true);
+                        LinearLayout dirListLocationView = inflater.findViewById(R.id.rootDirectoryList);
+                        Button backButtonDir = inflater.findViewById(R.id.cancelSelectImg);
+
+                        if(checkStorageRead == PackageManager.PERMISSION_GRANTED){
+                            File envExternalStorage = Environment.getExternalStorageDirectory();
+                            File[] lisFiles = envExternalStorage.listFiles();
+
+                            if(lisFiles != null){
+                                for(File sgFile : lisFiles){
+                                    TextView singleDirPathTv = new TextView(context);
+                                    String fullPath = sgFile.getAbsolutePath();
+
+                                    singleDirPathTv.setText(fullPath);
+                                    singleDirPathTv.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            String pathFromClicked = singleDirPathTv.getText().toString();
+                                            if(new File(pathFromClicked).isDirectory()){
+                                                File clickedExtendFiles = new File(pathFromClicked);
+                                                File[] listFiles = clickedExtendFiles.listFiles();
+
+                                                if(listFiles != null){
+                                                    dirListLocationView.removeAllViews();
+                                                    for(File sgFile : listFiles){
+                                                        TextView sgTextView = new TextView(context);
+                                                        sgTextView.setText(sgFile.getAbsolutePath());
+                                                        sgTextView.setOnClickListener(new View.OnClickListener() {
+                                                            @Override
+                                                            public void onClick(View v) {
+                                                                singleDirPathTv.setText(sgFile.getAbsolutePath());
+                                                                singleDirPathTv.callOnClick();
+                                                            }
+                                                        });
+                                                        dirListLocationView.addView(sgTextView);
+                                                    }
+                                                }
+                                            }else{
+                                                try{
+                                                    Bitmap bitmap = BitmapFactory.decodeFile(pathFromClicked);
+                                                    if(bitmap != null){
+                                                        Button storeTrashesButton = inflater.findViewById(R.id.processStoreTrash);
+                                                        trashPathPhotoLoc = pathFromClicked;
+                                                        trashPhoto.setImageBitmap(bitmap);
+                                                        inflater.removeView(inflater.findViewById(R.id.parentDirectoryList));
+
+                                                        storeTrashesButton.setOnClickListener(new View.OnClickListener() {
+                                                            @Override
+                                                            public void onClick(View v) {
+                                                                if(token == null){
+                                                                    Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                                                                    finishAffinity();
+                                                                    finish();
+                                                                    startActivity(intent);
+                                                                    return;
+                                                                }
+
+                                                                File trashPhotoDetails = new File(pathFromClicked);
+                                                                String trashDesc = String.valueOf(((EditText) inflater.findViewById(R.id.trashDesc)).getText());
+                                                                String trashWeight = String.valueOf(((EditText)  inflater.findViewById(R.id.trashWeight)).getText());
+
+                                                                if(trashDesc.equals("") || trashWeight.equals("") || trashTypeSelectedId == null){
+                                                                    Toast.makeText(getApplicationContext(), R.string.empty_field, Toast.LENGTH_LONG).show();
+                                                                    return;
+                                                                }
+
+                                                                RequestBody requestBody = new MultipartBody.Builder()
+                                                                        .setType(MultipartBody.FORM)
+                                                                        .addFormDataPart("photo",
+                                                                                trashPhotoDetails.getName(),
+                                                                                RequestBody.create(
+                                                                                        MediaType.parse("image/png"),
+                                                                                        trashPhotoDetails
+                                                                                )
+                                                                        )
+                                                                        .addFormDataPart("type", trashTypeSelectedId)
+                                                                        .addFormDataPart("weight", trashWeight)
+                                                                        .addFormDataPart("pickup_id", "f64c6e7f-7abd-4d73-b256-9bdc98bc7077")
+                                                                        .addFormDataPart("description", trashDesc)
+                                                                        .build();
+
+                                                                System.out.println(trashPhotoDetails.getName() + " " + trashTypeSelectedId + " " + trashWeight + " " + trashDesc);
+
+                                                                Request uploadTrashRequest = new Request.Builder()
+                                                                        .header("Authorization", "Bearer " + token)
+                                                                        .post(requestBody)
+                                                                        .url(PathUrl.ROOT_PATH_TRASH)
+                                                                        .build();
+
+                                                                okHttpClient.newCall(uploadTrashRequest).enqueue(new Callback() {
+                                                                    @Override
+                                                                    public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                                                                        System.out.println(Arrays.toString(e.getStackTrace()));
+                                                                    }
+
+                                                                    @Override
+                                                                    public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                                                                        System.out.println(response.body().toString());
+                                                                    }
+                                                                });
+                                                            }
+                                                        });
+                                                    }else{
+                                                        Toast.makeText(context,R.string.trash_photo_format, Toast.LENGTH_LONG).show();
+                                                    }
+                                                }catch (Exception e){
+                                                    Toast.makeText(context,R.string.fail_set_image, Toast.LENGTH_LONG).show();
+                                                }
+                                            }
+                                        }
+                                    });
+                                    dirListLocationView.addView(singleDirPathTv);
+                                }
+                            }
+                        }else{
+                            requestStorageAccess();
+                        }
+
+                        backButtonDir.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                inflater.removeView(inflater.findViewById(R.id.parentDirectoryList));
+                            }
+                        });
+                    }
+                });
+
+                cancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        popupWindow.dismiss();
+                    }
+                });
+
+                listTrashType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        TrashType singleTrashBySelected = trashBundle.get(position);
+                        String trashPrice = IDRFormatCurr.currFormat(Long.valueOf(singleTrashBySelected.getAmount())) + " / Kilo Gram";
+                        trashTypeSelectedId = singleTrashBySelected.getId();
+                        trashAmount.setText(trashPrice);
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {
+                    }
+                });
+
+                listTrashType.setAdapter(adapter);
+                popupWindow.setFocusable(true);
+                popupWindow.showAtLocation(inflateTrashLay, Gravity.CENTER, 0, 0);
+            }catch (Exception e){
+                System.out.println(Arrays.toString(e.getStackTrace()));
+                failedConnectToServer(R.string.failed_con_server);
+            }
+        }else{
+            failedConnectToServer(R.string.unavailable_service);
+        }
     }
 
     void requestStorageAccess(){
