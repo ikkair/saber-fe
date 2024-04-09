@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.desti.saber.LayoutHelper.ProgressBar.ProgressBarHelper;
 import com.desti.saber.configs.OkHttpHandler;
 import com.desti.saber.utils.ImageSetterFromStream;
 import com.desti.saber.utils.constant.PathUrl;
@@ -54,22 +55,31 @@ public class RegisterActivity extends AppCompatActivity {
         signUpBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onClickedButtonSignUpRegister();
+                onClickedButtonSignUpRegister(v);
             }
         });
     }
 
-    private void onClickedButtonSignUpRegister(){
+    private void onClickedButtonSignUpRegister(View view){
         // TODO : if button signup clicked
         EditText email = findViewById(R.id.fieldInputEmailRegister);
         EditText password = findViewById(R.id.fieldInputPasswordRegister);
         EditText Name = findViewById(R.id.fieldInputNameRegister);
-        String NameValue = Name.getText().toString();
+        String nameValue = Name.getText().toString();
         String passwordValue = password.getText().toString();
         String emailValue = email.getText().toString();
 
-    JsonObject registerPayload = new JsonObject();
-        registerPayload.addProperty("name", NameValue);
+        if(nameValue.equals("") || passwordValue.equals("") || emailValue.equals("")){
+            Toast.makeText(
+                getApplicationContext(),
+                R.string.empty_field,
+                Toast.LENGTH_LONG
+            ).show();
+            return;
+        }
+
+        JsonObject registerPayload = new JsonObject();
+        registerPayload.addProperty("name", nameValue);
         registerPayload.addProperty("email", emailValue);
         registerPayload.addProperty("password", passwordValue);
         RequestBody requestBody = RequestBody.create(
@@ -79,57 +89,51 @@ public class RegisterActivity extends AppCompatActivity {
         OkHttpHandler okHttpHandler = new OkHttpHandler();
 
         Request request = new Request
-                .Builder()
-                .url(PathUrl.ENP_REGISTER_USER)
-                .post(requestBody)
-                .build();
+        .Builder()
+        .url(PathUrl.ENP_REGISTER_USER)
+        .post(requestBody)
+        .build();
+
+        ProgressBarHelper.onProgress(getApplicationContext(), view, true);
         okHttpHandler.requestAsync(this, request, new OkHttpHandler.MyCallback() {
             @Override
             public void onSuccess(Context context, Response response) {
-                int responseType = response.code()/100;
-                ResponseGlobalJsonDTO globalResponse = null;
-                DataLogInDTO[] loginData = null;
-                try {
-                    Gson gson = new Gson();
-                    TypeToken<ResponseGlobalJsonDTO<DataLogInDTO>> resToken = new TypeToken<ResponseGlobalJsonDTO<DataLogInDTO>>(){};
-                    globalResponse = gson.fromJson(response.body().string(), resToken.getType());
-                    loginData = (DataLogInDTO[]) globalResponse.getData();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ProgressBarHelper.onProgress(getApplicationContext(), view, false);
+                        if(response != null){
+                            try {
+                                Gson gson = new Gson();
+                                TypeToken<ResponseGlobalJsonDTO<DataLogInDTO>> resToken = new TypeToken<ResponseGlobalJsonDTO<DataLogInDTO>>(){};
+                                ResponseGlobalJsonDTO globalResponse = gson.fromJson(response.body().string(), resToken.getType());
+                                DataLogInDTO[] loginData = (DataLogInDTO[]) globalResponse.getData();
+                                ResponseGlobalJsonDTO finalGlobalResponse = globalResponse;
 
-                } catch (Exception e){
-                    Log.e("Parsing Login Error", e.getMessage());
-                }
-                switch (responseType){
-                    case 2:
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(getApplicationContext(), "Register Success, Check your email",
-                                        Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                        break;
-                    case 3:
-                    case 4:
-                    case 5:
-                        try {
-                            ResponseGlobalJsonDTO finalGlobalResponse = globalResponse;
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Toast.makeText(getApplicationContext(), "Login Failed: ".concat(finalGlobalResponse.getMessage()), Toast.LENGTH_SHORT).show();
+                                if(response.isSuccessful()){
+                                    Toast.makeText(
+                                        getApplicationContext(),
+                                        R.string.success_register,
+                                        Toast.LENGTH_LONG
+                                    ).show();
+                                }else{
+                                    Toast.makeText(getApplicationContext(), "Gagal Melakukan Registrasi : ".concat(finalGlobalResponse.getMessage()), Toast.LENGTH_SHORT).show();
                                 }
-                            });
-                        } catch (Exception e){
-                            Log.e("Login Toast Error", e.getMessage());
+                                return;
+                            } catch (Exception e){
+                                Log.e("Parsing Login Error", e.fillInStackTrace().toString());
+                            }
                         }
-                        break;
-                }
+                        Toast.makeText(getApplicationContext(), "Failed Register", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
             @Override
             public void onFailure(Exception e) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        ProgressBarHelper.onProgress(getApplicationContext(), view, false);
                         Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });

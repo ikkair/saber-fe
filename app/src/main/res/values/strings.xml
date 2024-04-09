@@ -86,6 +86,10 @@
     <string name="trash_photo_format">"Silahkan Pilih File Berformat PNG, JPG, GIF"</string>
     <string name="fail_set_image">Gagal Melakukan Set Image</string>
     <string name="empty_field">Silahkan Isi Seluruh Field Yang Tersedia</string>
+    <string name="success_trash_store">Sukes Melakukan Permintaan Pickup Sampah</string>
+    <string name="fail_trash_store">Permintaan Pickup Sampah Gagal</string>
+    <string name="err_network">Gagal Melakukan Permintaan, Silahkan Periksa Konensi Internet</string>
+    <string name="success_register">Registasi Pengguna Sukses Silahkan Cek Email Untuk, Verifikasi Akun</string>
 
     <string-array name="bank_name_list">
         <item id="pb">Pilih Bank</item>

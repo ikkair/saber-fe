@@ -234,6 +234,8 @@ public class DashboardActivity extends AppCompatActivity {
                 Spinner listTrashType = inflateTrashLay.findViewById(R.id.trashTypeLists);
                 TextView trashAmount = inflateTrashLay.findViewById(R.id.trashAmount);
                 Button cancel = inflateTrashLay.findViewById(R.id.cancelTrashProcess);
+                Button storeTrashesButton = inflateTrashLay.findViewById(R.id.processStoreTrash);
+
                 trashPhoto = inflateTrashLay.findViewById(R.id.trashPhoto);
                 imageSetterFromStream.setAsImageDrawable("defImage.png", trashPhoto);
 
@@ -283,67 +285,9 @@ public class DashboardActivity extends AppCompatActivity {
                                                 try{
                                                     Bitmap bitmap = BitmapFactory.decodeFile(pathFromClicked);
                                                     if(bitmap != null){
-                                                        Button storeTrashesButton = inflater.findViewById(R.id.processStoreTrash);
                                                         trashPathPhotoLoc = pathFromClicked;
                                                         trashPhoto.setImageBitmap(bitmap);
                                                         inflater.removeView(inflater.findViewById(R.id.parentDirectoryList));
-
-                                                        storeTrashesButton.setOnClickListener(new View.OnClickListener() {
-                                                            @Override
-                                                            public void onClick(View v) {
-                                                                if(token == null){
-                                                                    Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-                                                                    finishAffinity();
-                                                                    finish();
-                                                                    startActivity(intent);
-                                                                    return;
-                                                                }
-
-                                                                File trashPhotoDetails = new File(pathFromClicked);
-                                                                String trashDesc = String.valueOf(((EditText) inflater.findViewById(R.id.trashDesc)).getText());
-                                                                String trashWeight = String.valueOf(((EditText)  inflater.findViewById(R.id.trashWeight)).getText());
-
-                                                                if(trashDesc.equals("") || trashWeight.equals("") || trashTypeSelectedId == null){
-                                                                    Toast.makeText(getApplicationContext(), R.string.empty_field, Toast.LENGTH_LONG).show();
-                                                                    return;
-                                                                }
-
-                                                                RequestBody requestBody = new MultipartBody.Builder()
-                                                                        .setType(MultipartBody.FORM)
-                                                                        .addFormDataPart("photo",
-                                                                                trashPhotoDetails.getName(),
-                                                                                RequestBody.create(
-                                                                                        MediaType.parse("image/png"),
-                                                                                        trashPhotoDetails
-                                                                                )
-                                                                        )
-                                                                        .addFormDataPart("type", trashTypeSelectedId)
-                                                                        .addFormDataPart("weight", trashWeight)
-                                                                        .addFormDataPart("pickup_id", "f64c6e7f-7abd-4d73-b256-9bdc98bc7077")
-                                                                        .addFormDataPart("description", trashDesc)
-                                                                        .build();
-
-                                                                System.out.println(trashPhotoDetails.getName() + " " + trashTypeSelectedId + " " + trashWeight + " " + trashDesc);
-
-                                                                Request uploadTrashRequest = new Request.Builder()
-                                                                        .header("Authorization", "Bearer " + token)
-                                                                        .post(requestBody)
-                                                                        .url(PathUrl.ROOT_PATH_TRASH)
-                                                                        .build();
-
-                                                                okHttpClient.newCall(uploadTrashRequest).enqueue(new Callback() {
-                                                                    @Override
-                                                                    public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                                                                        System.out.println(Arrays.toString(e.getStackTrace()));
-                                                                    }
-
-                                                                    @Override
-                                                                    public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                                                                        System.out.println(response.body().toString());
-                                                                    }
-                                                                });
-                                                            }
-                                                        });
                                                     }else{
                                                         Toast.makeText(context,R.string.trash_photo_format, Toast.LENGTH_LONG).show();
                                                     }
@@ -376,6 +320,17 @@ public class DashboardActivity extends AppCompatActivity {
                     }
                 });
 
+                storeTrashesButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        doPostStoreTrash(
+                            inflateTrashLay,
+                            okHttpClient,
+                            v, popupWindow
+                        );
+                    }
+                });
+
                 listTrashType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -400,6 +355,89 @@ public class DashboardActivity extends AppCompatActivity {
         }else{
             failedConnectToServer(R.string.unavailable_service);
         }
+    }
+
+    private void doPostStoreTrash(ViewGroup inflater, OkHttpClient okHttpClient, View view, PopupWindow popupWindow){
+        if(token == null){
+            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+            finishAffinity();
+            finish();
+            startActivity(intent);
+            return;
+        }
+
+        String trashDesc = String.valueOf(((EditText) inflater.findViewById(R.id.trashDesc)).getText());
+        String trashWeight = String.valueOf(((EditText)  inflater.findViewById(R.id.trashWeight)).getText());
+
+        if(trashDesc.equals("") || trashWeight.equals("") || trashTypeSelectedId == null || trashPathPhotoLoc == null){
+            Toast.makeText(getApplicationContext(), R.string.empty_field, Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        File trashPhotoDetails = new File(trashPathPhotoLoc);
+        RequestBody requestBody = new MultipartBody.Builder()
+        .setType(MultipartBody.FORM)
+        .addFormDataPart("photo",
+            trashPhotoDetails.getName(),
+            RequestBody.create(
+                MediaType.parse("image/png"),
+                trashPhotoDetails
+            )
+        )
+        .addFormDataPart("type", trashTypeSelectedId)
+        .addFormDataPart("weight", trashWeight)
+        .addFormDataPart("pickup_id", "f64c6e7f-7abd-4d73-b256-9bdc98bc7077")
+        .addFormDataPart("description", trashDesc)
+        .build();
+
+        Request uploadTrashRequest = new Request.Builder()
+        .header("Authorization", "Bearer " + token)
+        .post(requestBody)
+        .url(PathUrl.ROOT_PATH_TRASH)
+        .build();
+
+        ProgressBarHelper.onProgress(getApplication(), view, true);
+        okHttpClient.newCall(uploadTrashRequest).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ProgressBarHelper.onProgress(getApplication(), view, false);
+                        Toast.makeText(
+                            getApplicationContext(),
+                            R.string.err_network,
+                            Toast.LENGTH_LONG
+                        ).show();
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ProgressBarHelper.onProgress(getApplication(), view, false);
+                        if(response.isSuccessful()){
+                            popupWindow.dismiss();
+                            Toast.makeText(
+                                getApplicationContext(),
+                                R.string.success_trash_store,
+                                Toast.LENGTH_LONG
+                            ).show();
+                        }else{
+                            Toast.makeText(
+                                getApplicationContext(),
+                                R.string.fail_trash_store,
+                                Toast.LENGTH_LONG
+                            ).show();
+                            System.out.println(response.toString());
+                        }
+                    }
+                });
+            }
+        });
     }
 
     void requestStorageAccess(){
