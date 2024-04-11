@@ -9,21 +9,29 @@
         android:background="@drawable/white_rounded_bg"
         android:layout_width="match_parent">
 
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/backTraceLocBtn"
+        android:background="@drawable/baseline_arrow_back_24"
+        android:layout_width="24dp"
+        android:layout_height="24dp"/>
+
     <ScrollView
-            android:layout_weight="1"
-            android:layout_height="0dp"
-            android:layout_margin="5dp"
-            android:layout_width="match_parent">
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="15dp"
+        android:layout_weight="1"
+        android:layout_height="0dp"
+        android:layout_width="match_parent">
 
         <LinearLayout
                 android:orientation="vertical"
                 android:id="@+id/rootDirectoryList"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 
     </ScrollView>
 
     <androidx.appcompat.widget.AppCompatButton
+        android:textSize="20sp"
         android:id="@+id/cancelSelectImg"
         android:layout_gravity="center"
         android:text="@string/cancel_store_trash"

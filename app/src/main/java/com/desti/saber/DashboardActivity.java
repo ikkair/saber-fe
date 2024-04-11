@@ -2,39 +2,27 @@ package com.desti.saber;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Path;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Parcel;
 import android.os.StrictMode;
-import android.provider.MediaStore;
 import android.view.*;
 import android.widget.*;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import androidx.core.app.ActivityCompat;
 import com.desti.saber.LayoutHelper.ProgressBar.ProgressBarHelper;
-import com.desti.saber.configs.OkHttpHandler;
-import com.desti.saber.data.Result;
-import com.desti.saber.utils.HelperListDirButton;
 import com.desti.saber.utils.IDRFormatCurr;
 import com.desti.saber.utils.ImageSetterFromStream;
 import com.desti.saber.utils.constant.PathUrl;
 import com.desti.saber.utils.dto.ResponseGlobalJsonDTO;
 import com.desti.saber.utils.dto.TrashType;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import okhttp3.*;
@@ -42,9 +30,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
-import java.time.Duration;
 import java.util.*;
-import java.util.zip.Inflater;
 
 public class DashboardActivity extends AppCompatActivity {
 
@@ -245,47 +231,85 @@ public class DashboardActivity extends AppCompatActivity {
                         int checkStorageRead = getBaseContext().checkCallingOrSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
                         ViewGroup popParent = (ViewGroup) trashPhoto.getParent().getParent().getParent();
                         ViewGroup inflater = (ViewGroup) LayoutInflater.from(context).inflate(R.layout.directory_pop_up_layout, popParent, true);
-                        LinearLayout dirListLocationView = inflater.findViewById(R.id.rootDirectoryList);
+                        ViewGroup dirListLocationView = inflater.findViewById(R.id.rootDirectoryList);
+                        Button backWardLoc = inflater.findViewById(R.id.backTraceLocBtn);
                         Button backButtonDir = inflater.findViewById(R.id.cancelSelectImg);
+                        List<String> fileTraceClicked = new ArrayList<>();
+                        int singleTvLocId = R.id.singleTvFileLoc;
+                        int singleTvNameId = R.id.singleTvFileName;
 
                         if(checkStorageRead == PackageManager.PERMISSION_GRANTED){
                             File envExternalStorage = Environment.getExternalStorageDirectory();
                             File[] lisFiles = envExternalStorage.listFiles();
 
+                            fileTraceClicked.add(envExternalStorage.getAbsolutePath());
+
                             if(lisFiles != null){
-                                for(File sgFile : lisFiles){
-                                    TextView singleDirPathTv = new TextView(context);
-                                    String fullPath = sgFile.getAbsolutePath();
+                                for(int i =0; i < lisFiles.length; i++){
+                                    File sgFile = lisFiles[i];
+                                    View inflateTvFile = getLayoutInflater()
+                                    .inflate(
+                                        R.layout.single_list_file_choser,
+                                        dirListLocationView, false
+                                    );
+                                    TextView  singleTvFile = inflateTvFile.findViewById(singleTvNameId);
+                                    TextView singleTvLoc = inflateTvFile.findViewById(singleTvLocId);
 
-                                    singleDirPathTv.setText(fullPath);
-                                    singleDirPathTv.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-                                            String pathFromClicked = singleDirPathTv.getText().toString();
-                                            if(new File(pathFromClicked).isDirectory()){
-                                                File clickedExtendFiles = new File(pathFromClicked);
-                                                File[] listFiles = clickedExtendFiles.listFiles();
+                                    singleTvLoc.setText(sgFile.getAbsolutePath());
+                                    singleTvFile.setText(sgFile.getName());
+                                    dirListLocationView.addView(inflateTvFile);
+                                    inflateTvFile.setOnClickListener(new View.OnClickListener() {
+                                       @Override
+                                       public void onClick(View v) {
+                                           TextView sgFileNextDirTvLoc = v.findViewById(singleTvLocId);
+                                           String fullPathByLocField = sgFileNextDirTvLoc.getText().toString();
+                                           File nextDir = new File(fullPathByLocField);
 
-                                                if(listFiles != null){
-                                                    dirListLocationView.removeAllViews();
-                                                    for(File sgFile : listFiles){
-                                                        TextView sgTextView = new TextView(context);
-                                                        sgTextView.setText(sgFile.getAbsolutePath());
-                                                        sgTextView.setOnClickListener(new View.OnClickListener() {
-                                                            @Override
-                                                            public void onClick(View v) {
-                                                                singleDirPathTv.setText(sgFile.getAbsolutePath());
-                                                                singleDirPathTv.callOnClick();
-                                                            }
-                                                        });
-                                                        dirListLocationView.addView(sgTextView);
-                                                    }
-                                                }
-                                            }else{
-                                                try{
-                                                    Bitmap bitmap = BitmapFactory.decodeFile(pathFromClicked);
+                                           if(nextDir.isDirectory()){
+                                               File[] nextDirList = nextDir.listFiles();
+
+                                               if(nextDirList != null){
+                                                   if(nextDirList.length < 1){
+                                                       Toast.makeText(
+                                                           getApplicationContext(),
+                                                           "Tidak Ada Berkas Pada Folder " + nextDir.getName(),
+                                                           Toast.LENGTH_LONG
+                                                       ).show();
+                                                   }else{
+                                                       if(!fileTraceClicked.contains(fullPathByLocField)){
+                                                           fileTraceClicked.add(fullPathByLocField);
+                                                       }
+
+                                                       dirListLocationView.removeAllViews();
+                                                       for(File nextDirSgFile : nextDirList){
+                                                           View inflateNextDir = getLayoutInflater()
+                                                           .inflate(
+                                                               R.layout.single_list_file_choser,
+                                                               dirListLocationView, false
+                                                           );
+                                                           TextView tvNextDir = inflateNextDir.findViewById(singleTvNameId);
+                                                           TextView singleTvLoc = inflateNextDir.findViewById(singleTvLocId);
+
+                                                           tvNextDir.setText(nextDirSgFile.getName());
+                                                           singleTvLoc.setText(nextDirSgFile.getAbsolutePath());
+                                                           dirListLocationView.addView(inflateNextDir);
+
+                                                           inflateNextDir.setOnClickListener(new View.OnClickListener() {
+                                                               @Override
+                                                               public void onClick(View v) {
+                                                                   ((TextView) inflateTvFile.findViewById(singleTvLocId))
+                                                                   .setText(nextDirSgFile.getAbsolutePath());
+                                                                   inflateTvFile.callOnClick();
+                                                               }
+                                                           });
+                                                       }
+                                                   }
+                                               }
+                                           }else{
+                                               try{
+                                                    Bitmap bitmap = BitmapFactory.decodeFile(fullPathByLocField);
                                                     if(bitmap != null){
-                                                        trashPathPhotoLoc = pathFromClicked;
+                                                        trashPathPhotoLoc = fullPathByLocField;
                                                         trashPhoto.setImageBitmap(bitmap);
                                                         inflater.removeView(inflater.findViewById(R.id.parentDirectoryList));
                                                     }else{
@@ -294,10 +318,29 @@ public class DashboardActivity extends AppCompatActivity {
                                                 }catch (Exception e){
                                                     Toast.makeText(context,R.string.fail_set_image, Toast.LENGTH_LONG).show();
                                                 }
+                                           }
+                                       }
+                                   });
+
+                                    if(i == 0){
+                                        backWardLoc.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                int trashBackwardClick = fileTraceClicked.size();
+
+                                                if(trashBackwardClick >= 1){
+                                                    int getBackTracePath = (trashBackwardClick == 1) ? 0 : trashBackwardClick-2;
+                                                    ((TextView) inflateTvFile.findViewById(singleTvLocId)).setText(fileTraceClicked.get(getBackTracePath));
+                                                    inflateTvFile.callOnClick();
+
+                                                    if(trashBackwardClick > 1){
+                                                        fileTraceClicked.remove(trashBackwardClick-1);
+                                                    }
+                                                }
+
                                             }
-                                        }
-                                    });
-                                    dirListLocationView.addView(singleDirPathTv);
+                                        });
+                                    }
                                 }
                             }
                         }else{
