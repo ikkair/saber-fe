@@ -1,23 +1,21 @@
 package com.desti.saber;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.StrictMode;
 import android.view.*;
 import android.widget.*;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import androidx.core.app.ActivityCompat;
+import com.desti.saber.LayoutHelper.ManualImageChoser.ManualImageChooser;
+import com.desti.saber.LayoutHelper.ManualImageChoser.SuccessSetImage;
 import com.desti.saber.LayoutHelper.ProgressBar.ProgressBarHelper;
+import com.desti.saber.LayoutHelper.WindowPopUp.CustomWindowPopUp;
 import com.desti.saber.utils.IDRFormatCurr;
 import com.desti.saber.utils.ImageSetterFromStream;
 import com.desti.saber.utils.constant.PathUrl;
@@ -79,7 +77,7 @@ public class DashboardActivity extends AppCompatActivity {
         detailAccountClickable.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                detailAccountOnClick();
+                detailAccountOnClick(v);
             }
         });
         trashDeliverClickable.setOnClickListener(new View.OnClickListener() {
@@ -103,8 +101,12 @@ public class DashboardActivity extends AppCompatActivity {
         startActivity(withDrawIntent);
     }
 
-    private void detailAccountOnClick(){
-        Toast.makeText(this, "Detail Account on click", Toast.LENGTH_SHORT).show();
+    private void detailAccountOnClick(View v){
+        View inflateProfileDetail = getLayoutInflater().inflate(R.layout.profile_detail_layout, null);
+        PopupWindow popupWindow = new PopupWindow(inflateProfileDetail);
+        popupWindow.showAtLocation(inflateProfileDetail, Gravity.CENTER, 1, 1);
+
+//        Toast.makeText(this, "Detail Account on click", Toast.LENGTH_SHORT).show();
     }
 
     private void pinPointLocOnClick(){
@@ -221,6 +223,7 @@ public class DashboardActivity extends AppCompatActivity {
                 TextView trashAmount = inflateTrashLay.findViewById(R.id.trashAmount);
                 Button cancel = inflateTrashLay.findViewById(R.id.cancelTrashProcess);
                 Button storeTrashesButton = inflateTrashLay.findViewById(R.id.processStoreTrash);
+                ManualImageChooser imageChoser = new ManualImageChooser(this);
 
                 trashPhoto = inflateTrashLay.findViewById(R.id.trashPhoto);
                 imageSetterFromStream.setAsImageDrawable("defImage.png", trashPhoto);
@@ -228,129 +231,13 @@ public class DashboardActivity extends AppCompatActivity {
                 trashPhoto.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        int checkStorageRead = getBaseContext().checkCallingOrSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
-                        ViewGroup popParent = (ViewGroup) trashPhoto.getParent().getParent().getParent();
-                        ViewGroup inflater = (ViewGroup) LayoutInflater.from(context).inflate(R.layout.directory_pop_up_layout, popParent, true);
-                        ViewGroup dirListLocationView = inflater.findViewById(R.id.rootDirectoryList);
-                        Button backWardLoc = inflater.findViewById(R.id.backTraceLocBtn);
-                        Button backButtonDir = inflater.findViewById(R.id.cancelSelectImg);
-                        List<String> fileTraceClicked = new ArrayList<>();
-                        int singleTvLocId = R.id.singleTvFileLoc;
-                        int singleTvNameId = R.id.singleTvFileName;
-
-                        if(checkStorageRead == PackageManager.PERMISSION_GRANTED){
-                            File envExternalStorage = Environment.getExternalStorageDirectory();
-                            File[] lisFiles = envExternalStorage.listFiles();
-
-                            fileTraceClicked.add(envExternalStorage.getAbsolutePath());
-
-                            if(lisFiles != null){
-                                for(int i =0; i < lisFiles.length; i++){
-                                    File sgFile = lisFiles[i];
-                                    View inflateTvFile = getLayoutInflater()
-                                    .inflate(
-                                        R.layout.single_list_file_choser,
-                                        dirListLocationView, false
-                                    );
-                                    TextView  singleTvFile = inflateTvFile.findViewById(singleTvNameId);
-                                    TextView singleTvLoc = inflateTvFile.findViewById(singleTvLocId);
-
-                                    singleTvLoc.setText(sgFile.getAbsolutePath());
-                                    singleTvFile.setText(sgFile.getName());
-                                    dirListLocationView.addView(inflateTvFile);
-                                    inflateTvFile.setOnClickListener(new View.OnClickListener() {
-                                       @Override
-                                       public void onClick(View v) {
-                                           TextView sgFileNextDirTvLoc = v.findViewById(singleTvLocId);
-                                           String fullPathByLocField = sgFileNextDirTvLoc.getText().toString();
-                                           File nextDir = new File(fullPathByLocField);
-
-                                           if(nextDir.isDirectory()){
-                                               File[] nextDirList = nextDir.listFiles();
-
-                                               if(nextDirList != null){
-                                                   if(nextDirList.length < 1){
-                                                       Toast.makeText(
-                                                           getApplicationContext(),
-                                                           "Tidak Ada Berkas Pada Folder " + nextDir.getName(),
-                                                           Toast.LENGTH_LONG
-                                                       ).show();
-                                                   }else{
-                                                       if(!fileTraceClicked.contains(fullPathByLocField)){
-                                                           fileTraceClicked.add(fullPathByLocField);
-                                                       }
-
-                                                       dirListLocationView.removeAllViews();
-                                                       for(File nextDirSgFile : nextDirList){
-                                                           View inflateNextDir = getLayoutInflater()
-                                                           .inflate(
-                                                               R.layout.single_list_file_choser,
-                                                               dirListLocationView, false
-                                                           );
-                                                           TextView tvNextDir = inflateNextDir.findViewById(singleTvNameId);
-                                                           TextView singleTvLoc = inflateNextDir.findViewById(singleTvLocId);
-
-                                                           tvNextDir.setText(nextDirSgFile.getName());
-                                                           singleTvLoc.setText(nextDirSgFile.getAbsolutePath());
-                                                           dirListLocationView.addView(inflateNextDir);
-
-                                                           inflateNextDir.setOnClickListener(new View.OnClickListener() {
-                                                               @Override
-                                                               public void onClick(View v) {
-                                                                   ((TextView) inflateTvFile.findViewById(singleTvLocId))
-                                                                   .setText(nextDirSgFile.getAbsolutePath());
-                                                                   inflateTvFile.callOnClick();
-                                                               }
-                                                           });
-                                                       }
-                                                   }
-                                               }
-                                           }else{
-                                               try{
-                                                    Bitmap bitmap = BitmapFactory.decodeFile(fullPathByLocField);
-                                                    if(bitmap != null){
-                                                        trashPathPhotoLoc = fullPathByLocField;
-                                                        trashPhoto.setImageBitmap(bitmap);
-                                                        inflater.removeView(inflater.findViewById(R.id.parentDirectoryList));
-                                                    }else{
-                                                        Toast.makeText(context,R.string.trash_photo_format, Toast.LENGTH_LONG).show();
-                                                    }
-                                                }catch (Exception e){
-                                                    Toast.makeText(context,R.string.fail_set_image, Toast.LENGTH_LONG).show();
-                                                }
-                                           }
-                                       }
-                                   });
-
-                                    if(i == 0){
-                                        backWardLoc.setOnClickListener(new View.OnClickListener() {
-                                            @Override
-                                            public void onClick(View v) {
-                                                int trashBackwardClick = fileTraceClicked.size();
-
-                                                if(trashBackwardClick >= 1){
-                                                    int getBackTracePath = (trashBackwardClick == 1) ? 0 : trashBackwardClick-2;
-                                                    ((TextView) inflateTvFile.findViewById(singleTvLocId)).setText(fileTraceClicked.get(getBackTracePath));
-                                                    inflateTvFile.callOnClick();
-
-                                                    if(trashBackwardClick > 1){
-                                                        fileTraceClicked.remove(trashBackwardClick-1);
-                                                    }
-                                                }
-
-                                            }
-                                        });
-                                    }
-                                }
-                            }
-                        }else{
-                            requestStorageAccess();
-                        }
-
-                        backButtonDir.setOnClickListener(new View.OnClickListener() {
+                        imageChoser.setParent((ViewGroup) trashPhoto.getParent().getParent().getParent());
+                        imageChoser.startChooser(new SuccessSetImage() {
                             @Override
-                            public void onClick(View v) {
-                                inflater.removeView(inflater.findViewById(R.id.parentDirectoryList));
+                            public void success(Bitmap bitmap, String bitmapLoc, ViewGroup parentFileChooser) {
+                                trashPathPhotoLoc = bitmapLoc;
+                                trashPhoto.setImageBitmap(bitmap);
+                                imageChoser.closeImageChooser(parentFileChooser);
                             }
                         });
                     }
@@ -359,6 +246,7 @@ public class DashboardActivity extends AppCompatActivity {
                 cancel.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        trashPathPhotoLoc = null;
                         popupWindow.dismiss();
                     }
                 });
@@ -416,7 +304,7 @@ public class DashboardActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), R.string.empty_field, Toast.LENGTH_LONG).show();
             return;
         }
-
+        System.out.println(trashPathPhotoLoc + "sdsadsa");
         File trashPhotoDetails = new File(trashPathPhotoLoc);
         RequestBody requestBody = new MultipartBody.Builder()
         .setType(MultipartBody.FORM)
@@ -463,6 +351,7 @@ public class DashboardActivity extends AppCompatActivity {
                     public void run() {
                         ProgressBarHelper.onProgress(getApplication(), view, false);
                         if(response.isSuccessful()){
+                            trashPathPhotoLoc = null;
                             popupWindow.dismiss();
                             Toast.makeText(
                                 getApplicationContext(),
@@ -475,22 +364,10 @@ public class DashboardActivity extends AppCompatActivity {
                                 R.string.fail_trash_store,
                                 Toast.LENGTH_LONG
                             ).show();
-                            System.out.println(response.toString());
                         }
                     }
                 });
             }
         });
-    }
-
-    void requestStorageAccess(){
-        String[] permissionList = {Manifest.permission.READ_EXTERNAL_STORAGE};
-        ActivityCompat.requestPermissions(
-        this, permissionList, PackageManager.PERMISSION_GRANTED
-        );
-
-        if(getApplicationContext().checkCallingOrSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED){
-            Toast.makeText(getApplicationContext(), "Berikan Izin Akses Berkas", Toast.LENGTH_LONG).show();
-        }
     }
 }
