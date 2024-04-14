@@ -162,6 +162,7 @@ public class LoginActivity extends AppCompatActivity {
                                 loginInfoEditor.putString("username", loginData[0].getName());
                                 loginInfoEditor.putString("token", loginData[0].getToken());
                                 loginInfoEditor.putString("role", loginData[0].getRole());
+                                loginInfoEditor.putString("user_id", loginData[0].getId());
                                 loginInfoEditor.apply();
                                 rememberMeData(emailOrNickNameValue, passwordValue);
 
