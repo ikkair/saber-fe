@@ -22,6 +22,7 @@ import com.desti.saber.utils.GPSTrackerHelper;
 import com.desti.saber.utils.IDRFormatCurr;
 import com.desti.saber.utils.ImageSetterFromStream;
 import com.desti.saber.utils.constant.PathUrl;
+import com.desti.saber.utils.dto.PickupDetailDto;
 import com.desti.saber.utils.dto.ResponseGlobalJsonDTO;
 import com.desti.saber.utils.dto.TrashType;
 import com.google.gson.Gson;
@@ -53,7 +54,7 @@ public class DashboardActivity extends AppCompatActivity {
     private String trashTypeSelectedId;
     private String token;
     private String userId;
-    private String notFoundLoc = getString(R.string.not_found_loc);
+    private String notFoundLoc;
 
 
     @Override
@@ -61,6 +62,7 @@ public class DashboardActivity extends AppCompatActivity {
        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
 
+        notFoundLoc = getString(R.string.not_found_loc);
         ImageSetterFromStream isfs = new ImageSetterFromStream(this);
         LinearLayout withdrawLabelClickable = findViewById(R.id.withdrawLabelClickable);
         LinearLayout detailAccountClickable = findViewById(R.id.detailAccountClickable);
@@ -241,8 +243,8 @@ public class DashboardActivity extends AppCompatActivity {
             }
 
             if(listGeocoder.size() == 0){
-                locByPin.setText(getString(R.string.not_found_loc));
-                adapter.add(getString(R.string.not_found_loc));
+                locByPin.setText(notFoundLoc);
+                adapter.add(notFoundLoc);
             }
 
             popupWindow.setFocusable(true);
@@ -287,30 +289,18 @@ public class DashboardActivity extends AppCompatActivity {
     }
 
     private void trashDeliverOnClick(View view){
-//        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-//        StrictMode.setThreadPolicy(policy);
-        if(finalLocPickUp != null && finalLocPickUp != ""){
+        Activity activity = DashboardActivity.this;
 
+        if(finalLocPickUp == null || finalLocPickUp.equals(notFoundLoc)){
+            Toast.makeText(activity, R.string.loc_details, Toast.LENGTH_LONG).show();
+            return;
         }
 
-        Activity activity = DashboardActivity.this;
         ProgressBarHelper.onProgress(activity, view, true);
-
-        HashMap<String, String> requestList = new HashMap<>();
         OkHttpClient okHttpClient = new OkHttpClient();
+        Request getAllPickup = new Request.Builder().get().url(PathUrl.ROOT_PATH_PICKUP).build();
 
-        requestList.put("address", finalLocPickUp);
-        requestList.put("user_id", userId);
-        requestList.put("time", new Date(System.currentTimeMillis()).toString());
-
-        String finalJsonPayload = new Gson().toJson(requestList);
-        RequestBody requestBody = RequestBody.create(finalJsonPayload, MediaType.parse("application/json"));
-        Request requestCreatePickupId = new Request
-        .Builder().post(requestBody)
-        .header("Authorization", "Bearer " + token)
-        .url(PathUrl.ROOT_PATH_PICKUP).build();
-
-        okHttpClient.newCall(requestCreatePickupId).enqueue(new Callback() {
+        okHttpClient.newCall(getAllPickup).enqueue(new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 ProgressBarHelper.onProgress(activity, view, false);
@@ -324,67 +314,148 @@ public class DashboardActivity extends AppCompatActivity {
                     public void run() {
                         ProgressBarHelper.onProgress(activity, view, false);
                         if(response.isSuccessful()){
-                            try {
-                                System.out.println(call.request().body().toString());
-                                System.out.println(response.body().string());
-                                View screeningLayout = activity.getLayoutInflater().inflate(R.layout.popup_notif_fullscreen, null);
-                                PopupWindow window = new PopupWindow(screeningLayout, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-                                TextView tvPickupId = screeningLayout.findViewById(R.id.messagesPoUp);
-                                Button leftButton  = screeningLayout.findViewById(R.id.leftPopUpBtn);
-                                Button rightButton = screeningLayout.findViewById(R.id.rightPopUpBtn);
+                            if(response.body() != null){
+                                try{
+                                    TypeToken<ResponseGlobalJsonDTO<PickupDetailDto>> jsonDTOTypeToken = new TypeToken<ResponseGlobalJsonDTO<PickupDetailDto>>(){};
+                                    ResponseGlobalJsonDTO<PickupDetailDto> jsonDTO = new Gson().fromJson(response.body().string(), jsonDTOTypeToken);
+                                    List<PickupDetailDto> pickupDetailDtos = new ArrayList<>(Arrays.asList(jsonDTO.getData()));
+                                    List<String> pickupIdEditedStatus = new ArrayList<>();
 
-                                leftButton.setText("Batal");
-                                rightButton.setText("Lanjutkan");
-                                tvPickupId.setText("Detail Pickup Id");
-
-                                leftButton.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        window.dismiss();
+                                    for(PickupDetailDto singlePickupDetail : pickupDetailDtos){
+                                        if(singlePickupDetail.getUser_id().equals(userId) && singlePickupDetail.getStatus().equals("editing")){
+                                            pickupIdEditedStatus.add(singlePickupDetail.getId());
+                                        }
                                     }
-                                });
-                                window.showAtLocation(screeningLayout, Gravity.CENTER, 0, 0);
-                            } catch (IOException e) {
-                                throw new RuntimeException(e);
+
+                                    if(pickupIdEditedStatus.size() == 0){
+                                        HashMap<String, String> requestList = new HashMap<>();
+                                        requestList.put("address", finalLocPickUp);
+                                        requestList.put("user_id", userId);
+                                        requestList.put("time", new Date(System.currentTimeMillis()).toString());
+
+                                        String finalJsonPayload = new Gson().toJson(requestList);
+                                        RequestBody requestBody = RequestBody.create(finalJsonPayload, MediaType.parse("application/json"));
+                                        Request requestCreatePickupId = new Request
+                                        .Builder().post(requestBody)
+                                        .header("Authorization", "Bearer " + token)
+                                        .url(PathUrl.ROOT_PATH_PICKUP).build();
+
+                                        okHttpClient.newCall(requestCreatePickupId).enqueue(new Callback() {
+                                            @Override
+                                            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                                                failedConnectToServer(R.string.failed_con_server);
+                                            }
+
+                                            @Override
+                                            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                                                activity.runOnUiThread(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        try {
+                                                            System.out.println(response.body().string());
+                                                        } catch (IOException e) {
+                                                            throw new RuntimeException(e);
+                                                        }
+                                                    }
+                                                });
+                                            }
+                                        });
+                                    }else{
+                                        trashStorePickupIdScreening(
+                                            activity,
+                                            okHttpClient,
+                                            view,
+                                            pickupDetailDtos,
+                                            pickupIdEditedStatus
+                                        );
+                                    }
+                                }catch (Exception e){
+                                    System.out.println(e.getCause());
+                                }
                             }
                         }
                     }
                 });
             }
         });
+    }
 
+    private void trashStorePickupIdScreening(Activity activity, OkHttpClient okHttpClient, View view, List<PickupDetailDto> pickupDetailDtos, List<String> pickupId){
+        View screeningLayout = activity.getLayoutInflater().inflate(R.layout.popup_notif_fullscreen, null);
+        PopupWindow window = new PopupWindow(screeningLayout, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        TextView tvPickupId = screeningLayout.findViewById(R.id.messagesPoUp);
+        Button leftButton = screeningLayout.findViewById(R.id.leftPopUpBtn);
+        Button rightButton = screeningLayout.findViewById(R.id.rightPopUpBtn);
+        ViewGroup body = screeningLayout.findViewById(R.id.bodyPopUp);
+        View inflateBody = View.inflate(body.getContext(), R.layout.pickup_id_screening_layout, body);
+        Spinner pickupIdList = inflateBody.findViewById(R.id.pickupIdOption);
+        EditText locPickUp = inflateBody.findViewById(R.id.pickupLocationEditable);
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(activity, R.layout.trash_list_dialog_dropdown);
 
+        arrayAdapter.addAll(pickupId);
+        inflateBody.setLayoutParams(
+            new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT
+            )
+        );
+        leftButton.setText("Batal");
+        rightButton.setText("Lanjutkan");
+        body.setVisibility(View.VISIBLE);
+        tvPickupId.setText("Detail Pickup Id");
+        pickupIdList.setAdapter(arrayAdapter);
+        locPickUp.setText(finalLocPickUp);
 
-//        Request request = new Request.Builder().url(PathUrl.ROOT_PATH_TRASH_TYPE).get().build();
-//        okHttpClient.newCall(request).enqueue(new Callback() {
-//            @Override
-//            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-//                activity.runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        ProgressBarHelper.onProgress(activity.getApplication(), view, false);
-//                    }
-//                });
-//                failedConnectToServer(R.string.failed_con_server);
-//            }
-//
-//            @Override
-//            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-//                activity.runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        ProgressBarHelper.onProgress(activity.getApplication(), view, false);
-//                        onResponseTrashMenuSuccess(
-//                            activity,
-//                            response,
-//                            view,
-//                            okHttpClient
-//                        );
-//                    }
-//                });
-//            }
-//        });
+        leftButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ProgressBarHelper.onProgress(activity, leftButton, true);
+                rightButton.setVisibility(View.GONE);
+//                Request deletePickupRequest = new Request.Builder().url(PathUrl.ROOT_PATH_PICKUP + "/" + pickupId).delete().build()
+                window.dismiss();
+            }
+        });
 
+        rightButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ProgressBarHelper.onProgress(activity.getApplication(), v, true);
+                ProgressBarHelper.onProgress(activity.getApplication(), leftButton, true);
+                Request request = new Request.Builder().url(PathUrl.ROOT_PATH_TRASH_TYPE).get().build();
+                okHttpClient.newCall(request).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                        activity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                ProgressBarHelper.onProgress(activity.getApplication(), leftButton, false);
+                                ProgressBarHelper.onProgress(activity.getApplication(), v, false);
+                            }
+                        });
+                        failedConnectToServer(R.string.failed_con_server);
+                    }
+
+                    @Override
+                    public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                        activity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                ProgressBarHelper.onProgress(activity.getApplication(), v, false);
+                                ProgressBarHelper.onProgress(activity.getApplication(), leftButton, false);
+                                onResponseTrashMenuSuccess(
+                                    activity,
+                                    response,
+                                    view,
+                                    okHttpClient
+                                );
+                            }
+                        });
+                    }
+                });
+            }
+        });
+        window.setFocusable(true);
+        window.showAtLocation(screeningLayout, Gravity.CENTER, 0, 0);
     }
 
     private void setUserNameTittle(String userName){

@@ -228,4 +228,15 @@
         <item name="android:paddingBottom">3dp</item>
         <item name="android:background">@drawable/gradient_3_color_bg_top_global_deco</item>
     </style>
+
+    <style name="datePicker">
+        <item name="android:gravity">center</item>
+        <item name="android:paddingBottom">8dp</item>
+        <item name="android:layout_marginEnd">10dp</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:textColor">@color/calmBlack</item>
+        <item name="android:layout_width">30dp</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
 </resources>

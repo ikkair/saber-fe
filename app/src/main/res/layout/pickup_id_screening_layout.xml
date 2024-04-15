@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:layout_gravity="center_vertical"
+    android:layout_marginBottom="30dp"
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_marginEnd="10dp"
+            android:layout_gravity="center|start"
+            style="@style/small_tittle_text_black"
+            android:text="@string/pickup_id_option_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <Spinner
+            android:layout_gravity="center|end"
+            android:layout_weight="1"
+            android:spinnerMode="dialog"
+            android:id="@+id/pickupIdOption"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="15dp"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        <TextView
+                android:layout_marginEnd="10dp"
+                android:layout_gravity="center|start"
+                style="@style/small_tittle_text_black"
+                android:text="@string/pickup_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+        <EditText
+                style="@style/datePicker"
+                android:hint="@string/dd"/>
+
+        <EditText
+                style="@style/datePicker"
+                android:layout_width="35dp"
+                android:hint="@string/mm"/>
+
+        <EditText
+                style="@style/datePicker"
+                android:layout_width="40dp"
+                android:layout_marginEnd="25dp"
+                android:hint="@string/yy"/>
+
+        <EditText
+                style="@style/datePicker"
+                android:hint="@string/hh"/>
+
+        <EditText
+                style="@style/datePicker"
+                android:hint="@string/mn"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_marginEnd="10dp"
+            android:layout_gravity="center|start"
+            style="@style/small_tittle_text_black"
+            android:text="@string/pickup_loc_editable_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <EditText
+            android:textColor="@color/calmBlack"
+            android:textSize="12sp"
+            android:paddingBottom="5dp"
+            android:layout_gravity="center|end"
+            android:layout_weight="1"
+            android:id="@+id/pickupLocationEditable"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+</LinearLayout>

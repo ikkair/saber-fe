@@ -96,6 +96,14 @@
     <string name="search_location">Cari Lokasi</string>
     <string name="loc_details">Tambahkan Detail Lokasi</string>
     <string name="not_found_loc">Lokasi Tidak Ditemukan</string>
+    <string name="pickup_id_option_title">Pilih Pickup ID</string>
+    <string name="pickup_loc_editable_title">Lokasi Pickup</string>
+    <string name="pickup_date">Tanggal Pickup</string>
+    <string name="dd">DD</string>
+    <string name="mm">MM</string>
+    <string name="yy">YYYY</string>
+    <string name="hh">HH</string>
+    <string name="mn">MN</string>
 
     <string-array name="bank_name_list">
         <item id="pb">Pilih Bank</item>
