@@ -8,6 +8,7 @@
     android:layout_height="match_parent">
 
     <LinearLayout
+            android:id="@+id/pickupIdWrapper"
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -46,27 +47,11 @@
                 android:layout_height="wrap_content"/>
 
         <EditText
+                android:id="@+id/pickupDate"
+                android:inputType="datetime"
                 style="@style/datePicker"
+                android:layout_width="match_parent"
                 android:hint="@string/dd"/>
-
-        <EditText
-                style="@style/datePicker"
-                android:layout_width="35dp"
-                android:hint="@string/mm"/>
-
-        <EditText
-                style="@style/datePicker"
-                android:layout_width="40dp"
-                android:layout_marginEnd="25dp"
-                android:hint="@string/yy"/>
-
-        <EditText
-                style="@style/datePicker"
-                android:hint="@string/hh"/>
-
-        <EditText
-                style="@style/datePicker"
-                android:hint="@string/mn"/>
 
     </LinearLayout>
 
@@ -86,7 +71,7 @@
         <EditText
             android:textColor="@color/calmBlack"
             android:textSize="12sp"
-            android:paddingBottom="5dp"
+            android:paddingBottom="10dp"
             android:layout_gravity="center|end"
             android:layout_weight="1"
             android:id="@+id/pickupLocationEditable"
@@ -94,4 +79,5 @@
             android:layout_height="wrap_content"/>
 
     </LinearLayout>
+
 </LinearLayout>

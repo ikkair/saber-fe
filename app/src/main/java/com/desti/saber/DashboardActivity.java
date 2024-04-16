@@ -42,6 +42,7 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.Date;
 import java.util.*;
+import java.util.logging.Logger;
 
 public class DashboardActivity extends AppCompatActivity {
 
@@ -303,8 +304,13 @@ public class DashboardActivity extends AppCompatActivity {
         okHttpClient.newCall(getAllPickup).enqueue(new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                ProgressBarHelper.onProgress(activity, view, false);
-                failedConnectToServer(R.string.failed_con_server);
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ProgressBarHelper.onProgress(activity, view, false);
+                        failedConnectToServer(R.string.failed_con_server);
+                    }
+                });
             }
 
             @Override
@@ -313,9 +319,9 @@ public class DashboardActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         ProgressBarHelper.onProgress(activity, view, false);
-                        if(response.isSuccessful()){
-                            if(response.body() != null){
-                                try{
+                        try{
+                            if(response.isSuccessful() || response.code() == 404){
+                                if(response.body() != null){
                                     TypeToken<ResponseGlobalJsonDTO<PickupDetailDto>> jsonDTOTypeToken = new TypeToken<ResponseGlobalJsonDTO<PickupDetailDto>>(){};
                                     ResponseGlobalJsonDTO<PickupDetailDto> jsonDTO = new Gson().fromJson(response.body().string(), jsonDTOTypeToken);
                                     List<PickupDetailDto> pickupDetailDtos = new ArrayList<>(Arrays.asList(jsonDTO.getData()));
@@ -327,52 +333,21 @@ public class DashboardActivity extends AppCompatActivity {
                                         }
                                     }
 
-                                    if(pickupIdEditedStatus.size() == 0){
-                                        HashMap<String, String> requestList = new HashMap<>();
-                                        requestList.put("address", finalLocPickUp);
-                                        requestList.put("user_id", userId);
-                                        requestList.put("time", new Date(System.currentTimeMillis()).toString());
+                                    trashStorePickupIdScreening(
+                                        activity,
+                                        okHttpClient,
+                                        view,
+                                        pickupDetailDtos,
+                                        pickupIdEditedStatus
+                                    );
 
-                                        String finalJsonPayload = new Gson().toJson(requestList);
-                                        RequestBody requestBody = RequestBody.create(finalJsonPayload, MediaType.parse("application/json"));
-                                        Request requestCreatePickupId = new Request
-                                        .Builder().post(requestBody)
-                                        .header("Authorization", "Bearer " + token)
-                                        .url(PathUrl.ROOT_PATH_PICKUP).build();
-
-                                        okHttpClient.newCall(requestCreatePickupId).enqueue(new Callback() {
-                                            @Override
-                                            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                                                failedConnectToServer(R.string.failed_con_server);
-                                            }
-
-                                            @Override
-                                            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                                                activity.runOnUiThread(new Runnable() {
-                                                    @Override
-                                                    public void run() {
-                                                        try {
-                                                            System.out.println(response.body().string());
-                                                        } catch (IOException e) {
-                                                            throw new RuntimeException(e);
-                                                        }
-                                                    }
-                                                });
-                                            }
-                                        });
-                                    }else{
-                                        trashStorePickupIdScreening(
-                                            activity,
-                                            okHttpClient,
-                                            view,
-                                            pickupDetailDtos,
-                                            pickupIdEditedStatus
-                                        );
-                                    }
-                                }catch (Exception e){
-                                    System.out.println(e.getCause());
+                                    return;
                                 }
                             }
+
+                            failedConnectToServer(R.string.failed_con_server);
+                        }catch (Exception e){
+                            System.out.println(e.getCause());
                         }
                     }
                 });
@@ -388,11 +363,10 @@ public class DashboardActivity extends AppCompatActivity {
         Button rightButton = screeningLayout.findViewById(R.id.rightPopUpBtn);
         ViewGroup body = screeningLayout.findViewById(R.id.bodyPopUp);
         View inflateBody = View.inflate(body.getContext(), R.layout.pickup_id_screening_layout, body);
-        Spinner pickupIdList = inflateBody.findViewById(R.id.pickupIdOption);
         EditText locPickUp = inflateBody.findViewById(R.id.pickupLocationEditable);
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(activity, R.layout.trash_list_dialog_dropdown);
+        EditText pickupDate = inflateBody.findViewById(R.id.pickupDate);
+        LinearLayout pickupIdWrapper = inflateBody.findViewById(R.id.pickupIdWrapper);
 
-        arrayAdapter.addAll(pickupId);
         inflateBody.setLayoutParams(
             new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -402,56 +376,132 @@ public class DashboardActivity extends AppCompatActivity {
         leftButton.setText("Batal");
         rightButton.setText("Lanjutkan");
         body.setVisibility(View.VISIBLE);
-        tvPickupId.setText("Detail Pickup Id");
-        pickupIdList.setAdapter(arrayAdapter);
-        locPickUp.setText(finalLocPickUp);
+
+        if(pickupId.size() == 0){
+            pickupIdWrapper.setVisibility(View.GONE);
+            locPickUp.setText(finalLocPickUp);
+
+            String pickUpDate = pickupDate.getText().toString();
+            String editableLocVal = locPickUp.getText().toString();
+
+            if(pickUpDate.equals("") || editableLocVal.equals("")) {
+               Toast.makeText(activity, "Silahkan Isi Lengkapi Tanggal Serta Lokasi Pickup", Toast.LENGTH_LONG).show();
+               return;
+            }else{
+                rightButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        HashMap<String, String> requestList = new HashMap<>();
+                        requestList.put("address", editableLocVal);
+                        requestList.put("user_id", userId);
+                        requestList.put("time", pickUpDate);
+
+                        String finalJsonPayload = new Gson().toJson(requestList);
+                        RequestBody requestBody = RequestBody.create(finalJsonPayload, MediaType.parse("application/json"));
+                        Request requestCreatePickupId = new Request
+                        .Builder().post(requestBody)
+                        .header("Authorization", "Bearer " + token)
+                        .url(PathUrl.ROOT_PATH_PICKUP).build();
+
+                        okHttpClient.newCall(requestCreatePickupId).enqueue(new Callback() {
+                            @Override
+                            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                                activity.runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        failedConnectToServer(R.string.failed_con_server);
+                                    }
+                                });
+                            }
+
+                            @Override
+                            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                                activity.runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        if(response.isSuccessful()){
+                                            Toast.makeText(activity, "Pikcup Id Berhasil Dibuat", Toast.LENGTH_LONG).show();
+                                            window.dismiss();
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+        }else{
+            pickupIdWrapper.setVisibility(View.VISIBLE);
+
+            Spinner pickupIdList = inflateBody.findViewById(R.id.pickupIdOption);
+            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
+                activity, R.layout.trash_list_dialog_dropdown
+            );
+
+            arrayAdapter.addAll(pickupId);
+            pickupIdList.setAdapter(arrayAdapter);
+
+            pickupIdList.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    PickupDetailDto singleDtoDetail = pickupDetailDtos.get(position);
+                    pickupDate.setText(singleDtoDetail.getTime());
+                    locPickUp.setText(singleDtoDetail.getAddress());
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+
+                }
+            });
+            rightButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ProgressBarHelper.onProgress(activity.getApplication(), v, true);
+                    ProgressBarHelper.onProgress(activity.getApplication(), leftButton, true);
+                    Request request = new Request.Builder().url(PathUrl.ROOT_PATH_TRASH_TYPE).get().build();
+                    okHttpClient.newCall(request).enqueue(new Callback() {
+                        @Override
+                        public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                            activity.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    ProgressBarHelper.onProgress(activity.getApplication(), leftButton, false);
+                                    ProgressBarHelper.onProgress(activity.getApplication(), v, false);
+                                }
+                            });
+                            failedConnectToServer(R.string.failed_con_server);
+                        }
+
+                        @Override
+                        public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                            activity.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    ProgressBarHelper.onProgress(activity.getApplication(), v, false);
+                                    ProgressBarHelper.onProgress(activity.getApplication(), leftButton, false);
+                                    onResponseTrashMenuSuccess(
+                                        activity,
+                                        response,
+                                        view,
+                                        okHttpClient,
+                                        String.valueOf(pickupIdList.getSelectedItem())
+                                    );
+                                    window.dismiss();
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        }
 
         leftButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ProgressBarHelper.onProgress(activity, leftButton, true);
                 rightButton.setVisibility(View.GONE);
-//                Request deletePickupRequest = new Request.Builder().url(PathUrl.ROOT_PATH_PICKUP + "/" + pickupId).delete().build()
                 window.dismiss();
-            }
-        });
-
-        rightButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ProgressBarHelper.onProgress(activity.getApplication(), v, true);
-                ProgressBarHelper.onProgress(activity.getApplication(), leftButton, true);
-                Request request = new Request.Builder().url(PathUrl.ROOT_PATH_TRASH_TYPE).get().build();
-                okHttpClient.newCall(request).enqueue(new Callback() {
-                    @Override
-                    public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                        activity.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                ProgressBarHelper.onProgress(activity.getApplication(), leftButton, false);
-                                ProgressBarHelper.onProgress(activity.getApplication(), v, false);
-                            }
-                        });
-                        failedConnectToServer(R.string.failed_con_server);
-                    }
-
-                    @Override
-                    public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                        activity.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                ProgressBarHelper.onProgress(activity.getApplication(), v, false);
-                                ProgressBarHelper.onProgress(activity.getApplication(), leftButton, false);
-                                onResponseTrashMenuSuccess(
-                                    activity,
-                                    response,
-                                    view,
-                                    okHttpClient
-                                );
-                            }
-                        });
-                    }
-                });
             }
         });
         window.setFocusable(true);
@@ -502,7 +552,7 @@ public class DashboardActivity extends AppCompatActivity {
         });
     }
 
-    private void onResponseTrashMenuSuccess(Activity activity, Response response, View view, OkHttpClient okHttpClient){
+    private void onResponseTrashMenuSuccess(Activity activity, Response response, View view, OkHttpClient okHttpClient, String pickupId){
         ImageSetterFromStream imageSetterFromStream = new ImageSetterFromStream(activity);
         if(response.isSuccessful() && response.body() != null){
             try {
@@ -562,7 +612,8 @@ public class DashboardActivity extends AppCompatActivity {
                         doPostStoreTrash(
                             inflateTrashLay,
                             okHttpClient,
-                            v, popupWindow
+                            v, popupWindow,
+                            pickupId
                         );
                     }
                 });
@@ -593,7 +644,7 @@ public class DashboardActivity extends AppCompatActivity {
         }
     }
 
-    private void doPostStoreTrash(ViewGroup inflater, OkHttpClient okHttpClient, View view, PopupWindow popupWindow){
+    private void doPostStoreTrash(ViewGroup inflater, OkHttpClient okHttpClient, View view, PopupWindow popupWindow, String pickupId){
         if(token == null){
             Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
             finishAffinity();
@@ -622,7 +673,7 @@ public class DashboardActivity extends AppCompatActivity {
         )
         .addFormDataPart("type", trashTypeSelectedId)
         .addFormDataPart("weight", trashWeight)
-        .addFormDataPart("pickup_id", "f64c6e7f-7abd-4d73-b256-9bdc98bc7077")
+        .addFormDataPart("pickup_id", pickupId)
         .addFormDataPart("description", trashDesc)
         .build();
 
