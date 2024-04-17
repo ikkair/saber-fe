@@ -1,7 +1,5 @@
 package com.desti.saber.LayoutHelper.WindowPopUp;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.res.Resources;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -30,7 +28,7 @@ public class CustomWindowPopUp {
     public void showPopUp(OnClickPopUpBtn onClickPopUpBtn){
         AppCompatButton buttonLeft = layoutPopUp.findViewById(R.id.leftPopUpBtn);
         AppCompatButton buttonRight = layoutPopUp.findViewById(R.id.rightPopUpBtn);
-        TextView messagesTv = layoutPopUp.findViewById(R.id.messagesPoUp);
+        TextView messagesTv = layoutPopUp.findViewById(R.id.PopUpTitle);
 
         messagesTv.setText(getMessages());
         buttonLeft.setText(getLabelLeftButton());

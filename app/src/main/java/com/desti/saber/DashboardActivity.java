@@ -7,9 +7,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.location.Address;
 import android.location.Geocoder;
-import android.media.MediaParser;
 import android.os.Bundle;
-import android.os.StrictMode;
 import android.view.*;
 import android.widget.*;
 
@@ -28,9 +26,7 @@ import com.desti.saber.utils.dto.TrashType;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import okhttp3.*;
-import okio.BufferedSink;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
@@ -42,7 +38,6 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.Date;
 import java.util.*;
-import java.util.logging.Logger;
 
 public class DashboardActivity extends AppCompatActivity {
 
@@ -358,7 +353,7 @@ public class DashboardActivity extends AppCompatActivity {
     private void trashStorePickupIdScreening(Activity activity, OkHttpClient okHttpClient, View view, List<PickupDetailDto> pickupDetailDtos, List<String> pickupId){
         View screeningLayout = activity.getLayoutInflater().inflate(R.layout.popup_notif_fullscreen, null);
         PopupWindow window = new PopupWindow(screeningLayout, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        TextView tvPickupId = screeningLayout.findViewById(R.id.messagesPoUp);
+        TextView tvPickupId = screeningLayout.findViewById(R.id.PopUpTitle);
         Button leftButton = screeningLayout.findViewById(R.id.leftPopUpBtn);
         Button rightButton = screeningLayout.findViewById(R.id.rightPopUpBtn);
         ViewGroup body = screeningLayout.findViewById(R.id.bodyPopUp);
@@ -366,6 +361,10 @@ public class DashboardActivity extends AppCompatActivity {
         EditText locPickUp = inflateBody.findViewById(R.id.pickupLocationEditable);
         EditText pickupDate = inflateBody.findViewById(R.id.pickupDate);
         LinearLayout pickupIdWrapper = inflateBody.findViewById(R.id.pickupIdWrapper);
+        Spinner pickupIdList = inflateBody.findViewById(R.id.pickupIdOption);
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
+            activity, R.layout.trash_list_dialog_dropdown
+        );
 
         inflateBody.setLayoutParams(
             new LinearLayout.LayoutParams(
@@ -373,128 +372,14 @@ public class DashboardActivity extends AppCompatActivity {
                 LinearLayout.LayoutParams.MATCH_PARENT
             )
         );
-        leftButton.setText("Batal");
-        rightButton.setText("Lanjutkan");
+
+        tvPickupId.setText(R.string.pickup_id_title);
+        arrayAdapter.add("Buat Pickup Id Baru");
+        pickupIdList.setAdapter(arrayAdapter);
         body.setVisibility(View.VISIBLE);
-
-        if(pickupId.size() == 0){
-            pickupIdWrapper.setVisibility(View.GONE);
-            locPickUp.setText(finalLocPickUp);
-
-            String pickUpDate = pickupDate.getText().toString();
-            String editableLocVal = locPickUp.getText().toString();
-
-            if(pickUpDate.equals("") || editableLocVal.equals("")) {
-               Toast.makeText(activity, "Silahkan Isi Lengkapi Tanggal Serta Lokasi Pickup", Toast.LENGTH_LONG).show();
-               return;
-            }else{
-                rightButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        HashMap<String, String> requestList = new HashMap<>();
-                        requestList.put("address", editableLocVal);
-                        requestList.put("user_id", userId);
-                        requestList.put("time", pickUpDate);
-
-                        String finalJsonPayload = new Gson().toJson(requestList);
-                        RequestBody requestBody = RequestBody.create(finalJsonPayload, MediaType.parse("application/json"));
-                        Request requestCreatePickupId = new Request
-                        .Builder().post(requestBody)
-                        .header("Authorization", "Bearer " + token)
-                        .url(PathUrl.ROOT_PATH_PICKUP).build();
-
-                        okHttpClient.newCall(requestCreatePickupId).enqueue(new Callback() {
-                            @Override
-                            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                                activity.runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        failedConnectToServer(R.string.failed_con_server);
-                                    }
-                                });
-                            }
-
-                            @Override
-                            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                                activity.runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        if(response.isSuccessful()){
-                                            Toast.makeText(activity, "Pikcup Id Berhasil Dibuat", Toast.LENGTH_LONG).show();
-                                            window.dismiss();
-                                        }
-                                    }
-                                });
-                            }
-                        });
-                    }
-                });
-            }
-        }else{
-            pickupIdWrapper.setVisibility(View.VISIBLE);
-
-            Spinner pickupIdList = inflateBody.findViewById(R.id.pickupIdOption);
-            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
-                activity, R.layout.trash_list_dialog_dropdown
-            );
-
-            arrayAdapter.addAll(pickupId);
-            pickupIdList.setAdapter(arrayAdapter);
-
-            pickupIdList.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    PickupDetailDto singleDtoDetail = pickupDetailDtos.get(position);
-                    pickupDate.setText(singleDtoDetail.getTime());
-                    locPickUp.setText(singleDtoDetail.getAddress());
-                }
-
-                @Override
-                public void onNothingSelected(AdapterView<?> parent) {
-
-                }
-            });
-            rightButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    ProgressBarHelper.onProgress(activity.getApplication(), v, true);
-                    ProgressBarHelper.onProgress(activity.getApplication(), leftButton, true);
-                    Request request = new Request.Builder().url(PathUrl.ROOT_PATH_TRASH_TYPE).get().build();
-                    okHttpClient.newCall(request).enqueue(new Callback() {
-                        @Override
-                        public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                            activity.runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    ProgressBarHelper.onProgress(activity.getApplication(), leftButton, false);
-                                    ProgressBarHelper.onProgress(activity.getApplication(), v, false);
-                                }
-                            });
-                            failedConnectToServer(R.string.failed_con_server);
-                        }
-
-                        @Override
-                        public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                            activity.runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    ProgressBarHelper.onProgress(activity.getApplication(), v, false);
-                                    ProgressBarHelper.onProgress(activity.getApplication(), leftButton, false);
-                                    onResponseTrashMenuSuccess(
-                                        activity,
-                                        response,
-                                        view,
-                                        okHttpClient,
-                                        String.valueOf(pickupIdList.getSelectedItem())
-                                    );
-                                    window.dismiss();
-                                }
-                            });
-                        }
-                    });
-                }
-            });
-        }
+        rightButton.setText("Lanjutkan");
+        arrayAdapter.addAll(pickupId);
+        leftButton.setText("Batal");
 
         leftButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -504,8 +389,103 @@ public class DashboardActivity extends AppCompatActivity {
                 window.dismiss();
             }
         });
+        pickupIdList.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if(position != 0){
+                    PickupDetailDto singleDtoDetail = pickupDetailDtos.get(position-1);
+                    pickupDate.setText(singleDtoDetail.getTime());
+                    locPickUp.setText(singleDtoDetail.getAddress());
+                    pickupDate.setFocusable(false);
+                    locPickUp.setFocusable(false);
+                }else{
+                    pickupDate.setFocusable(true);
+                    locPickUp.setFocusable(true);
+                    pickupDate.setText(new Date(System.currentTimeMillis()).toString());
+                    locPickUp.setText(finalLocPickUp);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        rightButton.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View v) {
+               String pickUpDate = pickupDate.getText().toString();
+               String editableLocVal = locPickUp.getText().toString();
+               int selectedPickId = pickupIdList.getSelectedItemPosition();
+
+               if(selectedPickId == 0){
+                   createPickupId(
+                       okHttpClient,
+                       window,
+                       activity,
+                       editableLocVal,
+                       pickUpDate,
+                       leftButton,
+                       rightButton
+                   );
+               }else{
+
+               }
+           }
+       });
+
         window.setFocusable(true);
         window.showAtLocation(screeningLayout, Gravity.CENTER, 0, 0);
+    }
+
+    private void createPickupId(OkHttpClient okHttpClient, PopupWindow window, Activity activity, String editableLocVal, String pickUpDate, View leftButton, View rightButton){
+        if(pickUpDate.equals("") || editableLocVal.equals("")) {
+            Toast.makeText(activity, "Silahkan  Lengkapi Tanggal Serta Lokasi Pickup", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        HashMap<String, String> requestList = new HashMap<>();
+        requestList.put("address", editableLocVal);
+        requestList.put("user_id", userId);
+        requestList.put("time", pickUpDate);
+
+        String finalJsonPayload = new Gson().toJson(requestList);
+        RequestBody requestBody = RequestBody.create(finalJsonPayload, MediaType.parse("application/json"));
+        Request requestCreatePickupId = new Request
+        .Builder().post(requestBody)
+        .header("Authorization", "Bearer " + token)
+        .url(PathUrl.ROOT_PATH_PICKUP).build();
+
+        leftButton.setVisibility(View.GONE);
+        ProgressBarHelper.onProgress(activity.getApplication(), rightButton, true);
+        okHttpClient.newCall(requestCreatePickupId).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        leftButton.setVisibility(View.VISIBLE);
+                        ProgressBarHelper.onProgress(activity.getApplication(), rightButton, false);
+                        failedConnectToServer(R.string.failed_con_server);
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(response.isSuccessful()){
+                            leftButton.setVisibility(View.VISIBLE);
+                            ProgressBarHelper.onProgress(activity.getApplication(), rightButton, false);
+                            Toast.makeText(activity, "Pikcup Id Berhasil Dibuat, Sila", Toast.LENGTH_LONG).show();
+                            window.dismiss();
+                        }
+                    }
+                });
+            }
+        });
     }
 
     private void setUserNameTittle(String userName){
