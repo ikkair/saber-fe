@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+        android:background="@color/transparent_blue_dark"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+                android:orientation="vertical"
+                android:background="@drawable/white_rounded_bg"
+                android:layout_gravity="center_vertical|center_horizontal"
+                android:padding="15dp"
+                android:layout_margin="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                                android:layout_gravity="center"
+                                android:gravity="center"
+                                style="@style/huge_tittle_text_black"
+                                android:text="@string/pickup_id_title"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"/>
+
+                        <androidx.appcompat.widget.AppCompatButton
+                                android:padding="0dp"
+                                android:layout_margin="0dp"
+                                android:id="@+id/cancelPickId"
+                                android:layout_gravity="center|end"
+                                android:background="@drawable/baseline_cancel_presentation_24"
+                                android:layout_width="30dp"
+                                android:layout_height="30dp"/>
+                </FrameLayout>
+
+                <Space android:layout_width="match_parent" android:layout_height="30dp"/>
+
+                <include layout="@layout/pickup_id_screening_layout"/>
+
+                <Space android:layout_width="match_parent" android:layout_height="30dp"/>
+
+                <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_gravity="center"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                        <androidx.appcompat.widget.AppCompatButton
+                                android:visibility="gone"
+                                android:layout_margin="10dp"
+                                android:id="@+id/editPickupId"
+                                android:gravity="center"
+                                android:layout_gravity="center_vertical"
+                                android:background="@drawable/pickup_id_edited"
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"/>
+
+                        <androidx.appcompat.widget.AppCompatButton
+                                android:visibility="gone"
+                                android:id="@+id/requestPickupTrash"
+                                android:background="@drawable/trash_upload"
+                                android:layout_margin="10dp"
+                                android:layout_gravity="center"
+                                android:layout_width="35dp"
+                                android:layout_height="40dp"/>
+
+                        <androidx.appcompat.widget.AppCompatButton
+                                android:visibility="gone"
+                                android:layout_margin="10dp"
+                                android:id="@+id/addNewTrash"
+                                android:layout_gravity="center"
+                                android:background="@drawable/add_trash"
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"/>
+
+                        <androidx.appcompat.widget.AppCompatButton
+                                android:layout_margin="10dp"
+                                android:id="@+id/addNewPickupId"
+                                android:layout_gravity="center"
+                                android:background="@drawable/add_pickup_id"
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"/>
+
+                        <androidx.appcompat.widget.AppCompatButton
+                                android:visibility="gone"
+                                android:layout_margin="10dp"
+                                android:id="@+id/cancelEditPickId"
+                                android:layout_gravity="center"
+                                android:background="@drawable/cancel_edit"
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"/>
+
+                        <androidx.appcompat.widget.AppCompatButton
+                                android:visibility="gone"
+                                android:layout_margin="10dp"
+                                android:id="@+id/saveEdited"
+                                android:layout_gravity="center"
+                                android:background="@drawable/save_edited"
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"/>
+
+                </LinearLayout>
+        </LinearLayout>
+
+</FrameLayout>

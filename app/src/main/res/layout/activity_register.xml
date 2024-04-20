@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".RegisterActivity"
+    android:background="@color/white"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <LinearLayout
+        android:layout_marginTop="180dp"
+        android:background="@drawable/gradient_color_bg_log_in"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <ImageView
+        android:id="@+id/logInPictureDecoration"
+        android:layout_gravity="top|center"
+        android:layout_width="320dp"
+        android:layout_height="320dp"/>
+
+    <ImageView
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_gravity="center_horizontal|center_vertical"
+        android:id="@+id/formDataTransparentContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <FrameLayout
+        android:layout_margin="10dp"
+        android:layout_gravity="center_vertical|center_horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:padding="15dp"
+            android:layout_gravity="center_horizontal|center_vertical"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+                <LinearLayout style="@style/wrapper_field_input_cyan_border">
+                    <ImageView
+                            style="@style/text_edit_icon"
+                            android:id="@+id/userInputNameIcon" />
+
+                    <EditText
+                            android:hint="@string/title_hint_input_text_name"
+                            android:inputType="text"
+                            android:id="@+id/fieldInputNameRegister"
+                            style="@style/cyan_field_form_data_text_input"/>
+
+                </LinearLayout>
+
+                <LinearLayout style="@style/wrapper_field_input_cyan_border">
+                    <ImageView
+                        android:id="@+id/userInputEmailIcon"
+                        style="@style/text_edit_icon"/>
+
+                    <EditText
+                        android:hint="@string/title_hint_input_text_email"
+                        android:id="@+id/fieldInputEmailRegister"
+                        style="@style/cyan_field_form_data_text_input"/>
+
+                </LinearLayout>
+
+                <LinearLayout style="@style/wrapper_field_input_cyan_border">
+                    <ImageView
+                            android:labelFor="@id/fieldInputPasswordRegister"
+                            android:id="@+id/userInputPasswordIcon"
+                            style="@style/text_edit_icon"/>
+
+                    <EditText
+                            android:hint="@string/title_hint_input_text_password"
+                            android:autofillHints="password"
+                            android:inputType="textPassword"
+                            android:id="@+id/fieldInputPasswordRegister"
+                            style="@style/cyan_field_form_data_text_input"/>
+                </LinearLayout>
+
+                <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                    <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/signUpBtnRegister"
+                            android:layout_gravity="center"
+                            style="@style/button_style_1"
+                            android:text="@string/action_sign_up"
+                            android:layout_width="130dp"
+                            android:layout_height="wrap_content"/>
+
+                    <LinearLayout
+                            android:layout_gravity="center"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content">
+
+                        <TextView
+                                style="@style/small_title_14sp_white"
+                                android:layout_gravity="center"
+                                android:text="@string/has_register_account_title"/>
+
+                        <TextView
+                                android:id="@+id/titleTextSignUpClickable"
+                                android:textColor="@color/white"
+                                android:textSize="14sp"
+                                android:textStyle="bold"
+                                android:layout_marginStart="7dp"
+                                android:layout_gravity="center"
+                                android:text="@string/button_login"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"/>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+        </LinearLayout>
+
+    </FrameLayout>
+
+</FrameLayout>

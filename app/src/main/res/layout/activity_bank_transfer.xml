@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        android:background="@color/white"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context=".BankTransferActivity">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:background="@drawable/gradient_3_color_bg_top_global_deco"
+        android:layout_width="match_parent"
+        android:layout_height="85dp">
+
+        <LinearLayout
+            android:layout_gravity="bottom"
+            android:id="@+id/backTopButton"
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_gravity="center"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:background="@drawable/ic_baseline_chevron_left_24"/>
+
+            <TextView
+                android:layout_gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/transferActivityMenuLabel"
+                style="@style/huge_tittle_text"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/rootTrfActivity"
+        android:layout_marginTop="15dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <FrameLayout
+            android:id="@+id/bankActivityNav"
+            android:layout_marginBottom="15dp"
+            style="@style/options_bank_tf_lst">
+
+            <LinearLayout
+                android:layout_gravity="center|start"
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:layout_gravity="center|start"
+                    android:id="@+id/transferActivityNavBankIcon"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"/>
+
+                <TextView
+                    android:layout_gravity="center|start"
+                    android:id="@+id/transferActivityNavLabel"
+                    style="@style/activity_result_text_trx_list"
+                    android:layout_marginStart="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center|end">
+
+                <Spinner
+                    android:textAlignment="textEnd"
+                    android:visibility="gone"
+                    android:id="@+id/bankNameListField"
+                    android:entries="@array/bank_name_list"
+                    android:background="@null"
+                    android:textSize="10sp"
+                    android:layout_width="230dp"
+                    android:layout_height="wrap_content"/>
+
+                <android.widget.Button
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:id="@+id/activityIconRight"
+                    android:background="@drawable/ic_baseline_chevron_right_24"/>
+
+            </LinearLayout>
+
+        </FrameLayout>
+
+        <FrameLayout style="@style/options_bank_tf_lst">
+
+            <TextView
+                android:id="@+id/transferActivityLabel"
+                style="@style/activity_result_text_trx_list"
+                android:layout_marginStart="5dp"
+                android:layout_gravity="center|start"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:id="@+id/transferActivityActionLabel"
+                style="@style/activity_result_text_trx_list_green"
+                android:visibility="gone"
+                android:text="@string/change"
+                android:layout_marginStart="5dp"
+                android:layout_gravity="center|end"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <EditText
+                android:id="@+id/fieldInputVaOrAcNumber"
+                style="@style/field_input_va"/>
+
+        </FrameLayout>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/bankArchiveList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"/>
+
+        </ScrollView>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/rootTrfActivityDoTrf"
+        android:layout_marginTop="15dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+    <LinearLayout
+        android:gravity="center|bottom"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:id="@+id/rootBottomDetailTrf"
+            android:visibility="gone"
+            android:paddingEnd="10dp"
+            android:background="@color/soft_green"
+            android:gravity="center_vertical"
+            android:orientation="vertical"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent">
+
+            <TextView
+                style="@style/bottom_trf_detail"
+                android:text="@string/grand_total_amount_tf"/>
+
+            <LinearLayout
+                style="@style/bottom_trf_detail"
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    style="@style/bottom_trf_detail"
+                    android:text="@string/id_curr"/>
+
+                <TextView
+                    android:id="@+id/grandTotalTrfAmountTv"
+                    android:layout_marginStart="5dp"
+                    style="@style/bottom_trf_detail"
+                    android:text="@string/zero_balance"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:visibility="gone"
+            android:id="@+id/nexTrfAction"
+            style="@style/huge_tittle_text_s2"
+            android:text="@string/continue_label"
+            android:background="@drawable/gradient_3_color_bg_top_global_deco"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"/>
+
+    </LinearLayout>
+</LinearLayout>

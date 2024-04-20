@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    android:background="@color/transparent_blue_dark"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/parentPopUp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:padding="10dp"
+        android:background="@drawable/white_rounded_bg"
+        android:layout_gravity="center"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:textAlignment="center"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="30dp"
+            android:id="@+id/PopUpTitle"
+            style="@style/huge_tittle_text_black"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:id="@+id/bodyPopUp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/leftPopUpBtn"
+                android:layout_gravity="start"
+                style="@style/popUpBtn"/>
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/rightPopUpBtn"
+                android:layout_gravity="end"
+                style="@style/popUpBtn"/>
+
+        </FrameLayout>
+
+    </LinearLayout>
+
+</FrameLayout>

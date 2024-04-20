@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
+        android:background="@color/transparent_blue_dark"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+                android:layout_gravity="center"
+                android:orientation="vertical"
+                android:background="@drawable/white_rounded_bg"
+                android:padding="10dp"
+                android:layout_margin="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                        style="@style/huge_tittle_text_black"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_width="wrap_content"
+                        android:text="Silahkan Tentukan Lokasi Pickup Sampah"
+                        android:layout_height="wrap_content"/>
+
+                <org.osmdroid.views.MapView
+                        android:layout_marginTop="20dp"
+                        android:layout_marginBottom="15dp"
+                        android:id="@+id/maps"
+                        android:layout_weight="1"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"/>
+
+                <TextView
+                        android:layout_marginBottom="15dp"
+                        android:layout_gravity="center"
+                        style="@style/huge_tittle_text_black"
+                        android:text="@string/loc_title_by_pin"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+
+                <LinearLayout
+                        android:layout_marginBottom="15dp"
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                                android:layout_marginEnd="10dp"
+                                android:layout_gravity="center|start"
+                                style="@style/small_tittle_text_black"
+                                android:text="@string/search_location"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"/>
+
+                        <EditText
+                                android:textColor="@color/transparent_blue_dark"
+                                android:id="@+id/searchMapField"
+                                android:paddingBottom="10dp"
+                                android:layout_marginBottom="0dp"
+                                android:textSize="12sp"
+                                android:singleLine="true"
+                                android:imeOptions="actionSearch"
+                                android:layout_gravity="center|end"
+                                style="@style/huge_tittle_text_black"
+                                android:hint="@string/search_location"
+                                android:layout_weight="1"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                                android:layout_marginEnd="10dp"
+                                android:layout_gravity="center|start"
+                                style="@style/small_tittle_text_black"
+                                android:text="@string/loc_option_by_pin"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"/>
+
+                        <Spinner
+                                android:layout_gravity="center|end"
+                                android:layout_weight="1"
+                                android:spinnerMode="dialog"
+                                android:id="@+id/locOption"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"/>
+
+                </LinearLayout>
+
+                <EditText
+                        android:textColor="@color/transparent_blue_dark"
+                        android:editable="false"
+                        android:textSize="12dp"
+                        android:id="@+id/locationByPinPoint"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+
+                <EditText
+                        android:textColor="@color/transparent_blue_dark"
+                        android:id="@+id/detailsLoc"
+                        style="@style/huge_tittle_text_black"
+                        android:hint="@string/loc_details"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+
+                <FrameLayout
+                        android:layout_marginTop="15dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <androidx.appcompat.widget.AppCompatButton
+                                android:id="@+id/setLoc"
+                                android:text="Set Lokasi Ini"
+                                android:layout_gravity="center|start"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"/>
+
+                        <androidx.appcompat.widget.AppCompatButton
+                                android:id="@+id/cancelSetLoc"
+                                android:layout_gravity="center|end"
+                                android:text="Batal"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"/>
+
+                </FrameLayout>
+
+        </LinearLayout>
+</LinearLayout>

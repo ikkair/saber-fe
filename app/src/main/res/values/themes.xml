@@ -1,0 +1,242 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="Base.Theme.Saber" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="android:windowFullscreen">true</item>
+        <item name="colorPrimary">@color/green</item>
+        <item name="android:spinnerItemStyle">@style/spinnerStyle</item>
+        <item name="android:spinnerDropDownItemStyle">@style/spinnerItemStyle</item>
+    </style>
+
+    <style name="button_style_1" parent="TextAppearance.AppCompat.Button">
+        <item name="android:layout_marginTop">13dp</item>
+        <item name="android:layout_marginBottom">13dp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:background">@drawable/gradient_color_bg_btn</item>
+        <item name="android:layout_width">120dp</item>
+        <item name="android:layout_height">40dp</item>
+    </style>
+
+    <style name="splash_image_circle" parent="Theme.AppCompat">
+        <item name="android:contentDescription">""</item>
+        <item name="android:layout_width">110dp</item>
+        <item name="android:layout_height">110dp</item>
+    </style>
+
+    <style name="small_tittle_text" parent="TextAppearance.AppCompat">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textAlignment">center</item>
+    </style>
+
+    <style name="huge_tittle_text" parent="TextAppearance.AppCompat">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="huge_tittle_text_s2" parent="TextAppearance.AppCompat">
+        <item name="android:textSize">13sp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    
+    <style name="cyan_field_form_data_text_input" parent="Widget.AppCompat.EditText">
+        <item name="android:layout_gravity">center</item>
+        <item name="android:background">@null</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:layout_margin">5dp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColorHint">@color/white_transparent</item>
+    </style>
+
+    <style name="wrapper_field_input_cyan_border">
+        <item name="android:padding">10dp</item>
+        <item name="android:layout_marginTop">15dp</item>
+        <item name="android:background">@drawable/transparent_field_form_data_bg</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="small_title_14sp_white" parent="TextAppearance.AppCompat">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="text_edit_icon">
+        <item name="android:layout_marginEnd">15dp</item>
+        <item name="android:layout_marginStart">15dp</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:layout_width">30dp</item>
+        <item name="android:layout_height">30dp</item>
+    </style>
+
+    <style name="huge_tittle_text_black" parent="TextAppearance.AppCompat">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textAlignment">textStart</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="small_tittle_text_black" parent="TextAppearance.AppCompat">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="dashboard_label_icon">
+        <item name="android:layout_margin">5dp</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:layout_width">75dp</item>
+        <item name="android:layout_height">75dp</item>
+    </style>
+
+    <style name="button_top_split">
+        <item name="android:textColor">@color/black</item>
+        <item name="minTouchTargetSize">50dp</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">match_parent</item>
+    </style>
+
+    <style name="single_layout_list_trx_history">
+        <item name="android:layout_margin">15dp</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="date_text_trx_list" parent="TextAppearance.AppCompat">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/calmBlack</item>
+        <item name="android:textAlignment">center</item>
+        <item name="fontWeight">10</item>
+    </style>
+
+    <style name="activity_text_trx_list" parent="TextAppearance.AppCompat">
+        <item name="android:textSize">15sp</item>
+        <item name="android:textColor">@color/calmBlack</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="activity_result_text_trx_list" parent="TextAppearance.AppCompat">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/calmBlack</item>
+        <item name="android:layout_gravity">end</item>
+    </style>
+
+    <style name="activity_result_text_trx_list_green" parent="activity_result_text_trx_list">
+        <item name="android:textColor">@color/green</item>
+    </style>
+
+    <style name="activity_date_text_trx_list" parent="TextAppearance.AppCompat">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textAlignment">center</item>
+    </style>
+
+    <style name="activity_status_text_trx_list">
+        <item name="android:textSize">15sp</item>
+        <item name="android:textColor">@color/red</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="options_bank_tf_lst_parent">
+        <item name="android:background">@drawable/rectagle_bank_trf</item>
+        <item name="android:paddingStart">13dp</item>
+        <item name="android:paddingEnd">13dp</item>
+        <item name="android:paddingTop">5dp</item>
+        <item name="android:paddingBottom">5dp</item>
+    </style>
+
+    <style name="options_bank_tf_lst" parent="options_bank_tf_lst_parent">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">45dp</item>
+    </style>
+
+    <style name="field_input_parent">
+        <item name="android:background">@null</item>
+    </style>
+
+    <style name="field_input_va" parent="field_input_parent">
+        <item name="android:hint">@string/placeholder_Va_or_Ac</item>
+        <item name="android:inputType">number|textNoSuggestions</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:layout_gravity">center|end</item>
+        <item name="android:layout_width">185dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:visibility">gone</item>
+    </style>
+
+    <style name="smallest_label_parent">
+        <item name="android:textSize">13sp</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="smallest_label" parent="smallest_label_parent">
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+    <style name="smallest_label_green" parent="smallest_label_parent">
+        <item name="android:textColor">@color/green</item>
+    </style>
+
+    <style name="smallest_label_grey" parent="smallest_label_parent">
+        <item name="android:textColor">@color/dark_grey</item>
+    </style>
+
+    <style name="bottom_trf_detail">
+        <item name="android:textColor">@color/grey2</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center|end</item>
+    </style>
+
+    <style name="spinnerStyle">
+        <item name="android:padding">0dp</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/grey2</item>
+    </style>
+
+    <style name="spinnerItemStyle">
+        <item name="android:background">@color/white</item>
+        <item name="android:padding">1dp</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+    <style name="popUpBtn" parent="TextAppearance.AppCompat.Button">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:paddingStart">10dp</item>
+        <item name="android:paddingEnd">10dp</item>
+        <item name="android:paddingTop">3dp</item>
+        <item name="android:paddingBottom">3dp</item>
+        <item name="android:background">@drawable/gradient_3_color_bg_top_global_deco</item>
+    </style>
+
+    <style name="datePicker">
+        <item name="android:gravity">center</item>
+        <item name="android:paddingBottom">8dp</item>
+        <item name="android:layout_marginEnd">10dp</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:textColor">@color/calmBlack</item>
+        <item name="android:layout_width">30dp</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+</resources>
