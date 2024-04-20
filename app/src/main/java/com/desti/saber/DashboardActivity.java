@@ -351,6 +351,7 @@ public class DashboardActivity extends AppCompatActivity {
     }
 
     private void trashStorePickupIdScreening(Activity activity, OkHttpClient okHttpClient, View view, List<PickupDetailDto> pickupDetailDtos, List<String> pickupId){
+<<<<<<< HEAD
         View screeningLayout = activity.getLayoutInflater().inflate(R.layout.pickup_id_pop_up, null);
         PopupWindow window = new PopupWindow(screeningLayout, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         View windowContentView = window.getContentView();
@@ -363,10 +364,24 @@ public class DashboardActivity extends AppCompatActivity {
         Spinner pickupIdList = windowContentView.findViewById(R.id.pickupIdOption);
         EditText locPickUp = windowContentView.findViewById(R.id.pickupLocationEditable);
 
+=======
+        View screeningLayout = activity.getLayoutInflater().inflate(R.layout.popup_notif_fullscreen, null);
+        PopupWindow window = new PopupWindow(screeningLayout, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        TextView tvPickupId = screeningLayout.findViewById(R.id.PopUpTitle);
+        Button leftButton = screeningLayout.findViewById(R.id.leftPopUpBtn);
+        Button rightButton = screeningLayout.findViewById(R.id.rightPopUpBtn);
+        ViewGroup body = screeningLayout.findViewById(R.id.bodyPopUp);
+        View inflateBody = View.inflate(body.getContext(), R.layout.pickup_id_screening_layout, body);
+        EditText locPickUp = inflateBody.findViewById(R.id.pickupLocationEditable);
+        EditText pickupDate = inflateBody.findViewById(R.id.pickupDate);
+        LinearLayout pickupIdWrapper = inflateBody.findViewById(R.id.pickupIdWrapper);
+        Spinner pickupIdList = inflateBody.findViewById(R.id.pickupIdOption);
+>>>>>>> b482573160b985f95dd2c54c08ce9484065a0938
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
             activity, R.layout.trash_list_dialog_dropdown
         );
 
+<<<<<<< HEAD
         arrayAdapter.add("Buat Pickup Id Baru");
         arrayAdapter.addAll(pickupId);
         pickupIdList.setAdapter(arrayAdapter);
@@ -425,10 +440,36 @@ public class DashboardActivity extends AppCompatActivity {
             }
         });
 
+=======
+        inflateBody.setLayoutParams(
+            new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT
+            )
+        );
+
+        tvPickupId.setText(R.string.pickup_id_title);
+        arrayAdapter.add("Buat Pickup Id Baru");
+        pickupIdList.setAdapter(arrayAdapter);
+        body.setVisibility(View.VISIBLE);
+        rightButton.setText("Lanjutkan");
+        arrayAdapter.addAll(pickupId);
+        leftButton.setText("Batal");
+
+        leftButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ProgressBarHelper.onProgress(activity, leftButton, true);
+                rightButton.setVisibility(View.GONE);
+                window.dismiss();
+            }
+        });
+>>>>>>> b482573160b985f95dd2c54c08ce9484065a0938
         pickupIdList.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if(position != 0){
+<<<<<<< HEAD
                     disableEditText(pickupDate, false);
                     disableEditText(locPickUp, false);
 
@@ -445,6 +486,18 @@ public class DashboardActivity extends AppCompatActivity {
                     disableEditText(pickupDate, true);
                     disableEditText(locPickUp, true);
                     window.setFocusable(true);
+=======
+                    PickupDetailDto singleDtoDetail = pickupDetailDtos.get(position-1);
+                    pickupDate.setText(singleDtoDetail.getTime());
+                    locPickUp.setText(singleDtoDetail.getAddress());
+                    pickupDate.setFocusable(false);
+                    locPickUp.setFocusable(false);
+                }else{
+                    pickupDate.setFocusable(true);
+                    locPickUp.setFocusable(true);
+                    pickupDate.setText(new Date(System.currentTimeMillis()).toString());
+                    locPickUp.setText(finalLocPickUp);
+>>>>>>> b482573160b985f95dd2c54c08ce9484065a0938
                 }
             }
 
@@ -453,10 +506,16 @@ public class DashboardActivity extends AppCompatActivity {
 
             }
         });
+<<<<<<< HEAD
 
         addNewPickupId.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+=======
+        rightButton.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View v) {
+>>>>>>> b482573160b985f95dd2c54c08ce9484065a0938
                String pickUpDate = pickupDate.getText().toString();
                String editableLocVal = locPickUp.getText().toString();
                int selectedPickId = pickupIdList.getSelectedItemPosition();
@@ -468,11 +527,17 @@ public class DashboardActivity extends AppCompatActivity {
                        activity,
                        editableLocVal,
                        pickUpDate,
+<<<<<<< HEAD
                        addNewPickupId
+=======
+                       leftButton,
+                       rightButton
+>>>>>>> b482573160b985f95dd2c54c08ce9484065a0938
                    );
                }else{
 
                }
+<<<<<<< HEAD
             }
         });
 
@@ -537,20 +602,31 @@ public class DashboardActivity extends AppCompatActivity {
                 });
             }
         });
+=======
+           }
+       });
+>>>>>>> b482573160b985f95dd2c54c08ce9484065a0938
 
         window.setFocusable(true);
         window.showAtLocation(screeningLayout, Gravity.CENTER, 0, 0);
     }
 
+<<<<<<< HEAD
     private void createPickupId(OkHttpClient okHttpClient, PopupWindow window, Activity activity, String editableLocVal, String pickUpDate, View addNewPickupIdBtn){
+=======
+    private void createPickupId(OkHttpClient okHttpClient, PopupWindow window, Activity activity, String editableLocVal, String pickUpDate, View leftButton, View rightButton){
+>>>>>>> b482573160b985f95dd2c54c08ce9484065a0938
         if(pickUpDate.equals("") || editableLocVal.equals("")) {
             Toast.makeText(activity, "Silahkan  Lengkapi Tanggal Serta Lokasi Pickup", Toast.LENGTH_LONG).show();
             return;
         }
 
+<<<<<<< HEAD
         addNewPickupIdBtn.setVisibility(View.GONE);
         ProgressBarHelper.onProgress(activity.getApplication(), addNewPickupIdBtn, true);
 
+=======
+>>>>>>> b482573160b985f95dd2c54c08ce9484065a0938
         HashMap<String, String> requestList = new HashMap<>();
         requestList.put("address", editableLocVal);
         requestList.put("user_id", userId);
@@ -563,14 +639,24 @@ public class DashboardActivity extends AppCompatActivity {
         .header("Authorization", "Bearer " + token)
         .url(PathUrl.ROOT_PATH_PICKUP).build();
 
+<<<<<<< HEAD
+=======
+        leftButton.setVisibility(View.GONE);
+        ProgressBarHelper.onProgress(activity.getApplication(), rightButton, true);
+>>>>>>> b482573160b985f95dd2c54c08ce9484065a0938
         okHttpClient.newCall(requestCreatePickupId).enqueue(new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+<<<<<<< HEAD
                         addNewPickupIdBtn.setVisibility(View.VISIBLE);
                         ProgressBarHelper.onProgress(activity.getApplication(), addNewPickupIdBtn, false);
+=======
+                        leftButton.setVisibility(View.VISIBLE);
+                        ProgressBarHelper.onProgress(activity.getApplication(), rightButton, false);
+>>>>>>> b482573160b985f95dd2c54c08ce9484065a0938
                         failedConnectToServer(R.string.failed_con_server);
                     }
                 });
@@ -582,8 +668,13 @@ public class DashboardActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         if(response.isSuccessful()){
+<<<<<<< HEAD
                             addNewPickupIdBtn.setVisibility(View.VISIBLE);
                             ProgressBarHelper.onProgress(activity.getApplication(), addNewPickupIdBtn, false);
+=======
+                            leftButton.setVisibility(View.VISIBLE);
+                            ProgressBarHelper.onProgress(activity.getApplication(), rightButton, false);
+>>>>>>> b482573160b985f95dd2c54c08ce9484065a0938
                             Toast.makeText(activity, "Pikcup Id Berhasil Dibuat, Sila", Toast.LENGTH_LONG).show();
                             window.dismiss();
                         }
@@ -811,10 +902,13 @@ public class DashboardActivity extends AppCompatActivity {
             }
         });
     }
+<<<<<<< HEAD
 
     private void disableEditText(View view, boolean mode){
         view.setFocusable(mode);
         view.setEnabled(mode);
         view.setFocusableInTouchMode(mode);
     }
+=======
+>>>>>>> b482573160b985f95dd2c54c08ce9484065a0938
 }
