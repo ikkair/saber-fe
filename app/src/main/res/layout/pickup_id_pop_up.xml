@@ -6,6 +6,7 @@
         android:layout_height="match_parent">
 
         <LinearLayout
+                android:id="@+id/wrapperPickupID"
                 android:orientation="vertical"
                 android:background="@drawable/white_rounded_bg"
                 android:layout_gravity="center_vertical|center_horizontal"

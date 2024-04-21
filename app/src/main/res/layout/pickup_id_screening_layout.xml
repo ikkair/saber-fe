@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     android:layout_gravity="center_vertical"
-<<<<<<< HEAD
-=======
-    android:layout_marginBottom="30dp"
->>>>>>> b482573160b985f95dd2c54c08ce9484065a0938
     android:orientation="vertical"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
