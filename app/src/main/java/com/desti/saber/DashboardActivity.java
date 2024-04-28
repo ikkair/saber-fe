@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.transition.Transition;
 import android.transition.TransitionValues;
 import android.view.*;
+import android.view.textclassifier.TextLinks;
 import android.widget.*;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.desti.saber.LayoutHelper.ManualImageChoser.ManualImageChooser;
 import com.desti.saber.LayoutHelper.ManualImageChoser.SuccessSetImage;
 import com.desti.saber.LayoutHelper.ProgressBar.ProgressBarHelper;
+import com.desti.saber.configs.OkHttpHandler;
 import com.desti.saber.utils.GPSTrackerHelper;
 import com.desti.saber.utils.IDRFormatCurr;
 import com.desti.saber.utils.ImageSetterFromStream;
@@ -25,6 +27,7 @@ import com.desti.saber.utils.constant.PathUrl;
 import com.desti.saber.utils.dto.PickupDetailDto;
 import com.desti.saber.utils.dto.ResponseGlobalJsonDTO;
 import com.desti.saber.utils.dto.TrashType;
+import com.desti.saber.utils.dto.UserDetailsDTO;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import okhttp3.*;
@@ -35,9 +38,11 @@ import org.osmdroid.views.MapView;
 import org.osmdroid.views.Projection;
 import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.Overlay;
+import org.w3c.dom.Text;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.sql.Date;
 import java.util.*;
 
@@ -54,6 +59,7 @@ public class DashboardActivity extends AppCompatActivity {
     private String userId;
     private String notFoundLoc;
     private boolean disableBackPress = false;
+    private View trashDeliverOnClickBtn;
 
 
     @Override
@@ -120,11 +126,71 @@ public class DashboardActivity extends AppCompatActivity {
     }
 
     private void detailAccountOnClick(View v){
-        View inflateProfileDetail = getLayoutInflater().inflate(R.layout.profile_detail_layout, null);
-        PopupWindow popupWindow = new PopupWindow(inflateProfileDetail);
-        popupWindow.showAtLocation(v, Gravity.CENTER, 1, 1);
+        Activity activity = this;
+        ProgressBarHelper.onProgress(activity, v, true);
+        OkHttpClient okHttpClient = new OkHttpClient();
+        Request request =  new Request.Builder().get().url(PathUrl.ROOT_PATH_USER + "/" + userId).build();
 
-//        Toast.makeText(this, "Detail Account on click", Toast.LENGTH_SHORT).show();
+        okHttpClient.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ProgressBarHelper.onProgress(activity, v, false);
+                        failedConnectToServer(R.string.failed_con_server);
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(response.isSuccessful() && response.body() != null){
+                            ProgressBarHelper.onProgress(activity, v, false);
+
+                            try {
+                                TypeToken<ResponseGlobalJsonDTO<UserDetailsDTO>> jsonDTOTypeToken = new TypeToken<ResponseGlobalJsonDTO<UserDetailsDTO>>(){};
+                                ResponseGlobalJsonDTO<UserDetailsDTO> globalJsonDTO = null;
+                                globalJsonDTO = new Gson().fromJson(response.body().string(), jsonDTOTypeToken);
+                                UserDetailsDTO[] userDetailsDTOS = globalJsonDTO.getData();
+                                Field[] propertyNameList = UserDetailsDTO.class.getDeclaredFields();
+                                View inflateProfileDetail = activity.getLayoutInflater().inflate(R.layout.profile_detail_layout, null);
+                                PopupWindow popupWindow = new PopupWindow(inflateProfileDetail, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+                                View popUpViewCv = popupWindow.getContentView();
+                                Context cvCtx = popUpViewCv.getContext();
+                                TableLayout tL = popUpViewCv.findViewById(R.id.profileTable);
+
+                                if(userDetailsDTOS.length > 0){
+                                    UserDetailsDTO singleUserDetailDto = userDetailsDTOS[0];
+                                    profileRowTable(tL, "Nama Pengguna", singleUserDetailDto.getName());
+                                    profileRowTable(tL, "Email", singleUserDetailDto.getEmail());
+                                }
+
+                                popupWindow.setFocusable(true);
+                                popupWindow.showAtLocation(inflateProfileDetail, Gravity.CENTER, 0, 0);
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }else{
+                            Toast.makeText(activity, R.string.failed_get_details_accounts, Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+            }
+        });
+
+    }
+
+    private void profileRowTable(TableLayout tableLayout, String label, String value){
+        TableLayout tableLayoutInflate = (TableLayout) View.inflate(tableLayout.getContext(), R.layout.table_layout_row, tableLayout);
+//        TableRow tableRow = tableLayoutInflate.findViewById(R.id.tableRow);
+//        TextView tvLabel = (TextView) tableRow.getChildAt(0);
+//        TextView tvValue = (TextView) tableRow.getChildAt(1);
+//        tvLabel.setText(label);
+//        tvValue.setText(value);
     }
 
     private void pinPointLocOnClick(){
@@ -288,6 +354,7 @@ public class DashboardActivity extends AppCompatActivity {
     }
 
     private void trashDeliverOnClick(View view){
+        trashDeliverOnClickBtn = view;
         Activity activity = DashboardActivity.this;
 
         if(finalLocPickUp == null || finalLocPickUp.equals(notFoundLoc)){
@@ -697,7 +764,11 @@ public class DashboardActivity extends AppCompatActivity {
                             addNewPickupIdBtn.setVisibility(View.VISIBLE);
                             ProgressBarHelper.onProgress(activity.getApplication(), addNewPickupIdBtn, false);
                             window.dismiss();
-                            Toast.makeText(activity, "Pikcup Id Berhasil Dibuat, Silahkan Buka Kembali Menu Pickup Sampah", Toast.LENGTH_LONG).show();
+                            Toast.makeText(activity, "Pikcup Id Berhasil Dibuat, Tunggu Sesaat..", Toast.LENGTH_SHORT).show();
+
+                            if(trashDeliverOnClickBtn != null){
+                                trashDeliverOnClick(trashDeliverOnClickBtn);
+                            }
                         }
                     }
                 });

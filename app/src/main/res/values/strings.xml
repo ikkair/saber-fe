@@ -101,6 +101,8 @@
     <string name="pickup_id_title">Detail Pickup</string>
     <string name="pickup_date">Tanggal Pickup</string>
     <string name="dd">YYYY-MM-DD HH:MM (Format 24 Jam)</string>
+    <string name="failed_get_details_accounts">Gagal Melakukan Pengambilan Detail User profile</string>
+    <string name="detail_profile">Detail Profil Pengguna</string>
 
     <string-array name="bank_name_list">
         <item id="pb">Pilih Bank</item>
