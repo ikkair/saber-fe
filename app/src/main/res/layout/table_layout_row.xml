@@ -5,14 +5,14 @@
           android:layout_height="match_parent">
 
     <TextView
-            android:text="sadasdasdas"
+            android:layout_gravity="center_vertical"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:padding="5dp" />
 
     <TextView
-            android:text="asdasdasd"
+            android:layout_gravity="center_vertical"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

@@ -7,6 +7,8 @@ public class UserDetailsDTO {
     private String role;
     private String phone;
     private String photo;
+    private String balance;
+    private String creation_date;
 
     public String getId() {
         return id;
@@ -71,7 +73,4 @@ public class UserDetailsDTO {
     public void setCreation_date(String creation_date) {
         this.creation_date = creation_date;
     }
-
-    private String balance;
-    private String creation_date;
 }

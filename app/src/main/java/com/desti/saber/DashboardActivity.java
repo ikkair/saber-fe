@@ -165,6 +165,8 @@ public class DashboardActivity extends AppCompatActivity {
 
                                 if(userDetailsDTOS.length > 0){
                                     UserDetailsDTO singleUserDetailDto = userDetailsDTOS[0];
+                                    profileRowTable(tL, "Tanggal Terdaftar", singleUserDetailDto.getCreation_date());
+                                    profileRowTable(tL, "Nomor Handphone", singleUserDetailDto.getPhone());
                                     profileRowTable(tL, "Nama Pengguna", singleUserDetailDto.getName());
                                     profileRowTable(tL, "Email", singleUserDetailDto.getEmail());
                                 }
@@ -185,12 +187,12 @@ public class DashboardActivity extends AppCompatActivity {
     }
 
     private void profileRowTable(TableLayout tableLayout, String label, String value){
-        TableLayout tableLayoutInflate = (TableLayout) View.inflate(tableLayout.getContext(), R.layout.table_layout_row, tableLayout);
-//        TableRow tableRow = tableLayoutInflate.findViewById(R.id.tableRow);
-//        TextView tvLabel = (TextView) tableRow.getChildAt(0);
-//        TextView tvValue = (TextView) tableRow.getChildAt(1);
-//        tvLabel.setText(label);
-//        tvValue.setText(value);
+        TableRow tableRow = (TableRow) View.inflate(tableLayout.getContext(), R.layout.table_layout_row, null);
+        TextView tvLabel = (TextView) tableRow.getChildAt(0);
+        TextView tvValue = (TextView) tableRow.getChildAt(1);
+        tvLabel.setText(label);
+        tvValue.setText(value);
+        tableLayout.addView(tableRow);
     }
 
     private void pinPointLocOnClick(){
