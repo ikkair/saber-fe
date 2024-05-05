@@ -103,6 +103,11 @@
     <string name="dd">YYYY-MM-DD HH:MM (Format 24 Jam)</string>
     <string name="failed_get_details_accounts">Gagal Melakukan Pengambilan Detail User profile</string>
     <string name="detail_profile">Detail Profil Pengguna</string>
+    <string name="profile">Profil</string>
+    <string name="profile_edited">Edit Profil</string>
+    <string name="logout_title">Logout</string>
+    <string name="user_name_edited">Nama Pengguna Baru</string>
+    <string name="password_edited">Password Baru (Isi jika ingin merubah)</string>
 
     <string-array name="bank_name_list">
         <item id="pb">Pilih Bank</item>

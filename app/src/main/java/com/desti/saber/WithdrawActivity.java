@@ -2,7 +2,9 @@ package com.desti.saber;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.view.*;
+import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.graphics.Bitmap;
@@ -13,9 +15,19 @@ import android.widget.TextView;
 
 import com.desti.saber.LayoutHelper.SingleTrxListLayout.OnClickActionSingleListActivity;
 import com.desti.saber.LayoutHelper.SingleTrxListLayout.ParentSingleListViewGroup;
+import com.desti.saber.utils.GetUserDetailsCallback;
 import com.desti.saber.utils.IDRFormatCurr;
 import com.desti.saber.utils.ImageSetterFromStream;
+import com.desti.saber.utils.constant.GetImageProfileCallback;
+import com.desti.saber.utils.constant.UserDetailKeys;
+import com.desti.saber.utils.dto.UserDetailsDTO;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Response;
+import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
 import java.sql.Date;
 import java.text.NumberFormat;
 import java.util.Currency;
@@ -24,16 +36,41 @@ public class WithdrawActivity extends AppCompatActivity {
 
     private ImageSetterFromStream imageSetterFromStream;
     private View balanceLayout;
+    private  DashboardActivity dashboardActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_withdraw);
         imageSetterFromStream = new ImageSetterFromStream(this);
-        setBalanceLayout();
 
         Button balanceNavButton  = findViewById(R.id.balanceNavBtn);
         Button historyTrxNavButton = findViewById(R.id.historyTransactionNavBtn);
+        ImageSetterFromStream setterFromStream = new ImageSetterFromStream(this);
+        dashboardActivity = new DashboardActivity();
+        dashboardActivity.rootActivity = this;
+        ImageView profileImage = findViewById(R.id.profileImage);
+        String getLocPickup = getIntent().getStringExtra(UserDetailKeys.PICK_LOCATION_KEY);
+        SharedPreferences loginInfo = getSharedPreferences("LoginInfo", Context.MODE_PRIVATE);
+
+
+        setterFromStream.setAsImageDrawable("def_user_profile.png", profileImage);
+        dashboardActivity.getImageProfile(
+                loginInfo.getString("photo", null),
+                this,
+                new OkHttpClient(),
+                new GetImageProfileCallback() {
+                    @Override
+                    public void fail(Call call, IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void success(Bitmap bitmap) {
+                        profileImage.setImageBitmap(bitmap);
+                    }
+                }
+        );
 
         balanceNavButton.setOnClickListener(new View.OnClickListener() {
             //initial Set Balance Value
@@ -42,6 +79,7 @@ public class WithdrawActivity extends AppCompatActivity {
                 setBalanceLayout();
             }
         });
+
         historyTrxNavButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -49,10 +87,9 @@ public class WithdrawActivity extends AppCompatActivity {
             }
         });
 
-        //section For calling endpoint profile
-        this.setUserNameTittle("Example User Name");
-        this.setPinPointLocTitle("Desa Bojonggede");
-        //this.setImageProfile();
+        this.setUserNameTittle(loginInfo.getString(UserDetailKeys.USERNAME_KEY, "Invalid Username"));
+        this.setPinPointLocTitle((getLocPickup == null) ? "Lokasi Tidak Diset" : getLocPickup);
+        setBalanceLayout();
     }
 
     //Section For Calling endpoint and Set List Trx History
@@ -102,8 +139,21 @@ public class WithdrawActivity extends AppCompatActivity {
             }
         });
 
-        //section for set balance after successfully calling  endpoint
-        this.setBalanceValue(10000000L);
+        this.setBalanceValue(0L);
+        dashboardActivity.getDetailsUser(new GetUserDetailsCallback() {
+            @Override
+            public void failure(Call call, IOException e) {
+                e.printStackTrace();
+                dashboardActivity.failedConnectToServer(R.string.failed_con_server);
+            }
+
+            @Override
+            public void onSuccess(UserDetailsDTO userDetailsDTO) {
+                if(userDetailsDTO != null){
+                    setBalanceValue(Long.parseLong(userDetailsDTO.getBalance()));
+                }
+            }
+        });
     }
 
     private void setUserNameTittle(String userName){
@@ -121,9 +171,11 @@ public class WithdrawActivity extends AppCompatActivity {
         this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                int maxLocLength = 35;
-                String newLocation = (location.length() > maxLocLength) ? location.substring(0, maxLocLength) + "..." : location;
-                ((TextView) findViewById(R.id.pinPointLocTitle)).setText(newLocation);
+                if(location != null){
+                    int maxLocLength = 25;
+                    String newLocation = (location.length() > maxLocLength) ? location.substring(0, maxLocLength) + "..." : location;
+                    ((TextView) findViewById(R.id.pinPointLocTitle)).setText(newLocation);
+                }
             }
         });
     }

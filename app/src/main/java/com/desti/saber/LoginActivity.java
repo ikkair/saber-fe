@@ -17,6 +17,7 @@ import com.desti.saber.LayoutHelper.ProgressBar.ProgressBarHelper;
 import com.desti.saber.configs.OkHttpHandler;
 import com.desti.saber.utils.ImageSetterFromStream;
 import com.desti.saber.utils.constant.PathUrl;
+import com.desti.saber.utils.constant.UserDetailKeys;
 import com.desti.saber.utils.dto.DataLogInDTO;
 import com.desti.saber.utils.dto.ResponseGlobalJsonDTO;
 
@@ -143,7 +144,7 @@ public class LoginActivity extends AppCompatActivity {
                         ProgressBarHelper.onProgress(getApplication(), view, false);
                         int responseType = response.code()/100;
 
-                        SharedPreferences loginInfo = getSharedPreferences("LoginInfo", Context.MODE_PRIVATE);
+                        SharedPreferences loginInfo = getSharedPreferences(UserDetailKeys.SHARED_PREF_LOGIN_KEY, Context.MODE_PRIVATE);
                         SharedPreferences.Editor loginInfoEditor = loginInfo.edit();
 
                         ResponseGlobalJsonDTO globalResponse = null;
@@ -163,10 +164,15 @@ public class LoginActivity extends AppCompatActivity {
                                 loginInfoEditor.putString("token", loginData[0].getToken());
                                 loginInfoEditor.putString("role", loginData[0].getRole());
                                 loginInfoEditor.putString("user_id", loginData[0].getId());
+                                loginInfoEditor.putString("photo", loginData[0].getPhoto());
+                                loginInfoEditor.putString("balance", String.valueOf(loginData[0].getBalance()));
+
                                 loginInfoEditor.apply();
                                 rememberMeData(emailOrNickNameValue, passwordValue);
 
                                 Intent dashboard = new Intent(context, DashboardActivity.class);
+                                dashboard.putExtra(UserDetailKeys.PASSWORD_KEY, passwordValue);
+                                loginInfo.edit().putString(UserDetailKeys.PASSWORD_KEY, passwordValue).apply();
                                 startActivity(dashboard);
                                 finish();
                                 break;

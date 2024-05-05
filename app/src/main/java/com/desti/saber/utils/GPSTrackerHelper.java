@@ -49,11 +49,11 @@ public class GPSTrackerHelper implements LocationListener {
                     providerInfo = LocationManager.GPS_PROVIDER;
                 }
 
-                locationManager.requestLocationUpdates(providerInfo,0,1, this);
+                locationManager.requestLocationUpdates(providerInfo,0,0, this);
                 location = locationManager.getLastKnownLocation(providerInfo);
             }
         }catch (Exception e){
-            System.out.println(Arrays.toString(e.getStackTrace()));
+            e.printStackTrace();
         }
     }
 

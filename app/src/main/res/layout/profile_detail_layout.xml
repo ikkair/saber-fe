@@ -22,21 +22,49 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
 
-                <Space android:layout_width="match_parent" android:layout_height="40dp"/>
+                <Space android:layout_width="match_parent" android:layout_height="20dp"/>
+
+                <FrameLayout
+                        android:clickable="false"
+                        android:layout_gravity="center_horizontal"
+                        android:id="@+id/imageProfileWrapper"
+                        android:background="@drawable/white_rounded_bg"
+                        android:layout_width="150dp"
+                        android:layout_height="150dp">
+
+                        <ImageView
+                                android:id="@+id/imageProfileDetails"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"/>
+
+                        <include layout="@layout/loading_progressbar" android:id="@+id/progressBarIp"/>
+
+                </FrameLayout>
+
+                <Space android:layout_width="match_parent" android:layout_height="20dp"/>
 
                 <FrameLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
 
-                        <ImageView
-                                android:layout_gravity="center_horizontal"
-                                android:id="@+id/profileImage"
-                                android:layout_width="200dp"
-                                android:layout_height="200dp"/>
+                        <TextView
+                                android:id="@+id/titleProfileEdited"
+                                android:layout_gravity="start|center_vertical"
+                                android:gravity="center"
+                                style="@style/huge_tittle_text_black"
+                                android:text="@string/profile"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"/>
 
+                        <androidx.appcompat.widget.AppCompatButton
+                                android:layout_gravity="end|center_vertical"
+                                android:background="@drawable/pickup_id_edited"
+                                android:id="@+id/editProfile"
+                                android:layout_width="30dp"
+                                android:layout_height="30dp"/>
                 </FrameLayout>
 
-                <Space android:layout_width="match_parent" android:layout_height="40dp"/>
+                <Space android:layout_width="match_parent" android:layout_height="15dp"/>
 
                 <ScrollView
                         android:scrollbars="vertical"
@@ -53,9 +81,104 @@
                                         android:id="@+id/profileTable"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"/>
+
+                                <LinearLayout
+                                        android:visibility="gone"
+                                        android:id="@+id/editedWrapperProfile"
+                                        android:orientation="vertical"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content">
+
+                                        <EditText
+                                                android:textColor="@color/transparent_blue_dark"
+                                                android:id="@+id/userNameEdited"
+                                                android:paddingBottom="10dp"
+                                                android:layout_marginBottom="0dp"
+                                                android:textSize="12sp"
+                                                android:singleLine="true"
+                                                android:imeOptions="actionSearch"
+                                                android:layout_gravity="center|end"
+                                                style="@style/huge_tittle_text_black"
+                                                android:hint="@string/user_name_edited"
+                                                android:layout_width="match_parent"
+                                                android:layout_height="wrap_content"/>
+
+                                        <EditText
+                                                android:textColor="@color/transparent_blue_dark"
+                                                android:id="@+id/passwordEdited"
+                                                android:paddingBottom="10dp"
+                                                android:layout_marginBottom="0dp"
+                                                android:textSize="12sp"
+                                                android:singleLine="true"
+                                                android:imeOptions="actionSearch"
+                                                android:layout_gravity="center|end"
+                                                style="@style/huge_tittle_text_black"
+                                                android:hint="@string/password_edited"
+                                                android:layout_width="match_parent"
+                                                android:layout_height="wrap_content"/>
+
+                                        <Space android:layout_width="match_parent" android:layout_height="15dp"/>
+
+                                        <LinearLayout
+                                                android:orientation="horizontal"
+                                                android:layout_gravity="center"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content">
+
+                                                <androidx.appcompat.widget.AppCompatButton
+                                                        android:layout_margin="10dp"
+                                                        android:id="@+id/cancelEditProfile"
+                                                        android:layout_gravity="center"
+                                                        android:background="@drawable/cancel_edit"
+                                                        android:layout_width="40dp"
+                                                        android:layout_height="40dp"/>
+
+                                                <androidx.appcompat.widget.AppCompatButton
+                                                        android:layout_margin="10dp"
+                                                        android:id="@+id/saveEdited"
+                                                        android:layout_gravity="center"
+                                                        android:background="@drawable/save_edited"
+                                                        android:layout_width="40dp"
+                                                        android:layout_height="40dp"/>
+
+                                        </LinearLayout>
+                                </LinearLayout>
+
                         </LinearLayout>
 
                 </ScrollView>
+
+                <Space android:layout_width="match_parent" android:layout_height="25dp"/>
+
+                <LinearLayout
+                        android:id="@+id/logOut"
+                        android:background="@drawable/blue_rounded_bg"
+                        android:layout_gravity="center_horizontal"
+                        android:orientation="horizontal"
+                        android:layout_width="137dp"
+                        android:clickable="true"
+                        android:layout_height="wrap_content"
+                        android:focusable="true">
+
+                        <LinearLayout
+                                android:layout_marginStart="10dp"
+                                android:layout_gravity="center_vertical"
+                                android:background="@drawable/baseline_power_settings_new_24"
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"/>
+
+                        <androidx.appcompat.widget.AppCompatButton
+                                android:clickable="false"
+                                android:textColor="@color/white"
+                                android:padding="0dp"
+                                android:layout_margin="0dp"
+                                android:layout_gravity="center_vertical"
+                                android:background="@null"
+                                android:text="@string/logout_title"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"/>
+
+                </LinearLayout>
 
         </LinearLayout>
 

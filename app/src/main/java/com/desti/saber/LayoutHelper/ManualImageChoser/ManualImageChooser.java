@@ -12,14 +12,18 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import com.desti.saber.R;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ManualImageChooser {
+public class ManualImageChooser extends Activity{
 
     private final Activity activity;
     private ViewGroup parent;
@@ -30,16 +34,16 @@ public class ManualImageChooser {
 
     public void startChooser(SuccessSetImage successSetImage){
         int checkStorageRead = activity.checkCallingOrSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
-        ViewGroup popParent = parent;
-        ViewGroup inflater = (ViewGroup) LayoutInflater.from(activity).inflate(R.layout.directory_pop_up_layout, popParent, true);
-        ViewGroup dirListLocationView = inflater.findViewById(R.id.rootDirectoryList);
-        Button backWardLoc = inflater.findViewById(R.id.backTraceLocBtn);
-        Button backButtonDir = inflater.findViewById(R.id.cancelSelectImg);
-        List<String> fileTraceClicked = new ArrayList<>();
-        int singleTvLocId = R.id.singleTvFileLoc;
-        int singleTvNameId = R.id.singleTvFileName;
 
         if(checkStorageRead == PackageManager.PERMISSION_GRANTED){
+            ViewGroup popParent = parent;
+            ViewGroup inflater = (ViewGroup) LayoutInflater.from(activity).inflate(R.layout.directory_pop_up_layout, popParent, true);
+            ViewGroup dirListLocationView = inflater.findViewById(R.id.rootDirectoryList);
+            Button backWardLoc = inflater.findViewById(R.id.backTraceLocBtn);
+            Button backButtonDir = inflater.findViewById(R.id.cancelSelectImg);
+            List<String> fileTraceClicked = new ArrayList<>();
+            int singleTvLocId = R.id.singleTvFileLoc;
+            int singleTvNameId = R.id.singleTvFileName;
             File envExternalStorage = Environment.getExternalStorageDirectory();
             File[] lisFiles = envExternalStorage.listFiles();
 
@@ -115,6 +119,7 @@ public class ManualImageChooser {
                                         Toast.makeText(activity, R.string.trash_photo_format, Toast.LENGTH_LONG).show();
                                     }
                                 }catch (Exception e){
+                                    e.printStackTrace();
                                     Toast.makeText(activity, R.string.fail_set_image, Toast.LENGTH_LONG).show();
                                 }
                             }
@@ -142,26 +147,13 @@ public class ManualImageChooser {
                     }
                 }
             }
-        }else{
-            requestStorageAccess();
-        }
 
-        backButtonDir.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                inflater.removeView(inflater.findViewById(R.id.parentDirectoryList));
-            }
-        });
-    }
-
-    private void requestStorageAccess(){
-        String[] permissionList = {Manifest.permission.READ_EXTERNAL_STORAGE};
-        ActivityCompat.requestPermissions(
-            activity, permissionList, PackageManager.PERMISSION_GRANTED
-        );
-
-        if(activity.checkCallingOrSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED){
-            Toast.makeText(activity, "Berikan Izin Akses Berkas", Toast.LENGTH_LONG).show();
+            backButtonDir.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    inflater.removeView(inflater.findViewById(R.id.parentDirectoryList));
+                }
+            });
         }
     }
 
