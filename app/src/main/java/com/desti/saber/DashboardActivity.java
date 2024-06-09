@@ -8,7 +8,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.inputmethodservice.Keyboard;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
@@ -325,17 +324,19 @@ public class DashboardActivity extends AppCompatActivity {
                                             @Override
                                             public void onClick(View v) {
                                                 String newPassword = passwordEdited.getText().toString();
+                                                String newUsername =  usernameEditField.getText().toString();
+
                                                 RequestBody requestBody = new MultipartBody.Builder()
-                                                        .setType(MultipartBody.FORM)
-                                                        .addFormDataPart("name", userDetailsDTO.getName())
-                                                        .addFormDataPart("password", (newPassword.equals("")) ? password : newPassword)
-                                                        .build();
+                                                .setType(MultipartBody.FORM)
+                                                .addFormDataPart("name", newUsername)
+                                                .addFormDataPart("password", (newPassword.equals("")) ? password : newPassword)
+                                                .build();
 
                                                 Request editUsersDetails = new Request.Builder()
-                                                        .header("Authorization", "Bearer " + token)
-                                                        .put(requestBody)
-                                                        .url(PathUrl.ROOT_PATH_USER)
-                                                        .build();
+                                                .header("Authorization", "Bearer " + token)
+                                                .put(requestBody)
+                                                .url(PathUrl.ROOT_PATH_USER)
+                                                .build();
 
                                                 ProgressBarHelper.onProgress(activity, v, true);
                                                 cancelEditProfile.setVisibility(View.GONE);
@@ -362,7 +363,13 @@ public class DashboardActivity extends AppCompatActivity {
                                                                 ProgressBarHelper.onProgress(activity, v, false);
 
                                                                 if(response.isSuccessful()){
-
+                                                                    Toast.makeText(activity,"Sukses Melakukan Update Profile", Toast.LENGTH_LONG).show();
+                                                                    userDetailsDTO.setName(newUsername);
+                                                                    setUserNameTittle(newUsername);
+                                                                    popupWindow.dismiss();
+                                                                    detailAccountOnClick(v);
+                                                                }else{
+                                                                    Toast.makeText(activity,"Gagal Melakukan Update Profile, Coba Kembali", Toast.LENGTH_LONG).show();
                                                                 }
                                                             }
                                                         });
@@ -385,10 +392,8 @@ public class DashboardActivity extends AppCompatActivity {
                                         editProfileTv.setText(R.string.profile);
                                         tL.setVisibility(View.VISIBLE);
 
-
                                     }
                                 });
-
 
                                 popupWindow.setFocusable(true);
                                 popupWindow.showAtLocation(inflateProfileDetail, Gravity.CENTER, 0, 0);
@@ -747,7 +752,7 @@ public class DashboardActivity extends AppCompatActivity {
     }
 
     private void trashStorePickupIdScreening(Activity activity, OkHttpClient okHttpClient, View view,  HashMap<String, PickupDetailDto> pickupIdKey, List<String> pickupId){
-        View screeningLayout = activity.getLayoutInflater().inflate(R.layout.pickup_id_pop_up, null);
+        View screeningLayout = activity.getLayoutInflater().inflate(R.layout.user_pickup_screening_pop_up, null);
         PopupWindow window = new PopupWindow(screeningLayout, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         View windowContentView = window.getContentView();
         View wrapperPickupId = windowContentView.findViewById(R.id.wrapperPickupID);
