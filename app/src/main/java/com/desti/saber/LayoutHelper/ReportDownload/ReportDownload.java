@@ -1,22 +1,19 @@
 package com.desti.saber.LayoutHelper.ReportDownload;
 
 import android.app.Activity;
-import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.os.Environment;
 import android.os.Handler;
 import android.view.*;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import androidx.core.content.ContextCompat;
 import com.desti.saber.R;
-import com.desti.saber.utils.ImageSetterFromStream;
-import com.itextpdf.kernel.font.PdfFont;
-import com.itextpdf.kernel.pdf.PdfDocument;
-import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfWriter;
 
-import java.io.FileNotFoundException;
-import java.util.zip.Inflater;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 
 public class ReportDownload {
     public ReportDownload(Activity activity) {
@@ -34,12 +31,17 @@ public class ReportDownload {
             @Override
             public void onClick(View v) {
                 try {
-                    PdfWriter pdfWriter = new PdfWriter(Environment.getExternalStorageDirectory().getAbsolutePath() + "/saber_report.pdf");
-                    PdfDocument pdfDocument = new PdfDocument(pdfWriter);
+                    OutputStream outputStream = new FileOutputStream(Environment.getExternalStorageDirectory().getAbsolutePath() + "/saber_report.pdf");
+                    Document document = new Document(PageSize.A4);
+                    Paragraph paragraph = new Paragraph();
 
-                    pdfDocument.close();
-                    pdfDocument.addNewPage();
-                } catch (FileNotFoundException e) {
+                    paragraph.add("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.");
+
+                    document.setMargins(10, 10, 10, 10);
+                    PdfWriter.getInstance(document, outputStream);
+
+                    document.close();
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
