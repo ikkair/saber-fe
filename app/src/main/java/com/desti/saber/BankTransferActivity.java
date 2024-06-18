@@ -1,7 +1,9 @@
 package com.desti.saber;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.text.Editable;
@@ -11,21 +13,32 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
+import com.desti.saber.LayoutHelper.ProgressBar.ProgressBarHelper;
 import com.desti.saber.LayoutHelper.SingleArchiveBankList.OnClickArchiveBankBeneficiary;
 import com.desti.saber.LayoutHelper.SingleArchiveBankList.OnClickSwitchSaved;
 import com.desti.saber.LayoutHelper.SingleArchiveBankList.SingleArchiveBeneficiaryBankList;
 import com.desti.saber.LayoutHelper.SingleArchiveBankList.SingleStoredBankNameToggle;
 import com.desti.saber.LayoutHelper.WindowPopUp.CustomWindowPopUp;
 import com.desti.saber.LayoutHelper.WindowPopUp.OnClickPopUpBtn;
+import com.desti.saber.configs.OkHttpHandler;
+import com.desti.saber.utils.GetUserDetailsCallback;
 import com.desti.saber.utils.ImageSetterFromStream;
+import com.desti.saber.utils.constant.PathUrl;
 import com.desti.saber.utils.constant.PropsConstantUtil;
+import com.desti.saber.utils.constant.UserDetailKeys;
+import com.desti.saber.utils.dto.DataHistoricalReqDTO;
 import com.desti.saber.utils.dto.DetailTrfDto;
+import com.desti.saber.utils.dto.UserDetailsDTO;
+import com.desti.saber.utils.dto.WithdrawReqDTO;
 import com.google.gson.Gson;
+import okhttp3.*;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -49,11 +62,14 @@ public class BankTransferActivity extends AppCompatActivity {
     private ViewGroup bankActivityNav;
     private ViewGroup rootTrfActivity;
     private String accountOrVaNumber;
-    private String trackingMenuHist;
+    private List<String>  trackingMenuHist;
     private String beneficiaryName;
-    private Button nexTrfActionBtn;
+    private Button nextTrfActionBtn;
     private long transferAmount;
     private Bitmap bankIcons;
+    private DashboardActivity dashboardActivity;
+    private long availableBalance;
+    private String token;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +77,9 @@ public class BankTransferActivity extends AppCompatActivity {
         setContentView(R.layout.activity_bank_transfer);
         ViewGroup backTopButton = findViewById(R.id.backTopButton);
 
-        nexTrfActionBtn = findViewById(R.id.nexTrfAction);
+        trackingMenuHist = new ArrayList<>();
+        dashboardActivity = new DashboardActivity();
+        nextTrfActionBtn = findViewById(R.id.nexTrfAction);
         imageSetter = new ImageSetterFromStream(this);
         rootTrfActivity = findViewById(R.id.rootTrfActivity);
         bankActivityNav = findViewById(R.id.bankActivityNav);
@@ -75,7 +93,13 @@ public class BankTransferActivity extends AppCompatActivity {
         transferActivityNavLabel = findViewById(R.id.transferActivityNavLabel);
         transferActivityMenuLabel = findViewById(R.id.transferActivityMenuLabel);
         transferActivityActionLabel = findViewById(R.id.transferActivityActionLabel);
+        SharedPreferences loginInfo = getSharedPreferences(UserDetailKeys.SHARED_PREF_LOGIN_KEY, Context.MODE_PRIVATE);
 
+        dashboardActivity.rootActivity = this;
+        dashboardActivity.userId = loginInfo.getString(UserDetailKeys.USER_ID_KEY, null);
+        token = loginInfo.getString(UserDetailKeys.TOKEN_KEY, null);
+
+        trackingMenuHist.add("rootDir");
         setLatestBankTransferTrx();
 
         //Set Back Trace Menu at below
@@ -83,7 +107,20 @@ public class BankTransferActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if(trackingMenuHist != null){
-                    switch (trackingMenuHist){
+
+                    int trackingMenuIndex = (trackingMenuHist.size()-1);
+                    trackingMenuIndex = (trackingMenuIndex < 0) ? 0 : trackingMenuIndex;
+                    String finalTrace = trackingMenuHist.get(trackingMenuIndex);
+
+                    switch (finalTrace){
+                        case "rootDir" :
+                            Intent intent = new Intent();
+                            intent.setClass(getApplicationContext(), WithdrawActivity.class);
+                            intent.putExtra(UserDetailKeys.PICK_LOCATION_KEY, getIntent().getStringExtra(UserDetailKeys.PICK_LOCATION_KEY));
+                            startActivity(intent);
+                            finish();
+                        break;
+
                         case "setLatestBankTransferTrx" :
                             setLatestBankTransferTrx();
                         break;
@@ -92,10 +129,14 @@ public class BankTransferActivity extends AppCompatActivity {
                             setTrxBankTransfer();
                         break;
 
-                        case "setTrxTransferTo" :
-                            setTrxTransferTo();
+                        case "doTransferTrxTo" :
+                            doTransferTrxTo();
                         break;
+
+                        default: return;
                     }
+
+                    trackingMenuHist.remove(trackingMenuIndex);
                 }
             }
         });
@@ -128,7 +169,7 @@ public class BankTransferActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View view) {
                         setTrxBankTransfer();
-                        trackingMenuHist = "setLatestBankTransferTrx";
+                        trackingMenuHist.add("setLatestBankTransferTrx");
                     }
                 });
 
@@ -172,20 +213,24 @@ public class BankTransferActivity extends AppCompatActivity {
                 bankActivityNav.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        trackingMenuHist = "setTrxBankTransfer";
-                        setTrxTransferTo();
+                        trackingMenuHist.add("setTrxBankTransfer");
+                        doTransferTrxTo();
                     }
                 });
 
                 //section for call endpoint and looping bank name beneficiary stored
-                for(int i =0; i < 100; i++){
-                    int test = i;
+                String[] beneficiaryBankMock = getResources().getStringArray(R.array.beneficiary_name_mock);
+
+                for(int i =0; i < beneficiaryBankMock.length; i++){
                     SingleArchiveBeneficiaryBankList bankList = new SingleArchiveBeneficiaryBankList(getApplicationContext());
-                    bankList.setSingleListBankArchive(null, "Sonia Cakep " + test,
+                    int finalI = i;
+                    bankList.setSingleListBankArchive(null, beneficiaryBankMock[i],
                         new OnClickArchiveBankBeneficiary() {
                             @Override
                             public void onClick() {
-                                Toast.makeText(getApplicationContext(), "Burung Gajah Gede " + test, Toast.LENGTH_SHORT).show();
+                                trackingMenuHist.add("setTrxBankTransfer");
+                                setTransferTrxTo(finalI);
+                                doTransferTrxTo();
                             }
                         }
                     );
@@ -196,10 +241,10 @@ public class BankTransferActivity extends AppCompatActivity {
     }
 
     //Section For Inquiry valid bank name, stored bank info and va or account number
-    private void setTrxTransferTo(){
+    private void doTransferTrxTo(){
         disabledProp();
 
-        nexTrfActionBtn.setVisibility(View.VISIBLE);
+        nextTrfActionBtn.setVisibility(View.VISIBLE);
         bankNameListField.setVisibility(View.VISIBLE);
         fieldInputVaOrAcNumber.setVisibility(View.VISIBLE);
 
@@ -252,7 +297,7 @@ public class BankTransferActivity extends AppCompatActivity {
         });
 
         //section for mock hardcode to db
-        nexTrfActionBtn.setOnClickListener(new View.OnClickListener() {
+        nextTrfActionBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(accountOrVaNumber == null || beneficiaryBankNameId <= 0){
@@ -262,6 +307,7 @@ public class BankTransferActivity extends AppCompatActivity {
                         Toast.LENGTH_LONG
                     ).show();
                 }else{
+                    trackingMenuHist.add("doTransferTrxTo");
 
                     //start Section For Inquiry valid bank name, stored bank info and va or account number
                     String bankInquiryPattern = accountOrVaNumber+"|"+beneficiaryBankNameId;
@@ -302,6 +348,16 @@ public class BankTransferActivity extends AppCompatActivity {
         });
     }
 
+    private void setTransferTrxTo(int accountNumberIndex){
+        String accountNumberAndBank = getResources().getStringArray(R.array.beneficiary_bank_mock)[accountNumberIndex];
+        String[] accountNumAndBankCode = accountNumberAndBank.split("\\|");
+
+        accountOrVaNumber = accountNumAndBankCode[0];
+        beneficiaryBankNameId = Integer.parseInt(accountNumAndBankCode[1]);
+        fieldInputVaOrAcNumber.setText(accountOrVaNumber);
+        bankNameListField.setSelection(beneficiaryBankNameId);
+    }
+
     //section for do Transfer Trx and get balance
     private void doTransferBalance(){
         setNexTrfActionBtnWith("half");
@@ -329,8 +385,112 @@ public class BankTransferActivity extends AppCompatActivity {
         bankNameBeneficiaryTv.setText(beneficiaryBankName);
 
         //user balance available, set at below
-        long availableBalance = 10007670L;
-        balanceReadyToTransferTv.setText(String.valueOf(availableBalance));
+        dashboardActivity.getDetailsUser(new GetUserDetailsCallback() {
+            @Override
+            public void failure(Call call, IOException e) {
+                BankTransferActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getApplicationContext(),"Pemidahan Dana Tidak Dapatdilakukan, Periksa Internet", Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+
+            @Override
+            public void onSuccess(UserDetailsDTO userDetailsDTO) {
+                BankTransferActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        availableBalance = Long.parseLong(userDetailsDTO.getBalance());
+                        balanceReadyToTransferTv.setText(String.valueOf(availableBalance));
+                        nextTrfActionBtn.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                if(transferAmount <= 0 || transferAmount > availableBalance || trfDesc.getText().length() > 100){
+                                    Toast.makeText(getApplicationContext(), R.string.reached_limit_amount, Toast.LENGTH_SHORT).show();
+                                }else{
+                                    DetailTrfDto detailTrfDto = new DetailTrfDto();
+                                    WithdrawReqDTO withdrawReqDTO = new WithdrawReqDTO();
+                                    DataHistoricalReqDTO dataHistoricalReqDTO = new DataHistoricalReqDTO();
+
+                                    detailTrfDto.setTransferAmount(transferAmount);
+                                    detailTrfDto.setBeneficiaryName(beneficiaryName);
+                                    detailTrfDto.setSaveBankInfo(storeInfBeneficiaryBank);
+                                    detailTrfDto.setUserFullName(userDetailsDTO.getName());
+                                    detailTrfDto.setBeneficiaryBankId(beneficiaryBankNameId);
+                                    detailTrfDto.setBeneficiaryBankName(beneficiaryBankName);
+                                    detailTrfDto.setAccountOrVaNumberBeneficiary(accountOrVaNumber);
+                                    detailTrfDto.setTransferDescription(trfDesc.getText().toString());
+                                    detailTrfDto.setTransactionDate(new Date(System.currentTimeMillis()).toString());
+
+                                    withdrawReqDTO.setAmount(transferAmount);
+                                    withdrawReqDTO.setBankDest(beneficiaryBankName);
+                                    withdrawReqDTO.setBeneficiaryName(beneficiaryName);
+                                    withdrawReqDTO.setTrfDesc(detailTrfDto.getTransferDescription());
+                                    withdrawReqDTO.setAccNumber(Integer.parseInt(accountOrVaNumber));
+
+                                    //section for sending data
+                                    String jsonDataSending = new Gson().toJson(withdrawReqDTO);
+                                    OkHttpClient okHttpClient = new OkHttpClient();
+                                    RequestBody requestBody = RequestBody.create(jsonDataSending.getBytes());
+                                    Request request = new Request.Builder()
+                                    .header("Content-Type", "application/json")
+                                    .header("Authorization", "Bearer " + token)
+                                    .url(PathUrl.ROOT_PATH_WITHDRAW).post(requestBody).build();
+
+                                    ProgressBarHelper.onProgress(getApplicationContext(), view, true);
+                                    okHttpClient.newCall(request).enqueue(new Callback() {
+                                        @Override
+                                        public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                                            BankTransferActivity.this.runOnUiThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    ProgressBarHelper.onProgress(getApplicationContext(), view, false);
+                                                    Toast.makeText(getApplicationContext(),"Silahkan Periksa Sambungan Internet, Pemindahan Dana Gagal", Toast.LENGTH_LONG).show();
+                                                }
+                                            });
+                                        }
+
+                                        @Override
+                                        public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                                            BankTransferActivity.this.runOnUiThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    ProgressBarHelper.onProgress(getApplicationContext(), view, false);
+                                                    if(response.isSuccessful()) {
+                                                        CustomWindowPopUp popUp = new CustomWindowPopUp(getLayoutInflater(), getResources());
+                                                        popUp.setMessages(R.string.success_trf_notification);
+                                                        popUp.setLabelRightButton(R.string.show_detail);
+                                                        popUp.setLabelLeftButton(R.string.back_to_dashboard);
+                                                        popUp.showPopUp(new OnClickPopUpBtn() {
+                                                            @Override
+                                                            public void onClickLeftButton() {
+                                                                finish();
+                                                            }
+
+                                                            @Override
+                                                            public void onClickRightButton() {
+                                                                Intent intent = new Intent(getApplicationContext(), DetailBankTrasnfer.class);
+                                                                intent.putExtra("detailsData", new Gson().toJson(detailTrfDto));
+                                                                startActivity(intent);
+                                                            }
+                                                        });
+                                                    } else {
+                                                        assert request.body() != null;
+                                                        System.out.println(jsonDataSending);
+                                                        Toast.makeText(getApplicationContext(),"Silahkan Periksa Riwayat Transaksi, Pemindahan Dana Gagal", Toast.LENGTH_LONG).show();
+                                                    }
+                                                }
+                                            });
+                                        }
+                                    });
+                                }
+                            }
+                        });
+                    }
+                });
+            }
+        });
 
         transferAmountEt.setOnKeyListener(new View.OnKeyListener() {
             @Override
@@ -363,6 +523,7 @@ public class BankTransferActivity extends AppCompatActivity {
                 return false;
             }
         });
+
         trfDesc.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -384,52 +545,6 @@ public class BankTransferActivity extends AppCompatActivity {
 
             }
         });
-
-        //section for transfer sending
-        nexTrfActionBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(transferAmount <= 0 || transferAmount > availableBalance || trfDesc.getText().length() > 100){
-                    Toast.makeText(getApplicationContext(), R.string.reached_limit_amount, Toast.LENGTH_SHORT).show();
-                }else{
-                    DetailTrfDto detailTrfDto = new DetailTrfDto();
-                    detailTrfDto.setUserFullName("User Login");
-                    detailTrfDto.setTransferAmount(transferAmount);
-                    detailTrfDto.setBeneficiaryName(beneficiaryName);
-                    detailTrfDto.setSaveBankInfo(storeInfBeneficiaryBank);
-                    detailTrfDto.setBeneficiaryBankId(beneficiaryBankNameId);
-                    detailTrfDto.setBeneficiaryBankName(beneficiaryBankName);
-                    detailTrfDto.setAccountOrVaNumberBeneficiary(accountOrVaNumber);
-                    detailTrfDto.setTransferDescription(trfDesc.getText().toString());
-                    detailTrfDto.setTransactionDate(new Date(System.currentTimeMillis()).toString());
-
-
-                    //section for sending data
-                    String jsonDataSending = new Gson().toJson(detailTrfDto);
-                    System.out.println(jsonDataSending);
-
-                    //Start show popUp if trf success
-                    CustomWindowPopUp popUp = new CustomWindowPopUp(getLayoutInflater(), getResources());
-                    popUp.setMessages(R.string.success_trf_notification);
-                    popUp.setLabelRightButton(R.string.show_detail);
-                    popUp.setLabelLeftButton(R.string.back_to_dashboard);
-                    popUp.showPopUp(new OnClickPopUpBtn() {
-                        @Override
-                        public void onClickLeftButton() {
-                            finish();
-                        }
-
-                        @Override
-                        public void onClickRightButton() {
-                            Intent intent = new Intent(getApplicationContext(), DetailBankTrasnfer.class);
-                            intent.putExtra("detailsData", jsonDataSending);
-                            startActivity(intent);
-                        }
-                    });
-                    //end show popUp
-                }
-            }
-        });
     }
 
     private ViewGroup getArchiveBankList(){
@@ -441,7 +556,7 @@ public class BankTransferActivity extends AppCompatActivity {
     private void disabledProp(){
         finalDoTrfLayout.removeAllViews();
         bankActivityNav.setOnClickListener(null);
-        nexTrfActionBtn.setVisibility(View.GONE);
+        nextTrfActionBtn.setVisibility(View.GONE);
         finalDoTrfLayout.setVisibility(View.GONE);
         bankNameListField.setVisibility(View.GONE);
         rootTrfActivity.setVisibility(View.VISIBLE);
@@ -475,6 +590,6 @@ public class BankTransferActivity extends AppCompatActivity {
             rootBottomDetailTrf.setVisibility(View.GONE);
         }
 
-        nexTrfActionBtn.setLayoutParams(layoutParams);
+        nextTrfActionBtn.setLayoutParams(layoutParams);
     }
 }

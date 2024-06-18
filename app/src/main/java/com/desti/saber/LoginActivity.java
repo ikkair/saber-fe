@@ -37,10 +37,10 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
-
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         ImageSetterFromStream imageSetter = new ImageSetterFromStream(this);
+        setContentView(R.layout.activity_login);
+
         CheckBox rememberMe = findViewById(R.id.rememberMeCheckBox);
         Button logInButton = findViewById(R.id.logInBtnWithCredential);
         TextView titleSignUpClickable = findViewById(R.id.titleTextSignUpClickable);
@@ -163,7 +163,7 @@ public class LoginActivity extends AppCompatActivity {
                                 loginInfoEditor.putString("username", loginData[0].getName());
                                 loginInfoEditor.putString("token", loginData[0].getToken());
                                 loginInfoEditor.putString("role", loginData[0].getRole());
-                                loginInfoEditor.putString("user_id", loginData[0].getId());
+                                loginInfoEditor.putString(UserDetailKeys.USER_ID_KEY, loginData[0].getId());
                                 loginInfoEditor.putString("photo", loginData[0].getPhoto());
                                 loginInfoEditor.putString("balance", String.valueOf(loginData[0].getBalance()));
 

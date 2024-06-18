@@ -11,6 +11,7 @@ import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.view.*;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
@@ -58,7 +59,7 @@ public class DashboardActivity extends AppCompatActivity {
     private String trashPathPhotoLoc;
     private String trashTypeSelectedId;
     private String token;
-    private String userId;
+    String userId;
     private String notFoundLoc;
     private boolean disableBackPress = false;
     private View trashDeliverOnClickBtn;
@@ -72,6 +73,8 @@ public class DashboardActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
        super.onCreate(savedInstanceState);
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
         setContentView(R.layout.activity_dashboard);
 
         notFoundLoc = getString(R.string.not_found_loc);
@@ -85,7 +88,7 @@ public class DashboardActivity extends AppCompatActivity {
         SharedPreferences loginInfo = getSharedPreferences(UserDetailKeys.SHARED_PREF_LOGIN_KEY, Context.MODE_PRIVATE);
 
         token = loginInfo.getString("token", null);
-        userId = loginInfo.getString("user_id", null);
+        userId = loginInfo.getString(UserDetailKeys.USER_ID_KEY, null);
         password = loginInfo.getString(UserDetailKeys.PASSWORD_KEY, null);
 
         //change user name
@@ -273,16 +276,11 @@ public class DashboardActivity extends AppCompatActivity {
                                                                 progressBarImageProfile.setVisibility(View.GONE);
                                                                 wrapperImageProfile.setEnabled(true);
 
-                                                                try {
-                                                                    if (response.isSuccessful()) {
-                                                                        profileImage.setImageBitmap(bitmap);
-                                                                        setImageProfile(bitmap);
-                                                                    } else {
-                                                                        System.out.println(response.body().string());
-                                                                        Toast.makeText(activity, "Gagal Memperbahrui Data", Toast.LENGTH_LONG).show();
-                                                                    }
-                                                                } catch (IOException e) {
-                                                                    e.printStackTrace();
+                                                                if (response.isSuccessful()) {
+                                                                    profileImage.setImageBitmap(bitmap);
+                                                                    setImageProfile(bitmap);
+                                                                } else {
+                                                                    Toast.makeText(activity, "Gagal Memperbahrui Data", Toast.LENGTH_LONG).show();
                                                                 }
                                                             }
                                                         });
@@ -679,7 +677,7 @@ public class DashboardActivity extends AppCompatActivity {
             lastMenuPermissionRequest = view;
         }else {
             trashDeliverOnClickBtn = view;
-            Activity activity = DashboardActivity.this;
+            Activity activity = (Activity) getWindow().getContext();
 
             if (finalLocPickUp == null || finalLocPickUp.equals(notFoundLoc)) {
                 Toast.makeText(activity, R.string.loc_details, Toast.LENGTH_LONG).show();
@@ -742,7 +740,7 @@ public class DashboardActivity extends AppCompatActivity {
 
                                 failedConnectToServer(R.string.failed_con_server);
                             } catch (Exception e) {
-                                System.out.println(e.getCause());
+                                e.printStackTrace();
                             }
                         }
                     });
@@ -904,7 +902,6 @@ public class DashboardActivity extends AppCompatActivity {
 
                                             newDetailsPickupId.setAddress(locPickUp.getText().toString());
                                             newDetailsPickupId.setTime(pickupDate.getText().toString());
-                                            System.out.println(newDetailsPickupId.getAddress());
                                             pickupIdKey.put(newDetailsPickupId.getId(), newDetailsPickupId);
                                             Toast.makeText(activity, "Berhasil Memperbarui Detail Puickup", Toast.LENGTH_LONG).show();
                                         }
@@ -1236,7 +1233,6 @@ public class DashboardActivity extends AppCompatActivity {
                 popupWindow.showAtLocation(inflateTrashLay, Gravity.CENTER, 0, 0);
                 wrapperPickupId.setVisibility(View.GONE);
             }catch (Exception e){
-                System.out.println(Arrays.toString(e.getStackTrace()));
                 failedConnectToServer(R.string.failed_con_server);
             }
         }else{

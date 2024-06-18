@@ -1,6 +1,8 @@
 package com.desti.saber.LayoutHelper.SingleTrxListLayout;
 
+import android.app.Activity;
 import android.content.Context;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import com.desti.saber.R;
@@ -9,15 +11,14 @@ public class ParentSingleListViewGroup extends LinearLayout {
 
     public ParentSingleListViewGroup(Context context) {
         super(context, null, 0, R.style.single_layout_list_trx_history);
-
         LayoutParams layoutParams = new LayoutParams(
             LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.WRAP_CONTENT
         );
 
-        layoutParams.setMargins(20, 10, 20, 10);
+        layoutParams.setMargins(25, 15, 25, 15);
         setBackgroundResource(R.drawable.white_rounded_bg_border);
-        setPadding(10, 10, 10, 10);
+        setPadding(20, 10, 20, 10);
         setOrientation(LinearLayout.VERTICAL);
         setLayoutParams(layoutParams);
     }
@@ -50,5 +51,10 @@ public class ParentSingleListViewGroup extends LinearLayout {
         ActivityTitleTrxList activityStatus = new ActivityTitleTrxList(getContext());
         activityStatus.setActivityStatus(activityStatusText, onClickActionSingleListActivity);
         addView(activityStatus);
+    }
+
+    @Override
+    protected void removeDetachedView(View child, boolean animate) {
+        super.removeDetachedView(child, false);
     }
 }

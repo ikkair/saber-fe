@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class SingleTrxViewText extends androidx.appcompat.widget.AppCompatTextView {
 
+
     public SingleTrxViewText(@NonNull @NotNull Context context) {
         super(context);
     }

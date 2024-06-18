@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:background="@drawable/gradient_color_transparent_bg_btn"
+              android:layout_gravity="bottom|end"
+              android:clickable="true"
+              android:layout_marginEnd="10dp"
+              android:id="@+id/downloadReportButton"
+              android:layout_marginBottom="80dp"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:orientation="vertical"
+              android:focusable="true">
+
+    <androidx.appcompat.widget.AppCompatButton
+    android:id="@+id/mainBtnReportDownload"
+    android:background="@drawable/baseline_download_24"
+    android:layout_width="45dp"
+    android:layout_height="45dp"/>
+
+</LinearLayout>

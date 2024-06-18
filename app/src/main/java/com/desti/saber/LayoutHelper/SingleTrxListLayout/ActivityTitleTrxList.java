@@ -5,10 +5,7 @@ import android.content.Context;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.*;
 import androidx.annotation.NonNull;
 import com.desti.saber.R;
 import com.desti.saber.utils.ImageSetterFromStream;
@@ -17,11 +14,9 @@ public class ActivityTitleTrxList extends FrameLayout {
 
     private final ImageSetterFromStream imageSetterFromStream;
 
-    public ActivityTitleTrxList(@NonNull Context context) {
+    public ActivityTitleTrxList(Context context) {
         super(context);
-        this.imageSetterFromStream = new ImageSetterFromStream((Activity)getContext());
-        ViewGroup.LayoutParams layoutParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        setLayoutParams(layoutParams);
+        this.imageSetterFromStream = new ImageSetterFromStream((Activity) context);
     }
 
     public void setTitleActivityList(String titleActivityValue, String activityResultValue){
@@ -37,10 +32,11 @@ public class ActivityTitleTrxList extends FrameLayout {
 
     public void setActivityDescription(String descriptionValue){
         TextView textView = new TextView(getContext());
-        textView.setGravity(Gravity.END);
-        textView.setText(descriptionValue);
         textView.setTextAppearance(R.style.activity_result_text_trx_list);
-        textView.setPadding(0, 2,0, 5);
+        textView.setGravity(Gravity.END);
+        textView.setPadding(0, 20,0, 20);
+        textView.setText(descriptionValue);
+
         addView(textView);
     }
 
@@ -67,7 +63,7 @@ public class ActivityTitleTrxList extends FrameLayout {
         trashButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                onClickActionSingleListActivity.onClick();
+                onClickActionSingleListActivity.onClick(view);
             }
         });
     }

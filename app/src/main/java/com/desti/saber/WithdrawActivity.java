@@ -1,75 +1,82 @@
 package com.desti.saber;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.StrictMode;
 import android.view.*;
-import android.widget.Toast;
+import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
 
+import com.desti.saber.LayoutHelper.ProgressBar.ProgressBarHelper;
+import com.desti.saber.LayoutHelper.ReportDownload.ReportDownload;
 import com.desti.saber.LayoutHelper.SingleTrxListLayout.OnClickActionSingleListActivity;
 import com.desti.saber.LayoutHelper.SingleTrxListLayout.ParentSingleListViewGroup;
 import com.desti.saber.utils.GetUserDetailsCallback;
 import com.desti.saber.utils.IDRFormatCurr;
 import com.desti.saber.utils.ImageSetterFromStream;
+import com.desti.saber.utils.constant.ActivityStatusDetail;
 import com.desti.saber.utils.constant.GetImageProfileCallback;
+import com.desti.saber.utils.constant.PathUrl;
 import com.desti.saber.utils.constant.UserDetailKeys;
+import com.desti.saber.utils.dto.DataHistoricalResDTO;
+import com.desti.saber.utils.dto.ResponseGlobalJsonDTO;
 import com.desti.saber.utils.dto.UserDetailsDTO;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.OkHttpClient;
-import okhttp3.Response;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
-import java.sql.Date;
-import java.text.NumberFormat;
-import java.util.Currency;
+import java.io.*;
 
 public class WithdrawActivity extends AppCompatActivity {
 
     private ImageSetterFromStream imageSetterFromStream;
-    private View balanceLayout;
-    private  DashboardActivity dashboardActivity;
+    private DashboardActivity dashboardActivity;
+    private SharedPreferences loginInfo;
+    private LinearLayout balanceLayout;
+    private View histTrxList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
         setContentView(R.layout.activity_withdraw);
-        imageSetterFromStream = new ImageSetterFromStream(this);
 
-        Button balanceNavButton  = findViewById(R.id.balanceNavBtn);
-        Button historyTrxNavButton = findViewById(R.id.historyTransactionNavBtn);
-        ImageSetterFromStream setterFromStream = new ImageSetterFromStream(this);
+        loginInfo = getSharedPreferences("LoginInfo", Context.MODE_PRIVATE);
+        imageSetterFromStream = new ImageSetterFromStream(this);
         dashboardActivity = new DashboardActivity();
         dashboardActivity.rootActivity = this;
+
         ImageView profileImage = findViewById(R.id.profileImage);
+        Button balanceNavButton  = findViewById(R.id.balanceNavBtn);
+        Button historyTrxNavButton = findViewById(R.id.historyTransactionNavBtn);
         String getLocPickup = getIntent().getStringExtra(UserDetailKeys.PICK_LOCATION_KEY);
-        SharedPreferences loginInfo = getSharedPreferences("LoginInfo", Context.MODE_PRIVATE);
 
-
-        setterFromStream.setAsImageDrawable("def_user_profile.png", profileImage);
+        imageSetterFromStream.setAsImageBackground("balance_bg.png", R.id.balanceWrapper);
+        dashboardActivity.userId = loginInfo.getString(UserDetailKeys.USER_ID_KEY, null);
+        imageSetterFromStream.setAsImageDrawable("def_user_profile.png", profileImage);
+        balanceLayout = findViewById(R.id.balanceLayout);
         dashboardActivity.getImageProfile(
-                loginInfo.getString("photo", null),
-                this,
-                new OkHttpClient(),
-                new GetImageProfileCallback() {
-                    @Override
-                    public void fail(Call call, IOException e) {
-                        e.printStackTrace();
-                    }
-
-                    @Override
-                    public void success(Bitmap bitmap) {
-                        profileImage.setImageBitmap(bitmap);
-                    }
+            loginInfo.getString("photo", null),
+            this,
+            new OkHttpClient(),
+            new GetImageProfileCallback() {
+                @Override
+                public void fail(Call call, IOException e) {
+                    e.printStackTrace();
                 }
+
+                @Override
+                public void success(Bitmap bitmap) {
+                    profileImage.setImageBitmap(bitmap);
+                }
+            }
         );
 
         balanceNavButton.setOnClickListener(new View.OnClickListener() {
@@ -83,53 +90,126 @@ public class WithdrawActivity extends AppCompatActivity {
         historyTrxNavButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setHistoryTrx();
+                setHistoryTrx((Activity) getWindow().getContext());
             }
         });
 
-        this.setUserNameTittle(loginInfo.getString(UserDetailKeys.USERNAME_KEY, "Invalid Username"));
-        this.setPinPointLocTitle((getLocPickup == null) ? "Lokasi Tidak Diset" : getLocPickup);
+        setUserNameTittle(loginInfo.getString(UserDetailKeys.USERNAME_KEY, "Invalid Username"));
+        setPinPointLocTitle((getLocPickup == null) ? "Lokasi Tidak Diset" : getLocPickup);
         setBalanceLayout();
     }
 
-    //Section For Calling endpoint and Set List Trx History
-    private void setHistoryTrx(){
-        clearRecentLayout();
-        View inflateHistoryTrx = getLayoutInflater().inflate(R.layout.history_transaction_layout, findViewById(R.id.rootWithDrawActivity));
-        ViewGroup rootParentTrxList = inflateHistoryTrx.findViewById(R.id.rootParentTrxList);
-        Context context = rootParentTrxList.getContext();
+    // Section For Calling endpoint and Set List Trx History
+    private void setHistoryTrx(Activity activity){
+        balanceLayout.setVisibility(View.GONE);
+        histTrxList = findViewById(R.id.historyTransactionLayout);
+        removeTrxLayout();
 
-        //section for looping list trx history
-        this.runOnUiThread(new Runnable() {
+        histTrxList = getLayoutInflater().inflate(R.layout.history_transaction_layout, findViewById(R.id.rootWithDrawActivity));
+        ViewGroup rootParentTrxList = histTrxList.findViewById(R.id.trxListContainer);
+        ReportDownload reportDownload = new ReportDownload(this);
+        ProgressBar progressBar = histTrxList.findViewById(R.id.progressBar);
+        OkHttpClient okHttpClient = new OkHttpClient();
+        Request request = new Request.Builder()
+                .header(
+            "Authorization",
+            "Bearer " + loginInfo.getString(UserDetailKeys.TOKEN_KEY, "")
+                ).get()
+                .url(PathUrl.ENP_USER_ACTIVITY)
+                .build();
+
+        progressBar.setVisibility(View.VISIBLE);
+        okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
-            public void run() {
-                for(int i =0; i < 5; i++){
-                    ParentSingleListViewGroup parentSingleList = new ParentSingleListViewGroup(context);
-                    parentSingleList.setUserName("Susu Aku Ada " + String.valueOf(i));
-                    parentSingleList.setDate(new Date(System.currentTimeMillis()).toString());
-                    parentSingleList.setActivity("Penarikan Tunai " + i, "Rp. 999.999.999.999");
-                    parentSingleList.setDescription("Buat Beli " + i + " Toke Rp. " + i);
-                    parentSingleList.setActivityStatus("Berhasil", new OnClickActionSingleListActivity() {
-                        @Override
-                        public void onClick() {
-                            //use syntax at below if you get callback from server successfully delete history
-                            rootParentTrxList.removeView(parentSingleList);
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        progressBar.setVisibility(View.GONE);
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        progressBar.setVisibility(View.GONE);
+                        try {
+                            if(response.isSuccessful() && response.body() != null){
+                                String bodyResults = response.body().string();
+                                TypeToken<ResponseGlobalJsonDTO<DataHistoricalResDTO>>  typeToken = new TypeToken<ResponseGlobalJsonDTO<DataHistoricalResDTO>>(){};
+                                ResponseGlobalJsonDTO<DataHistoricalResDTO> globalJsonDTO = new Gson().fromJson(bodyResults, typeToken);
+                                DataHistoricalResDTO[] dataHistoricalResDTOS = globalJsonDTO.getData();
+
+                                for(int i = 0; i < dataHistoricalResDTOS.length; i++){
+                                    DataHistoricalResDTO historicalDTO = dataHistoricalResDTOS[i];
+                                    ParentSingleListViewGroup parentSingleList = new ParentSingleListViewGroup(activity);
+                                    parentSingleList.setUserName(historicalDTO.getActivityTitleGroup());
+                                    parentSingleList.setDate(historicalDTO.getActivityDate());
+                                    parentSingleList.setActivity(historicalDTO.getActivityTitleDetail(), historicalDTO.getTotalBalance());
+                                    parentSingleList.setDescription(historicalDTO.getActivityDesc());
+                                    parentSingleList.setActivityStatus(String.valueOf(ActivityStatusDetail.values()[historicalDTO.getActivityStatus()]), new OnClickActionSingleListActivity() {
+                                        @Override
+                                        public void onClick(View view) {
+                                            ProgressBarHelper.onProgress(getApplicationContext(),  view, true);
+                                            Request request = new Request.Builder()
+                                                    .header(
+                                                    "Authorization",
+                                                    "Bearer " + loginInfo.getString(UserDetailKeys.TOKEN_KEY, "")
+                                                    ).delete()
+                                                    .url(PathUrl.ENP_USER_ACTIVITY.concat("?actId=").concat(historicalDTO.getId()))
+                                                    .build();
+                                            okHttpClient.newCall(request).enqueue(new Callback() {
+                                                @Override
+                                                public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                                                    WithdrawActivity.this.runOnUiThread(new Runnable() {
+                                                        @Override
+                                                        public void run() {
+                                                            ProgressBarHelper.onProgress(getApplicationContext(),  view, false);
+                                                            Toast.makeText(getApplicationContext(), "Gagal Melakukan Penghapusan Histroy, periksa Internet", Toast.LENGTH_LONG).show();
+                                                        }
+                                                    });
+                                                }
+
+                                                @Override
+                                                public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                                                    WithdrawActivity.this.runOnUiThread(new Runnable() {
+                                                        @Override
+                                                        public void run() {
+                                                            String message = "Berhasil Menghapus History Dengan ID : " + historicalDTO.getId();
+                                                            if(response.isSuccessful()){
+                                                                rootParentTrxList.removeView(parentSingleList);
+                                                            }else{
+                                                                ProgressBarHelper.onProgress(getApplicationContext(),  view, false);
+                                                                message = "Gagal Melakukan Penghapusan Histroy";
+                                                            }
+                                                            Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
+                                                        }
+                                                    });
+                                                }
+                                            });
+                                        }
+                                    });
+
+                                    rootParentTrxList.addView(parentSingleList);
+                                }
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
-                    });
-                    rootParentTrxList.addView(parentSingleList);
-                }
+                    }
+                });
             }
         });
     }
 
-    //Section For Calling endpoint and Set Balance Value
     private void setBalanceLayout(){
-        clearRecentLayout();
+        removeTrxLayout();
 
-        ViewGroup rootActivity = findViewById(R.id.rootWithDrawActivity);
-        this.balanceLayout = getLayoutInflater().inflate(R.layout.balance_layout, rootActivity);
-        Button withdrawButton = balanceLayout.findViewById(R.id.withdrawBtn);
-
+        balanceLayout.setVisibility(View.VISIBLE);
+        Button withdrawButton = findViewById(R.id.withdrawBtn);
         withdrawButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -180,23 +260,11 @@ public class WithdrawActivity extends AppCompatActivity {
         });
     }
 
-    private void setImageProfile(Bitmap imageProfile){
-        this.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                ((ImageView) findViewById(R.id.profileImage)).setImageBitmap(imageProfile);
-            }
-        });
-    }
-
     private void setBalanceValue(Long balance){
         this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                int balanceWrapper = balanceLayout.findViewById(R.id.balanceWrapper).getId();
-                TextView balanceTextView = balanceLayout.findViewById(R.id.balanceTitle);
-                imageSetterFromStream.setAsImageBackground("balance_bg.png", balanceWrapper);
-
+                TextView balanceTextView = findViewById(R.id.balanceTitle);
                 if(balance == null){
                     balanceTextView.setText(0);
                 }else{
@@ -206,13 +274,11 @@ public class WithdrawActivity extends AppCompatActivity {
         });
     }
 
-    private void clearRecentLayout(){
-        if(findViewById(R.id.balanceLayout) != null){
-            ((ViewGroup) findViewById(R.id.balanceLayout).getParent()).removeView(findViewById(R.id.balanceLayout));
-        }
-        if(findViewById(R.id.historyTransactionLayout) != null){
-            ((ViewGroup) findViewById(R.id.historyTransactionLayout).getParent()).removeView(findViewById(R.id.historyTransactionLayout));
+    private void removeTrxLayout(){
+        ViewGroup layout = findViewById(R.id.historyTransactionLayout);
+        if(layout != null){
+            ViewGroup viewGroup = findViewById(R.id.rootWithDrawActivity);
+            viewGroup.removeView(layout);
         }
     }
-
 }

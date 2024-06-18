@@ -68,9 +68,7 @@
     <string name="desc_trf_field_hint">Masukan Deskripsi</string>
     <string name="invalid_amount">Silahkan Masukan Nilai Transfer Yang Sah, (0–9, 1 hingga 19 digit)</string>
     <string name="balance_available_transfer">Saldo yang Dapat Ditransfer :</string>
-    <string name="reached_limit_amount">Pemindahan Dana Dapat Dilakukan Dengan Nilai lebih dari 0 dan Tidak Melebihi
-        Saldo Tersedia
-    </string>
+    <string name="reached_limit_amount">Pemindahan Dana Gagal, Periksa Dana Tersedia dan Nonimal Pemindahan</string>
     <string name="success_trf_notification">Transfer Berhasil</string>
     <string name="back_to_dashboard">Kembali ke Branda</string>
     <string name="show_detail">Lihat Rincian</string>
@@ -125,7 +123,7 @@
         <item>CITIBANK N.A.</item>
         <item>KC JPMORGAN CHASE BANK, N.A.</item>
         <item>BANK OF AMERICA, N.A.</item>
-        <item>Bank China Construction Bank (Ex-Bank Windu Kentjana)</item>
+        <item>Bank China Construction Bank</item>
         <item>PT.BANK ARTHA GRAHA INT\'L,TBK</item>
         <item>BANGKOK BANK PUBLIC CO.LTD.</item>
         <item>MUFG Bank</item>
@@ -185,11 +183,11 @@
         <item>PT BANK JABAR BANTEN SYARIAH</item>
         <item>PT.BANK MEGA TBK</item>
         <item>Bank KB Bukopin</item>
-        <item>Bank Syariah Indonesia (Ex-Bank Syariah Mandiri,BRI Syariah, BNI Syariah)</item>
+        <item>Bank Syariah Indonesia</item>
         <item>PT. BANK JASA JAKARTA</item>
         <item>PT BANK KEB HANA</item>
         <item>PT BANK MNC INTERNASIONAL</item>
-        <item>Bank Neo Commerce (Ex-Bank Yudha Bhakti)</item>
+        <item>Bank Neo Commerce</item>
         <item>PT. BANK RAKYAT INDONESIA AGRONIAGA TBK.</item>
         <item>PT. BANK SBI INDONESIA</item>
         <item>Bank Digital BCA (Ex-Bank Royal)</item>
@@ -210,18 +208,19 @@
         <item>PT. BANK INDEX SELINDO</item>
         <item>Bank Mantap</item>
         <item>PT.BANK VICTORIA INTERNASIONAL</item>
-        <item>ALLO BANK (ex PT. BANK HARDA INTERNASIONAL)</item>
+        <item>ALLO BANK</item>
         <item>BPR Supra</item>
         <item>BPR KS</item>
         <item>IMkas</item>
         <item>BPR Eka</item>
         <item>LinkAja</item>
-        <item>Bank IBK Indonesia (Ex-Bank Agris)</item>
+        <item>Bank IBK Indonesia</item>
         <item>Bank Aladin Syariah</item>
         <item>PT. BANK CTBC INDONESIA</item>
         <item>PT. BANK COMMONWEALTH</item>
     </string-array>
     <string-array name="beneficiary_bank_mock">
+        <item>12345678|6</item>
         <item>29489889|60</item>
         <item>82559650|15</item>
         <item>71143968|107</item>
@@ -374,6 +373,7 @@
         <item>3445127|1</item>
     </string-array>
     <string-array name="beneficiary_name_mock">
+        <item>Desti Nurdiana</item>
         <item>I Ramanta Cardinata</item>
         <item>Fauzan Cahyani</item>
         <item>Asyrafi Satrio</item>

@@ -1,6 +1,7 @@
 package com.desti.saber.utils.constant;
 
 public class PathUrl {
+//    private static final String ROOT_HOST = "http://192.168.43.170:4000";
     private static final String ROOT_HOST = "https://saber-be.vercel.app";
     public static final String ROOT_PATH_USER = ROOT_HOST + "/users";
     public static final String ROOT_PATH_TRASH = ROOT_HOST + "/trashes";
@@ -9,5 +10,6 @@ public class PathUrl {
     public static final String ROOT_PATH_WITHDRAW = ROOT_HOST + "/withdrawals";
     public static final String ENP_REGISTER_USER = ROOT_PATH_USER + "/register";
     public static final String ENP_LOGIN_USER = ROOT_PATH_USER + "/login";
+    public static final String ENP_USER_ACTIVITY = ROOT_HOST + "/historicalActivity";
 }
 
