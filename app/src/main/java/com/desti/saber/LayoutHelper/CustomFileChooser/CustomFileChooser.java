@@ -1,4 +1,4 @@
-package com.desti.saber.LayoutHelper.ManualImageChoser;
+package com.desti.saber.LayoutHelper.CustomFileChooser;
 
 import android.Manifest;
 import android.app.Activity;
@@ -7,35 +7,62 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Environment;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import com.desti.saber.R;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ManualImageChooser extends Activity{
+public class CustomFileChooser extends AppCompatActivity {
 
     private final Activity activity;
     private ViewGroup parent;
 
-    public ManualImageChooser(Activity activity) {
+    public CustomFileChooser(Activity activity) {
        this.activity = activity;
     }
 
-    public void startChooser(SuccessSetImage successSetImage){
-        int checkStorageRead = activity.checkCallingOrSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
+    public void startImageChooser(SuccessSetImage successSetImage){
+        baseChooser(new ObjectOnClick() {
+            @Override
+            public void onFileClick(File file, ViewGroup parentFileChooser) {
+                try{
+                    Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+                    if(bitmap != null){
+                        successSetImage.success(bitmap, file.getAbsolutePath(), parentFileChooser);
+                    }else{
+                        Toast.makeText(activity, R.string.trash_photo_format, Toast.LENGTH_LONG).show();
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                    Toast.makeText(activity, R.string.fail_set_image, Toast.LENGTH_LONG).show();
+                }
+            }
 
-        if(checkStorageRead == PackageManager.PERMISSION_GRANTED){
+            @Override
+            public void onDirectoryClick(File file, ViewGroup parentFileChooser) {
+
+            }
+        });
+    }
+
+    public void startDirectoryChooser(ObjectOnClick objectOnClick){
+        baseChooser(objectOnClick);
+    }
+
+    private void baseChooser(ObjectOnClick objectOnClick){
+        int checkStorageRead = activity.checkCallingOrSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
+        int checkStorageWrite = activity.checkCallingOrSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        if(checkStorageRead == PackageManager.PERMISSION_GRANTED && checkStorageWrite == PackageManager.PERMISSION_GRANTED){
             ViewGroup popParent = parent;
             ViewGroup inflater = (ViewGroup) LayoutInflater.from(activity).inflate(R.layout.directory_pop_up_layout, popParent, true);
             ViewGroup dirListLocationView = inflater.findViewById(R.id.rootDirectoryList);
@@ -53,10 +80,10 @@ public class ManualImageChooser extends Activity{
                 for(int i =0; i < lisFiles.length; i++){
                     File sgFile = lisFiles[i];
                     View inflateTvFile = activity.getLayoutInflater()
-                    .inflate(
-                        R.layout.single_list_file_choser,
-                        dirListLocationView, false
-                    );
+                            .inflate(
+                                    R.layout.single_list_file_choser,
+                                    dirListLocationView, false
+                            );
                     TextView singleTvFile = inflateTvFile.findViewById(singleTvNameId);
                     TextView singleTvLoc = inflateTvFile.findViewById(singleTvLocId);
 
@@ -68,16 +95,16 @@ public class ManualImageChooser extends Activity{
                         public void onClick(View v) {
                             TextView sgFileNextDirTvLoc = v.findViewById(singleTvLocId);
                             String fullPathByLocField = sgFileNextDirTvLoc.getText().toString();
-                            File nextDir = new File(fullPathByLocField);
+                            File file = new File(fullPathByLocField);
 
-                            if(nextDir.isDirectory()){
-                                File[] nextDirList = nextDir.listFiles();
+                            if(file.isDirectory()){
+                                File[] nextDirList = file.listFiles();
 
                                 if(nextDirList != null){
                                     if(nextDirList.length < 1){
                                         Toast.makeText(
                                             activity,
-                                            "Tidak Ada Berkas Pada Folder " + nextDir.getName(),
+                                            "Tidak Ada Berkas Pada Folder " + file.getName(),
                                             Toast.LENGTH_LONG
                                         ).show();
                                     }else{
@@ -99,29 +126,37 @@ public class ManualImageChooser extends Activity{
                                             singleTvLoc.setText(nextDirSgFile.getAbsolutePath());
                                             dirListLocationView.addView(inflateNextDir);
 
-                                            inflateNextDir.setOnClickListener(new View.OnClickListener() {
+//                                            inflateNextDir.setOnClickListener(new View.OnClickListener() {
+//                                                @Override
+//                                                public void onClick(View v) {
+//
+//                                                }
+//                                            });
+                                            inflateNextDir.setOnTouchListener(new View.OnTouchListener() {
+                                                long startTime = 0;
+
                                                 @Override
-                                                public void onClick(View v) {
-                                                    ((TextView) inflateTvFile.findViewById(singleTvLocId))
-                                                    .setText(nextDirSgFile.getAbsolutePath());
-                                                    inflateTvFile.callOnClick();
+                                                public boolean onTouch(View v, MotionEvent event) {
+                                                    if(event.getAction() == MotionEvent.ACTION_DOWN){
+                                                        startTime = System.currentTimeMillis();
+                                                    }else{
+                                                        if((System.currentTimeMillis() - startTime) >= 800){
+                                                            Toast.makeText(activity, "Alamat Folder Dipilih", Toast.LENGTH_LONG).show();
+                                                        }else{
+                                                            ((TextView) inflateTvFile.findViewById(singleTvLocId)).setText(nextDirSgFile.getAbsolutePath());
+                                                            objectOnClick.onDirectoryClick(file, parent);
+                                                            inflateTvFile.callOnClick();
+                                                        }
+                                                    }
+
+                                                    return true;
                                                 }
                                             });
                                         }
                                     }
                                 }
                             }else{
-                                try{
-                                    Bitmap bitmap = BitmapFactory.decodeFile(fullPathByLocField);
-                                    if(bitmap != null){
-                                       successSetImage.success(bitmap, fullPathByLocField, parent);
-                                    }else{
-                                        Toast.makeText(activity, R.string.trash_photo_format, Toast.LENGTH_LONG).show();
-                                    }
-                                }catch (Exception e){
-                                    e.printStackTrace();
-                                    Toast.makeText(activity, R.string.fail_set_image, Toast.LENGTH_LONG).show();
-                                }
+                                objectOnClick.onFileClick(file, parent);
                             }
                         }
                     });
@@ -141,7 +176,6 @@ public class ManualImageChooser extends Activity{
                                         fileTraceClicked.remove(trashBackwardClick-1);
                                     }
                                 }
-
                             }
                         });
                     }
@@ -154,6 +188,8 @@ public class ManualImageChooser extends Activity{
                     inflater.removeView(inflater.findViewById(R.id.parentDirectoryList));
                 }
             });
+        }else{
+            readStoragePermission();
         }
     }
 
@@ -161,7 +197,15 @@ public class ManualImageChooser extends Activity{
         this.parent = parent;
     }
 
-    public void closeImageChooser(ViewGroup parentFileChooser){
+    public void closeCustomChooser(ViewGroup parentFileChooser){
         parentFileChooser.removeView(parentFileChooser.findViewById(R.id.parentDirectoryList));
+    }
+
+    public void  readStoragePermission(){
+        System.out.println("ABCD");
+        String[] permissionList = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        ActivityCompat.requestPermissions(
+            activity, permissionList, PackageManager.PERMISSION_GRANTED
+        );
     }
 }

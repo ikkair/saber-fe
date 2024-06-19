@@ -20,8 +20,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import androidx.core.app.ActivityCompat;
-import com.desti.saber.LayoutHelper.ManualImageChoser.ManualImageChooser;
-import com.desti.saber.LayoutHelper.ManualImageChoser.SuccessSetImage;
+import com.desti.saber.LayoutHelper.CustomFileChooser.CustomFileChooser;
+import com.desti.saber.LayoutHelper.CustomFileChooser.SuccessSetImage;
 import com.desti.saber.LayoutHelper.ProgressBar.ProgressBarHelper;
 import com.desti.saber.utils.GPSTrackerHelper;
 import com.desti.saber.utils.GetUserDetailsCallback;
@@ -230,9 +230,9 @@ public class DashboardActivity extends AppCompatActivity {
                                 wrapperImageProfile.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
-                                        ManualImageChooser manualImageChooser = new ManualImageChooser(activity);
-                                        manualImageChooser.setParent((ViewGroup) popUpViewCv);
-                                        manualImageChooser.startChooser(new SuccessSetImage() {
+                                        CustomFileChooser customFileChooser = new CustomFileChooser(activity);
+                                        customFileChooser.setParent((ViewGroup) popUpViewCv);
+                                        customFileChooser.startImageChooser(new SuccessSetImage() {
                                             @Override
                                             public void success(Bitmap bitmap, String bitmapLoc, ViewGroup parentFileChooser) {
                                                 File profileImageBitmap = new File(bitmapLoc);
@@ -289,7 +289,7 @@ public class DashboardActivity extends AppCompatActivity {
 
                                                 v.setEnabled(false);
                                                 progressBarImageProfile.setVisibility(View.VISIBLE);
-                                                manualImageChooser.closeImageChooser(parentFileChooser);
+                                                customFileChooser.closeCustomChooser(parentFileChooser);
                                             }
                                         });
                                     }
@@ -1171,7 +1171,7 @@ public class DashboardActivity extends AppCompatActivity {
                 TextView trashAmount = inflateTrashLay.findViewById(R.id.trashAmount);
                 Button cancel = inflateTrashLay.findViewById(R.id.cancelTrashProcess);
                 Button storeTrashesButton = inflateTrashLay.findViewById(R.id.processStoreTrash);
-                ManualImageChooser manualImageChooser = new ManualImageChooser(this);
+                CustomFileChooser customFileChooser = new CustomFileChooser(this);
 
                 trashPhoto = inflateTrashLay.findViewById(R.id.trashPhoto);
                 imageSetterFromStream.setAsImageDrawable("defImage.png", trashPhoto);
@@ -1179,13 +1179,13 @@ public class DashboardActivity extends AppCompatActivity {
                 trashPhoto.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        manualImageChooser.setParent((ViewGroup) trashPhoto.getParent().getParent().getParent());
-                        manualImageChooser.startChooser(new SuccessSetImage() {
+                        customFileChooser.setParent((ViewGroup) trashPhoto.getParent().getParent().getParent());
+                        customFileChooser.startImageChooser(new SuccessSetImage() {
                             @Override
                             public void success(Bitmap bitmap, String bitmapLoc, ViewGroup parentFileChooser) {
                                 trashPathPhotoLoc = bitmapLoc;
                                 trashPhoto.setImageBitmap(bitmap);
-                                manualImageChooser.closeImageChooser(parentFileChooser);
+                                customFileChooser.closeCustomChooser(parentFileChooser);
                             }
                         });
                     }
@@ -1366,8 +1366,8 @@ public class DashboardActivity extends AppCompatActivity {
         }
     }
 
-    private void  readStoragePermission(){
-        String[] permissionList = {Manifest.permission.READ_EXTERNAL_STORAGE};
+    public void  readStoragePermission(){
+        String[] permissionList = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
         ActivityCompat.requestPermissions(
         this, permissionList, PackageManager.PERMISSION_GRANTED
         );

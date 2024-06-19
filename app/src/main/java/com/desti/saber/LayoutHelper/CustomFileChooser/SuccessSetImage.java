@@ -1,4 +1,4 @@
-package com.desti.saber.LayoutHelper.ManualImageChoser;
+package com.desti.saber.LayoutHelper.CustomFileChooser;
 
 import android.graphics.Bitmap;
 import android.view.ViewGroup;
