@@ -2,10 +2,16 @@ package com.desti.saber.LayoutHelper.CustomFileChooser;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
+import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -15,18 +21,24 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import com.desti.saber.BuildConfig;
 import com.desti.saber.R;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
-public class CustomFileChooser extends AppCompatActivity {
+public class CustomFileChooser {
 
+    private ViewGroup dirListLocationView;
     private final Activity activity;
     private ViewGroup parent;
+    private List<String> traceListPath;
 
     public CustomFileChooser(Activity activity) {
+        traceListPath = new ArrayList<>();
        this.activity = activity;
     }
 
@@ -51,141 +63,70 @@ public class CustomFileChooser extends AppCompatActivity {
             public void onDirectoryClick(File file, ViewGroup parentFileChooser) {
 
             }
+
+            @Override
+            public void onCancelPressed(View view) {
+
+            }
+
+            @Override
+            public void onDirectoryHoldPress(File file, ViewGroup parentFileChooser, String absolutePathLocation) {
+
+            }
         });
     }
 
-    public void startDirectoryChooser(ObjectOnClick objectOnClick){
-        baseChooser(objectOnClick);
-    }
-
-    private void baseChooser(ObjectOnClick objectOnClick){
+    public void baseChooser(ObjectOnClick objectOnClick){
         int checkStorageRead = activity.checkCallingOrSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
         int checkStorageWrite = activity.checkCallingOrSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
+        if(Build.VERSION.SDK_INT >= 30){
+            int checkManageStorage = activity.checkCallingOrSelfPermission(Manifest.permission.MANAGE_EXTERNAL_STORAGE);
+
+            if(checkManageStorage == PackageManager.PERMISSION_GRANTED){
+                readStoragePermission();
+                return;
+            }
+        }
+
         if(checkStorageRead == PackageManager.PERMISSION_GRANTED && checkStorageWrite == PackageManager.PERMISSION_GRANTED){
+            View checkExistsPopUp = parent.getRootView().findViewById(R.id.parentDirectoryList);
+
+            if(checkExistsPopUp != null){
+                ((ViewGroup) parent.getRootView()).removeView(checkExistsPopUp);
+            }
+
             ViewGroup popParent = parent;
             ViewGroup inflater = (ViewGroup) LayoutInflater.from(activity).inflate(R.layout.directory_pop_up_layout, popParent, true);
-            ViewGroup dirListLocationView = inflater.findViewById(R.id.rootDirectoryList);
-            Button backWardLoc = inflater.findViewById(R.id.backTraceLocBtn);
-            Button backButtonDir = inflater.findViewById(R.id.cancelSelectImg);
-            List<String> fileTraceClicked = new ArrayList<>();
-            int singleTvLocId = R.id.singleTvFileLoc;
-            int singleTvNameId = R.id.singleTvFileName;
+            dirListLocationView = inflater.findViewById(R.id.rootDirectoryList);
             File envExternalStorage = Environment.getExternalStorageDirectory();
-            File[] lisFiles = envExternalStorage.listFiles();
+            Button backButtonDir = inflater.findViewById(R.id.cancelSelectImg);
+            Button backTraceButton = inflater.findViewById(R.id.backTraceLocBtn);
 
-            fileTraceClicked.add(envExternalStorage.getAbsolutePath());
-
-            if(lisFiles != null){
-                for(int i =0; i < lisFiles.length; i++){
-                    File sgFile = lisFiles[i];
-                    View inflateTvFile = activity.getLayoutInflater()
-                            .inflate(
-                                    R.layout.single_list_file_choser,
-                                    dirListLocationView, false
-                            );
-                    TextView singleTvFile = inflateTvFile.findViewById(singleTvNameId);
-                    TextView singleTvLoc = inflateTvFile.findViewById(singleTvLocId);
-
-                    singleTvLoc.setText(sgFile.getAbsolutePath());
-                    singleTvFile.setText(sgFile.getName());
-                    dirListLocationView.addView(inflateTvFile);
-                    inflateTvFile.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            TextView sgFileNextDirTvLoc = v.findViewById(singleTvLocId);
-                            String fullPathByLocField = sgFileNextDirTvLoc.getText().toString();
-                            File file = new File(fullPathByLocField);
-
-                            if(file.isDirectory()){
-                                File[] nextDirList = file.listFiles();
-
-                                if(nextDirList != null){
-                                    if(nextDirList.length < 1){
-                                        Toast.makeText(
-                                            activity,
-                                            "Tidak Ada Berkas Pada Folder " + file.getName(),
-                                            Toast.LENGTH_LONG
-                                        ).show();
-                                    }else{
-                                        if(!fileTraceClicked.contains(fullPathByLocField)){
-                                            fileTraceClicked.add(fullPathByLocField);
-                                        }
-
-                                        dirListLocationView.removeAllViews();
-                                        for(File nextDirSgFile : nextDirList){
-                                            View inflateNextDir = activity.getLayoutInflater()
-                                            .inflate(
-                                                R.layout.single_list_file_choser,
-                                                dirListLocationView, false
-                                            );
-                                            TextView tvNextDir = inflateNextDir.findViewById(singleTvNameId);
-                                            TextView singleTvLoc = inflateNextDir.findViewById(singleTvLocId);
-
-                                            tvNextDir.setText(nextDirSgFile.getName());
-                                            singleTvLoc.setText(nextDirSgFile.getAbsolutePath());
-                                            dirListLocationView.addView(inflateNextDir);
-
-//                                            inflateNextDir.setOnClickListener(new View.OnClickListener() {
-//                                                @Override
-//                                                public void onClick(View v) {
-//
-//                                                }
-//                                            });
-                                            inflateNextDir.setOnTouchListener(new View.OnTouchListener() {
-                                                long startTime = 0;
-
-                                                @Override
-                                                public boolean onTouch(View v, MotionEvent event) {
-                                                    if(event.getAction() == MotionEvent.ACTION_DOWN){
-                                                        startTime = System.currentTimeMillis();
-                                                    }else{
-                                                        if((System.currentTimeMillis() - startTime) >= 800){
-                                                            Toast.makeText(activity, "Alamat Folder Dipilih", Toast.LENGTH_LONG).show();
-                                                        }else{
-                                                            ((TextView) inflateTvFile.findViewById(singleTvLocId)).setText(nextDirSgFile.getAbsolutePath());
-                                                            objectOnClick.onDirectoryClick(file, parent);
-                                                            inflateTvFile.callOnClick();
-                                                        }
-                                                    }
-
-                                                    return true;
-                                                }
-                                            });
-                                        }
-                                    }
-                                }
-                            }else{
-                                objectOnClick.onFileClick(file, parent);
-                            }
-                        }
-                    });
-
-                    if(i == 0){
-                        backWardLoc.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                int trashBackwardClick = fileTraceClicked.size();
-
-                                if(trashBackwardClick >= 1){
-                                    int getBackTracePath = (trashBackwardClick == 1) ? 0 : trashBackwardClick-2;
-                                    ((TextView) inflateTvFile.findViewById(singleTvLocId)).setText(fileTraceClicked.get(getBackTracePath));
-                                    inflateTvFile.callOnClick();
-
-                                    if(trashBackwardClick > 1){
-                                        fileTraceClicked.remove(trashBackwardClick-1);
-                                    }
-                                }
-                            }
-                        });
-                    }
-                }
-            }
+            traceListPath.add(envExternalStorage.getAbsolutePath());
+            listingDir(envExternalStorage.getAbsolutePath(), objectOnClick);
 
             backButtonDir.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    inflater.removeView(inflater.findViewById(R.id.parentDirectoryList));
+                    objectOnClick.onCancelPressed(v);
+                    closeCustomChooser(parent);
+                }
+            });
+
+            backTraceButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(traceListPath.size() >= 1){
+                        int calcBackTraceIndex = traceListPath.size()-1;
+                        String copyIndex = String.valueOf(traceListPath.get(calcBackTraceIndex));
+
+                        if(calcBackTraceIndex > 0){
+                            traceListPath.remove(calcBackTraceIndex);
+                        }
+
+                        listingDir(copyIndex, objectOnClick);
+                    }
                 }
             });
         }else{
@@ -202,10 +143,76 @@ public class CustomFileChooser extends AppCompatActivity {
     }
 
     public void  readStoragePermission(){
-        System.out.println("ABCD");
-        String[] permissionList = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        List<String> permissionList = new ArrayList<>();
+        boolean checkApiLevel = (Build.VERSION.SDK_INT >= 30);
+
+        permissionList.add(Manifest.permission.READ_EXTERNAL_STORAGE);
+        permissionList.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        if(checkApiLevel){
+            permissionList.add(Manifest.permission.MANAGE_EXTERNAL_STORAGE);
+        }
+
         ActivityCompat.requestPermissions(
-            activity, permissionList, PackageManager.PERMISSION_GRANTED
+            activity, permissionList.toArray(new String[0]), PackageManager.PERMISSION_GRANTED
         );
+
+        if(checkApiLevel){
+            Uri uri= Uri.fromParts("package", activity.getPackageName(), null);
+            Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+
+            intent.setData(uri);
+            activity.startActivity(intent);
+        }
+    }
+
+    private void listingDir(String rootDirPath, ObjectOnClick objectOnClick){
+        File rootDir = new File(rootDirPath);
+
+        if(rootDir.exists() && rootDir.isDirectory() && rootDir.list() != null){
+            if(rootDir.list().length > 0){
+                dirListLocationView.removeAllViews();
+            }
+
+            for (String singlePathDir : rootDir.list()){
+                String singlePathRootDir = rootDir.getAbsolutePath();
+                String singleFullPathDir = singlePathRootDir + "/" + singlePathDir;
+                View layoutInflater = LayoutInflater.from(dirListLocationView.getContext()).inflate(R.layout.single_list_file_choser,null);
+                TextView singleTvFile = layoutInflater.findViewById(R.id.singleTvFileName);
+                File checkFile = new File(singleFullPathDir);
+
+                singleTvFile.setText(singlePathDir);
+                layoutInflater.setOnTouchListener(new View.OnTouchListener() {
+                    private long startClick = 0;
+
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        if(event.getAction() == MotionEvent.ACTION_DOWN) {
+                            startClick = System.currentTimeMillis();
+                        } else if(event.getAction() == MotionEvent.ACTION_UP){
+                            if((System.currentTimeMillis() - startClick) >= 500){
+                                if(checkFile.isDirectory()) {
+                                    objectOnClick.onDirectoryHoldPress(checkFile, parent, singleFullPathDir);
+                                }
+                            }else{
+                                if(checkFile.isDirectory()){
+                                    listingDir(singleFullPathDir, objectOnClick);
+                                    if(!traceListPath.contains(singlePathRootDir)){
+                                        traceListPath.add(singlePathRootDir);
+                                    }
+                                    objectOnClick.onDirectoryClick(checkFile, parent);
+                                }else {
+                                    objectOnClick.onFileClick(checkFile, parent);
+                                }
+                            }
+                        }
+
+                        return true;
+                    }
+                });
+
+                dirListLocationView.addView(layoutInflater);
+            }
+        }
     }
 }

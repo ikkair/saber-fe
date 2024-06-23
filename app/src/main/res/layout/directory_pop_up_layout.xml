@@ -1,40 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
-        android:id="@+id/parentDirectoryList"
-        xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/parentDirectoryList"
+    android:background="@color/transparent_blue_dark"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent">
+
+    <LinearLayout
+        android:layout_gravity="center_horizontal|center_vertical"
         android:orientation="vertical"
-        android:layout_margin="10dp"
-        android:padding="20dp"
-        android:layout_height="match_parent"
+        android:layout_marginTop="50dp"
+        android:layout_marginBottom="50dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:padding="15dp"
         android:background="@drawable/white_rounded_bg"
-        android:layout_width="match_parent">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/backTraceLocBtn"
-        android:background="@drawable/baseline_arrow_back_24"
-        android:layout_width="24dp"
-        android:layout_height="24dp"/>
+        <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/backTraceLocBtn"
+                android:background="@drawable/baseline_arrow_back_24"
+                android:layout_width="24dp"
+                android:layout_height="24dp"/>
 
-    <ScrollView
-        android:layout_marginTop="15dp"
-        android:layout_marginBottom="15dp"
-        android:layout_weight="1"
-        android:layout_height="0dp"
-        android:layout_width="match_parent">
+        <ScrollView
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="15dp"
+                android:layout_weight="1"
+                android:layout_height="0dp"
+                android:layout_width="match_parent">
 
-        <LinearLayout
-                android:orientation="vertical"
-                android:id="@+id/rootDirectoryList"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+            <LinearLayout
+                    android:orientation="vertical"
+                    android:id="@+id/rootDirectoryList"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
 
-    </ScrollView>
+        </ScrollView>
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:textSize="20sp"
-        android:id="@+id/cancelSelectImg"
-        android:layout_gravity="center"
-        android:text="@string/cancel_store_trash"
-        style="@style/popUpBtn"/>
+        <androidx.appcompat.widget.AppCompatButton
+                android:textSize="20sp"
+                android:id="@+id/cancelSelectImg"
+                android:layout_gravity="center"
+                android:text="@string/cancel_store_trash"
+                style="@style/popUpBtn"/>
 
+    </LinearLayout>
 </LinearLayout>

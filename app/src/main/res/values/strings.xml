@@ -1,20 +1,7 @@
 <resources>
     <string name="app_name">Saber</string>
     <string name="button_login">Log In</string>
-    <string name="button_detail_akun">Detail Akun</string>
-    <string name="button_register">Register</string>
-    <string name="button_tarik_tunai">Tarik Tunai</string>
-    <string name="button_setor_sampah">Setor Sampah</string>
-    <string name="title_activity_login">LoginActivity</string>
-    <string name="prompt_email">Email</string>
-    <string name="prompt_name">Name</string>
-    <string name="prompt_password">Password</string>
-    <string name="action_sign_in">Sign in or register</string>
     <string name="action_sign_up">Sign Up</string>
-    <string name="welcome">"Welcome !"</string>
-    <string name="invalid_username">Not a valid username</string>
-    <string name="invalid_password">Password must be >5 characters</string>
-    <string name="login_failed">"Login failed"</string>
     <string name="head_title_log_in_form_huge">Selamat Datang Kembali</string>
     <string name="head_title_log_in_form_small">Masuk dengan akun mu</string>
     <string name="foot_title_huge">Selamat Datang di SABER</string>
@@ -26,13 +13,7 @@
     <string name="title_hint_input_text_email_or_name">Masukkan E-mail</string>
     <string name="title_hint_input_text_password">Password</string>
     <string name="title_hint_input_text_name">Nama Depan</string>
-    <string name="title_hint_input_text_address">Alamat</string>
-    <string name="title_hint_input_text_phone">Telepon</string>
     <string name="title_hint_input_text_email">E-mail</string>
-    <string name="title_hint_input_text_password_confirm">Konfirmasi Password</string>
-    <string name="log_in_alternative_title">Atau Login dengan ?</string>
-    <string name="google_account_title">Akun Google anda</string>
-    <string name="google_title_logo">G</string>
     <string name="dashboard_title_menu_2">Menu Berarti</string>
     <string name="withdraw_label">Tarik Tunai</string>
     <string name="trash_deliver_label">Setor Sampah</string>
@@ -75,7 +56,6 @@
     <string name="greeting_text_bottom">Salam bersih Saber\nMenanti Sampah Mu</string>
     <string name="store_your_trash">Masukan Detail Sampah Kamu</string>
     <string name="trash_description">Deskripsi Sampah atau Barang</string>
-    <string name="pickup_id">Id Pengambilan Sampah</string>
     <string name="trash_weight">Berat Sampah atau Barang (Kilo Gram)</string>
     <string name="trash_type">Type Sampah atau Barang</string>
     <string name="continue_store_trash">Store Sampah</string>

@@ -134,14 +134,14 @@ public class LoginActivity extends AppCompatActivity {
         .post(requestBody)
         .build();
 
-        ProgressBarHelper.onProgress(getApplication(), view, true);
+        ProgressBarHelper.onProgress( view, true);
         okHttpHandler.requestAsync(this, request, new OkHttpHandler.MyCallback() {
             @Override
             public void onSuccess(Context context, Response response) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        ProgressBarHelper.onProgress(getApplication(), view, false);
+                        ProgressBarHelper.onProgress( view, false);
                         int responseType = response.code()/100;
 
                         SharedPreferences loginInfo = getSharedPreferences(UserDetailKeys.SHARED_PREF_LOGIN_KEY, Context.MODE_PRIVATE);
@@ -201,7 +201,7 @@ public class LoginActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        ProgressBarHelper.onProgress(getApplication(), view, false);
+                        ProgressBarHelper.onProgress( view, false);
                         Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });

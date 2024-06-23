@@ -11,7 +11,7 @@ import android.widget.ProgressBar;
 import com.desti.saber.R;
 
 public class ProgressBarHelper {
-    public static void onProgress(Context context, View view, boolean mode) {
+    public static void onProgress( View view, boolean mode) {
         ViewGroup parent = (ViewGroup) view.getParent();
         Context newConText = parent.getRootView().getContext();
         int layoutId = R.layout.loading_progressbar;
@@ -30,6 +30,7 @@ public class ProgressBarHelper {
             if(progressBar != null){
                 parent.removeView(progressBar);
             }
+
             view.setVisibility(View.VISIBLE);
         }
     }

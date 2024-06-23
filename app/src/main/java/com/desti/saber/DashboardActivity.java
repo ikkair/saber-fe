@@ -64,8 +64,6 @@ public class DashboardActivity extends AppCompatActivity {
     private boolean disableBackPress = false;
     private View trashDeliverOnClickBtn;
     private ImageView iconProfileImage;
-    private String permissionRequest;
-    private View lastMenuPermissionRequest;
     private String password;
     public Activity rootActivity;
 
@@ -73,8 +71,6 @@ public class DashboardActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
        super.onCreate(savedInstanceState);
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
         setContentView(R.layout.activity_dashboard);
 
         notFoundLoc = getString(R.string.not_found_loc);
@@ -156,253 +152,247 @@ public class DashboardActivity extends AppCompatActivity {
     }
 
     private void detailAccountOnClick(View v){
-        if(checkCallingOrSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
-            readStoragePermission();
-            permissionRequest = "detailAccount";
-            lastMenuPermissionRequest = v;
-        }else {
-            Activity activity = this;
-            OkHttpClient okHttpClient = new OkHttpClient();
-            ProgressBarHelper.onProgress(activity, v, true);
-            getDetailsUser(new GetUserDetailsCallback() {
-                @Override
-                public void failure(Call call, IOException e) {
-                    activity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            ProgressBarHelper.onProgress(activity, v, false);
-                            failedConnectToServer(R.string.failed_con_server);
-                        }
-                    });
-                }
+        Activity activity = this;
+        OkHttpClient okHttpClient = new OkHttpClient();
+        ProgressBarHelper.onProgress( v, true);
+        getDetailsUser(new GetUserDetailsCallback() {
+            @Override
+            public void failure(Call call, IOException e) {
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ProgressBarHelper.onProgress( v, false);
+                        failedConnectToServer(R.string.failed_con_server);
+                    }
+                });
+            }
 
-                @Override
-                public void onSuccess(UserDetailsDTO userDetailsDTO) {
-                    activity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            ProgressBarHelper.onProgress(activity, v, false);
-                            if (userDetailsDTO != null) {
-                                View inflateProfileDetail = activity.getLayoutInflater().inflate(R.layout.profile_detail_layout, null);
-                                PopupWindow popupWindow = new PopupWindow(inflateProfileDetail, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-                                View popUpViewCv = popupWindow.getContentView();
-                                Context cvCtx = popUpViewCv.getContext();
-                                TableLayout tL = popUpViewCv.findViewById(R.id.profileTable);
-                                Button savedEdited = popUpViewCv.findViewById(R.id.saveEdited);
-                                LinearLayout logoutButton = popUpViewCv.findViewById(R.id.logOut);
-                                Button editProfileButton = popUpViewCv.findViewById(R.id.editProfile);
-                                EditText passwordEdited = popUpViewCv.findViewById(R.id.passwordEdited);
-                                TextView editProfileTv = popUpViewCv.findViewById(R.id.titleProfileEdited);
-                                EditText usernameEditField = popUpViewCv.findViewById(R.id.userNameEdited);
-                                Button cancelEditProfile = popUpViewCv.findViewById(R.id.cancelEditProfile);
-                                ImageView profileImage = popUpViewCv.findViewById(R.id.imageProfileDetails);
-                                ImageSetterFromStream imageSetterFromStream = new ImageSetterFromStream(activity);
-                                FrameLayout progressBarImageProfile = popUpViewCv.findViewById(R.id.progressBarIp);
-                                FrameLayout wrapperImageProfile = popUpViewCv.findViewById(R.id.imageProfileWrapper);
-                                LinearLayout editProfileWrapper = popUpViewCv.findViewById(R.id.editedWrapperProfile);
+            @Override
+            public void onSuccess(UserDetailsDTO userDetailsDTO) {
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ProgressBarHelper.onProgress( v, false);
+                        if (userDetailsDTO != null) {
+                            View inflateProfileDetail = activity.getLayoutInflater().inflate(R.layout.profile_detail_layout, null);
+                            PopupWindow popupWindow = new PopupWindow(inflateProfileDetail, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+                            View popUpViewCv = popupWindow.getContentView();
+                            Context cvCtx = popUpViewCv.getContext();
+                            TableLayout tL = popUpViewCv.findViewById(R.id.profileTable);
+                            Button savedEdited = popUpViewCv.findViewById(R.id.saveEdited);
+                            LinearLayout logoutButton = popUpViewCv.findViewById(R.id.logOut);
+                            Button editProfileButton = popUpViewCv.findViewById(R.id.editProfile);
+                            EditText passwordEdited = popUpViewCv.findViewById(R.id.passwordEdited);
+                            TextView editProfileTv = popUpViewCv.findViewById(R.id.titleProfileEdited);
+                            EditText usernameEditField = popUpViewCv.findViewById(R.id.userNameEdited);
+                            Button cancelEditProfile = popUpViewCv.findViewById(R.id.cancelEditProfile);
+                            ImageView profileImage = popUpViewCv.findViewById(R.id.imageProfileDetails);
+                            ImageSetterFromStream imageSetterFromStream = new ImageSetterFromStream(activity);
+                            FrameLayout progressBarImageProfile = popUpViewCv.findViewById(R.id.progressBarIp);
+                            FrameLayout wrapperImageProfile = popUpViewCv.findViewById(R.id.imageProfileWrapper);
+                            LinearLayout editProfileWrapper = popUpViewCv.findViewById(R.id.editedWrapperProfile);
 
-                                imageSetterFromStream.setAsImageDrawable("def_user_profile.png", profileImage);
-                                profileRowTable(tL, "Tanggal Terdaftar", userDetailsDTO.getCreation_date());
-                                profileRowTable(tL, "Nomor Handphone", userDetailsDTO.getPhone());
-                                profileRowTable(tL, "Nama Pengguna", userDetailsDTO.getName());
-                                profileRowTable(tL, "Email", userDetailsDTO.getEmail());
+                            imageSetterFromStream.setAsImageDrawable("def_user_profile.png", profileImage);
+                            profileRowTable(tL, "Tanggal Terdaftar", userDetailsDTO.getCreation_date());
+                            profileRowTable(tL, "Nomor Handphone", userDetailsDTO.getPhone());
+                            profileRowTable(tL, "Nama Pengguna", userDetailsDTO.getName());
+                            profileRowTable(tL, "Email", userDetailsDTO.getEmail());
 
-                                if (userDetailsDTO.getPhoto() != null) {
-                                    getImageProfile(userDetailsDTO.getPhoto(), activity, okHttpClient, new GetImageProfileCallback() {
+                            if (userDetailsDTO.getPhoto() != null) {
+                                getImageProfile(userDetailsDTO.getPhoto(), activity, okHttpClient, new GetImageProfileCallback() {
+                                    @Override
+                                    public void fail(Call call, IOException e) {
+                                        progressBarImageProfile.setVisibility(View.GONE);
+                                        wrapperImageProfile.setEnabled(true);
+                                    }
+
+                                    @Override
+                                    public void success(Bitmap bitmap) {
+                                        profileImage.setImageBitmap(bitmap);
+                                        progressBarImageProfile.setVisibility(View.GONE);
+                                        wrapperImageProfile.setEnabled(true);
+                                    }
+                                });
+                            } else {
+                                progressBarImageProfile.setVisibility(View.GONE);
+                                wrapperImageProfile.setEnabled(true);
+                            }
+
+                            wrapperImageProfile.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    CustomFileChooser customFileChooser = new CustomFileChooser(activity);
+                                    customFileChooser.setParent((ViewGroup) popUpViewCv);
+                                    customFileChooser.startImageChooser(new SuccessSetImage() {
                                         @Override
-                                        public void fail(Call call, IOException e) {
-                                            progressBarImageProfile.setVisibility(View.GONE);
-                                            wrapperImageProfile.setEnabled(true);
-                                        }
+                                        public void success(Bitmap bitmap, String bitmapLoc, ViewGroup parentFileChooser) {
+                                            File profileImageBitmap = new File(bitmapLoc);
+                                            RequestBody requestBody = new MultipartBody.Builder()
+                                                    .setType(MultipartBody.FORM)
+                                                    .addFormDataPart("photo",
+                                                            profileImageBitmap.getName(),
+                                                            RequestBody.create(
+                                                                    MediaType.parse("image/png"),
+                                                                    profileImageBitmap
+                                                            )
+                                                    )
+                                                    .addFormDataPart("name", userDetailsDTO.getName())
+                                                    .addFormDataPart("password", password)
+                                                    .build();
 
-                                        @Override
-                                        public void success(Bitmap bitmap) {
-                                            profileImage.setImageBitmap(bitmap);
-                                            progressBarImageProfile.setVisibility(View.GONE);
-                                            wrapperImageProfile.setEnabled(true);
+                                            Request editUsersDetails = new Request.Builder()
+                                                    .header("Authorization", "Bearer " + token)
+                                                    .put(requestBody)
+                                                    .url(PathUrl.ROOT_PATH_USER)
+                                                    .build();
+
+                                            okHttpClient.newCall(editUsersDetails).enqueue(new Callback() {
+                                                @Override
+                                                public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                                                    activity.runOnUiThread(new Runnable() {
+                                                        @Override
+                                                        public void run() {
+                                                            progressBarImageProfile.setVisibility(View.GONE);
+                                                            wrapperImageProfile.setEnabled(true);
+                                                            failedConnectToServer(R.string.failed_con_server);
+                                                        }
+                                                    });
+                                                }
+
+                                                @Override
+                                                public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                                                    activity.runOnUiThread(new Runnable() {
+                                                        @Override
+                                                        public void run() {
+                                                            progressBarImageProfile.setVisibility(View.GONE);
+                                                            wrapperImageProfile.setEnabled(true);
+
+                                                            if (response.isSuccessful()) {
+                                                                profileImage.setImageBitmap(bitmap);
+                                                                setImageProfile(bitmap);
+                                                            } else {
+                                                                Toast.makeText(activity, "Gagal Memperbahrui Data", Toast.LENGTH_LONG).show();
+                                                            }
+                                                        }
+                                                    });
+                                                }
+                                            });
+
+                                            v.setEnabled(false);
+                                            progressBarImageProfile.setVisibility(View.VISIBLE);
+                                            customFileChooser.closeCustomChooser(parentFileChooser);
                                         }
                                     });
-                                } else {
-                                    progressBarImageProfile.setVisibility(View.GONE);
-                                    wrapperImageProfile.setEnabled(true);
                                 }
+                            });
+                            logoutButton.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    getSharedPreferences("LoginInfo", Context.MODE_PRIVATE).edit().clear().apply();
+                                    Intent login = new Intent(activity, LoginActivity.class);
+                                    startActivity(login);
+                                    popupWindow.dismiss();
+                                    finish();
+                                }
+                            });
+                            editProfileButton.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    usernameEditField.setText(userDetailsDTO.getName());
+                                    usernameEditField.setFocusableInTouchMode(true);
+                                    usernameEditField.setFocusable(true);
 
-                                wrapperImageProfile.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        CustomFileChooser customFileChooser = new CustomFileChooser(activity);
-                                        customFileChooser.setParent((ViewGroup) popUpViewCv);
-                                        customFileChooser.startImageChooser(new SuccessSetImage() {
-                                            @Override
-                                            public void success(Bitmap bitmap, String bitmapLoc, ViewGroup parentFileChooser) {
-                                                File profileImageBitmap = new File(bitmapLoc);
-                                                RequestBody requestBody = new MultipartBody.Builder()
-                                                .setType(MultipartBody.FORM)
-                                                .addFormDataPart("photo",
-                                                    profileImageBitmap.getName(),
-                                                    RequestBody.create(
-                                                        MediaType.parse("image/png"),
-                                                        profileImageBitmap
-                                                    )
-                                                )
-                                                .addFormDataPart("name", userDetailsDTO.getName())
-                                                .addFormDataPart("password", password)
-                                                .build();
+                                    v.setVisibility(View.GONE);
+                                    logoutButton.setVisibility(View.GONE);
+                                    wrapperImageProfile.setVisibility(View.GONE);
+                                    editProfileTv.setText(R.string.profile_edited);
+                                    tL.setVisibility(View.GONE);
+                                    editProfileWrapper.setVisibility(View.VISIBLE);
 
-                                                Request editUsersDetails = new Request.Builder()
-                                                        .header("Authorization", "Bearer " + token)
-                                                        .put(requestBody)
-                                                        .url(PathUrl.ROOT_PATH_USER)
-                                                        .build();
+                                    savedEdited.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            String newPassword = passwordEdited.getText().toString();
+                                            String newUsername =  usernameEditField.getText().toString();
 
-                                                okHttpClient.newCall(editUsersDetails).enqueue(new Callback() {
-                                                    @Override
-                                                    public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                                                        activity.runOnUiThread(new Runnable() {
-                                                            @Override
-                                                            public void run() {
-                                                                progressBarImageProfile.setVisibility(View.GONE);
-                                                                wrapperImageProfile.setEnabled(true);
-                                                                failedConnectToServer(R.string.failed_con_server);
+                                            RequestBody requestBody = new MultipartBody.Builder()
+                                                    .setType(MultipartBody.FORM)
+                                                    .addFormDataPart("name", newUsername)
+                                                    .addFormDataPart("password", (newPassword.equals("")) ? password : newPassword)
+                                                    .build();
+
+                                            Request editUsersDetails = new Request.Builder()
+                                                    .header("Authorization", "Bearer " + token)
+                                                    .put(requestBody)
+                                                    .url(PathUrl.ROOT_PATH_USER)
+                                                    .build();
+
+                                            ProgressBarHelper.onProgress( v, true);
+                                            cancelEditProfile.setVisibility(View.GONE);
+                                            okHttpClient.newCall(editUsersDetails).enqueue(new Callback() {
+                                                @Override
+                                                public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                                                    activity.runOnUiThread(new Runnable() {
+                                                        @Override
+                                                        public void run() {
+                                                            ProgressBarHelper.onProgress( v, false);
+                                                            failedConnectToServer(R.string.failed_con_server);
+                                                            cancelEditProfile.setVisibility(View.VISIBLE);
+                                                            e.printStackTrace();
+                                                        }
+                                                    });
+                                                }
+
+                                                @Override
+                                                public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                                                    activity.runOnUiThread(new Runnable() {
+                                                        @Override
+                                                        public void run() {
+                                                            cancelEditProfile.setVisibility(View.VISIBLE);
+                                                            ProgressBarHelper.onProgress( v, false);
+
+                                                            if(response.isSuccessful()){
+                                                                Toast.makeText(activity,"Sukses Melakukan Update Profile", Toast.LENGTH_LONG).show();
+                                                                userDetailsDTO.setName(newUsername);
+                                                                setUserNameTittle(newUsername);
+                                                                popupWindow.dismiss();
+                                                                detailAccountOnClick(v);
+                                                            }else{
+                                                                Toast.makeText(activity,"Gagal Melakukan Update Profile, Coba Kembali", Toast.LENGTH_LONG).show();
                                                             }
-                                                        });
-                                                    }
+                                                        }
+                                                    });
+                                                }
+                                            });
+                                        }
+                                    });
+                                }
+                            });
+                            cancelEditProfile.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                                    imm.hideSoftInputFromWindow(popUpViewCv.getApplicationWindowToken(), 0);
 
-                                                    @Override
-                                                    public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                                                        activity.runOnUiThread(new Runnable() {
-                                                            @Override
-                                                            public void run() {
-                                                                progressBarImageProfile.setVisibility(View.GONE);
-                                                                wrapperImageProfile.setEnabled(true);
+                                    editProfileWrapper.setVisibility(View.GONE);
+                                    editProfileButton.setVisibility(View.VISIBLE);
+                                    logoutButton.setVisibility(View.VISIBLE);
+                                    wrapperImageProfile.setVisibility(View.VISIBLE);
+                                    editProfileTv.setText(R.string.profile);
+                                    tL.setVisibility(View.VISIBLE);
 
-                                                                if (response.isSuccessful()) {
-                                                                    profileImage.setImageBitmap(bitmap);
-                                                                    setImageProfile(bitmap);
-                                                                } else {
-                                                                    Toast.makeText(activity, "Gagal Memperbahrui Data", Toast.LENGTH_LONG).show();
-                                                                }
-                                                            }
-                                                        });
-                                                    }
-                                                });
+                                }
+                            });
 
-                                                v.setEnabled(false);
-                                                progressBarImageProfile.setVisibility(View.VISIBLE);
-                                                customFileChooser.closeCustomChooser(parentFileChooser);
-                                            }
-                                        });
-                                    }
-                                });
-                                logoutButton.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        getSharedPreferences("LoginInfo", Context.MODE_PRIVATE).edit().clear().apply();
-                                        Intent login = new Intent(activity, LoginActivity.class);
-                                        startActivity(login);
-                                        popupWindow.dismiss();
-                                        finish();
-                                    }
-                                });
-                                editProfileButton.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        usernameEditField.setText(userDetailsDTO.getName());
-                                        usernameEditField.setFocusableInTouchMode(true);
-                                        usernameEditField.setFocusable(true);
-
-                                        v.setVisibility(View.GONE);
-                                        logoutButton.setVisibility(View.GONE);
-                                        wrapperImageProfile.setVisibility(View.GONE);
-                                        editProfileTv.setText(R.string.profile_edited);
-                                        tL.setVisibility(View.GONE);
-                                        editProfileWrapper.setVisibility(View.VISIBLE);
-
-                                        savedEdited.setOnClickListener(new View.OnClickListener() {
-                                            @Override
-                                            public void onClick(View v) {
-                                                String newPassword = passwordEdited.getText().toString();
-                                                String newUsername =  usernameEditField.getText().toString();
-
-                                                RequestBody requestBody = new MultipartBody.Builder()
-                                                .setType(MultipartBody.FORM)
-                                                .addFormDataPart("name", newUsername)
-                                                .addFormDataPart("password", (newPassword.equals("")) ? password : newPassword)
-                                                .build();
-
-                                                Request editUsersDetails = new Request.Builder()
-                                                .header("Authorization", "Bearer " + token)
-                                                .put(requestBody)
-                                                .url(PathUrl.ROOT_PATH_USER)
-                                                .build();
-
-                                                ProgressBarHelper.onProgress(activity, v, true);
-                                                cancelEditProfile.setVisibility(View.GONE);
-                                                okHttpClient.newCall(editUsersDetails).enqueue(new Callback() {
-                                                    @Override
-                                                    public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                                                        activity.runOnUiThread(new Runnable() {
-                                                            @Override
-                                                            public void run() {
-                                                                ProgressBarHelper.onProgress(activity, v, false);
-                                                                failedConnectToServer(R.string.failed_con_server);
-                                                                cancelEditProfile.setVisibility(View.VISIBLE);
-                                                                e.printStackTrace();
-                                                            }
-                                                        });
-                                                    }
-
-                                                    @Override
-                                                    public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                                                        activity.runOnUiThread(new Runnable() {
-                                                            @Override
-                                                            public void run() {
-                                                                cancelEditProfile.setVisibility(View.VISIBLE);
-                                                                ProgressBarHelper.onProgress(activity, v, false);
-
-                                                                if(response.isSuccessful()){
-                                                                    Toast.makeText(activity,"Sukses Melakukan Update Profile", Toast.LENGTH_LONG).show();
-                                                                    userDetailsDTO.setName(newUsername);
-                                                                    setUserNameTittle(newUsername);
-                                                                    popupWindow.dismiss();
-                                                                    detailAccountOnClick(v);
-                                                                }else{
-                                                                    Toast.makeText(activity,"Gagal Melakukan Update Profile, Coba Kembali", Toast.LENGTH_LONG).show();
-                                                                }
-                                                            }
-                                                        });
-                                                    }
-                                                });
-                                            }
-                                        });
-                                    }
-                                });
-                                cancelEditProfile.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                                        imm.hideSoftInputFromWindow(popUpViewCv.getApplicationWindowToken(), 0);
-
-                                        editProfileWrapper.setVisibility(View.GONE);
-                                        editProfileButton.setVisibility(View.VISIBLE);
-                                        logoutButton.setVisibility(View.VISIBLE);
-                                        wrapperImageProfile.setVisibility(View.VISIBLE);
-                                        editProfileTv.setText(R.string.profile);
-                                        tL.setVisibility(View.VISIBLE);
-
-                                    }
-                                });
-
-                                popupWindow.setFocusable(true);
-                                popupWindow.showAtLocation(inflateProfileDetail, Gravity.CENTER, 0, 0);
-                            } else {
-                                Toast.makeText(activity, R.string.failed_get_details_accounts, Toast.LENGTH_LONG).show();
-                            }
+                            popupWindow.setFocusable(true);
+                            popupWindow.showAtLocation(inflateProfileDetail, Gravity.CENTER, 0, 0);
+                        } else {
+                            Toast.makeText(activity, R.string.failed_get_details_accounts, Toast.LENGTH_LONG).show();
                         }
-                    });
-                }
-            });
-        }
+                    }
+                });
+            }
+        });
     }
 
     public void getDetailsUser(GetUserDetailsCallback callback){
@@ -502,8 +492,6 @@ public class DashboardActivity extends AppCompatActivity {
                 permissionList,
                 PackageManager.PERMISSION_GRANTED
             );
-
-            permissionRequest = "pinPointLoc";
         }else {
             try {
                 Configuration.getInstance().setUserAgentValue(BuildConfig.APPLICATION_ID);
@@ -671,82 +659,76 @@ public class DashboardActivity extends AppCompatActivity {
     }
 
     private void trashDeliverOnClick(View view){
-        if(checkCallingOrSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
-            readStoragePermission();
-            permissionRequest = "trashDeliver";
-            lastMenuPermissionRequest = view;
-        }else {
-            trashDeliverOnClickBtn = view;
-            Activity activity = (Activity) getWindow().getContext();
+        trashDeliverOnClickBtn = view;
+        Activity activity = (Activity) getWindow().getContext();
 
-            if (finalLocPickUp == null || finalLocPickUp.equals(notFoundLoc)) {
-                Toast.makeText(activity, R.string.loc_details, Toast.LENGTH_LONG).show();
-                return;
+        if (finalLocPickUp == null || finalLocPickUp.equals(notFoundLoc)) {
+            Toast.makeText(activity, R.string.loc_details, Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        disableBackPress = true;
+        ProgressBarHelper.onProgress( view, true);
+        OkHttpClient okHttpClient = new OkHttpClient();
+        Request getAllPickup = new Request.Builder().get().url(PathUrl.ROOT_PATH_PICKUP).build();
+
+        okHttpClient.newCall(getAllPickup).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        disableBackPress = false;
+                        ProgressBarHelper.onProgress( view, false);
+                        failedConnectToServer(R.string.failed_con_server);
+                    }
+                });
             }
 
-            disableBackPress = true;
-            ProgressBarHelper.onProgress(activity, view, true);
-            OkHttpClient okHttpClient = new OkHttpClient();
-            Request getAllPickup = new Request.Builder().get().url(PathUrl.ROOT_PATH_PICKUP).build();
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ProgressBarHelper.onProgress( view, false);
+                        try {
+                            if (response.isSuccessful() || response.code() == 404) {
+                                if (response.body() != null) {
+                                    TypeToken<ResponseGlobalJsonDTO<PickupDetailDto>> jsonDTOTypeToken = new TypeToken<ResponseGlobalJsonDTO<PickupDetailDto>>() {
+                                    };
+                                    ResponseGlobalJsonDTO<PickupDetailDto> jsonDTO = new Gson().fromJson(response.body().string(), jsonDTOTypeToken);
+                                    List<PickupDetailDto> pickupDetailDtos = new ArrayList<>(Arrays.asList(jsonDTO.getData()));
+                                    HashMap<String, PickupDetailDto> pickupIdEditedStatus = new HashMap<>();
+                                    List<String> pickupId = new ArrayList<>();
 
-            okHttpClient.newCall(getAllPickup).enqueue(new Callback() {
-                @Override
-                public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                    activity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            disableBackPress = false;
-                            ProgressBarHelper.onProgress(activity, view, false);
-                            failedConnectToServer(R.string.failed_con_server);
-                        }
-                    });
-                }
+                                    for (int i = 0; i < pickupDetailDtos.size(); i++) {
+                                        PickupDetailDto singlePickupDetail = pickupDetailDtos.get(i);
 
-                @Override
-                public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                    activity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            ProgressBarHelper.onProgress(activity, view, false);
-                            try {
-                                if (response.isSuccessful() || response.code() == 404) {
-                                    if (response.body() != null) {
-                                        TypeToken<ResponseGlobalJsonDTO<PickupDetailDto>> jsonDTOTypeToken = new TypeToken<ResponseGlobalJsonDTO<PickupDetailDto>>() {
-                                        };
-                                        ResponseGlobalJsonDTO<PickupDetailDto> jsonDTO = new Gson().fromJson(response.body().string(), jsonDTOTypeToken);
-                                        List<PickupDetailDto> pickupDetailDtos = new ArrayList<>(Arrays.asList(jsonDTO.getData()));
-                                        HashMap<String, PickupDetailDto> pickupIdEditedStatus = new HashMap<>();
-                                        List<String> pickupId = new ArrayList<>();
-
-                                        for (int i = 0; i < pickupDetailDtos.size(); i++) {
-                                            PickupDetailDto singlePickupDetail = pickupDetailDtos.get(i);
-
-                                            if (singlePickupDetail.getUser_id().equals(userId) && singlePickupDetail.getStatus().equals("editing")) {
-                                                pickupIdEditedStatus.put(singlePickupDetail.getId(), singlePickupDetail);
-                                                pickupId.add(singlePickupDetail.getId());
-                                            }
+                                        if (singlePickupDetail.getUser_id().equals(userId) && singlePickupDetail.getStatus().equals("editing")) {
+                                            pickupIdEditedStatus.put(singlePickupDetail.getId(), singlePickupDetail);
+                                            pickupId.add(singlePickupDetail.getId());
                                         }
+                                    }
 
-                                        trashStorePickupIdScreening(
+                                    trashStorePickupIdScreening(
                                             activity,
                                             okHttpClient,
                                             view,
                                             pickupIdEditedStatus,
                                             pickupId
-                                        );
-                                        return;
-                                    }
+                                    );
+                                    return;
                                 }
-
-                                failedConnectToServer(R.string.failed_con_server);
-                            } catch (Exception e) {
-                                e.printStackTrace();
                             }
+
+                            failedConnectToServer(R.string.failed_con_server);
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
-                    });
-                }
-            });
-        }
+                    }
+                });
+            }
+        });
     }
 
     private void trashStorePickupIdScreening(Activity activity, OkHttpClient okHttpClient, View view,  HashMap<String, PickupDetailDto> pickupIdKey, List<String> pickupId){
@@ -887,7 +869,7 @@ public class DashboardActivity extends AppCompatActivity {
                         .url(PathUrl.ROOT_PATH_PICKUP + "/" +  pickupIdList.getSelectedItem().toString()).build();
 
                         cancelEditPickId.setVisibility(View.GONE);
-                        ProgressBarHelper.onProgress(activity, v, true);
+                        ProgressBarHelper.onProgress( v, true);
                         okHttpClient.newCall(requestCreatePickupId).enqueue(new Callback() {
                             @Override
                             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -895,7 +877,7 @@ public class DashboardActivity extends AppCompatActivity {
                                     @Override
                                     public void run() {
                                         cancelEditPickId.setVisibility(View.VISIBLE);
-                                        ProgressBarHelper.onProgress(activity, v, false);
+                                        ProgressBarHelper.onProgress( v, false);
 
                                         if(response.isSuccessful()){
                                             PickupDetailDto newDetailsPickupId = pickupIdKey.get(pickupIdList.getSelectedItem());
@@ -916,7 +898,7 @@ public class DashboardActivity extends AppCompatActivity {
                                     @Override
                                     public void run() {
                                         cancelEditPickId.setVisibility(View.VISIBLE);
-                                        ProgressBarHelper.onProgress(activity, v, false);
+                                        ProgressBarHelper.onProgress( v, false);
                                     }
                                 });
                             }
@@ -932,7 +914,7 @@ public class DashboardActivity extends AppCompatActivity {
                 disableEditText(pickupIdList, false);
                 editPickupId.setVisibility(View.GONE);
                 requestPickupTrash.setVisibility(View.GONE);
-                ProgressBarHelper.onProgress(activity.getApplication(), v, true);
+                ProgressBarHelper.onProgress( v, true);
 
                 Request request = new Request.Builder().url(PathUrl.ROOT_PATH_TRASH_TYPE).get().build();
                 okHttpClient.newCall(request).enqueue(new Callback() {
@@ -944,7 +926,7 @@ public class DashboardActivity extends AppCompatActivity {
                                 disableEditText(pickupIdList, true);
                                 editPickupId.setVisibility(View.VISIBLE);
                                 requestPickupTrash.setVisibility(View.VISIBLE);
-                                ProgressBarHelper.onProgress(activity.getApplication(), v, false);
+                                ProgressBarHelper.onProgress( v, false);
                             }
                         });
                         failedConnectToServer(R.string.failed_con_server);
@@ -967,7 +949,7 @@ public class DashboardActivity extends AppCompatActivity {
                                 disableEditText(pickupIdList, true);
                                 editPickupId.setVisibility(View.VISIBLE);
                                 requestPickupTrash.setVisibility(View.VISIBLE);
-                                ProgressBarHelper.onProgress(activity.getApplication(), v, false);
+                                ProgressBarHelper.onProgress( v, false);
                             }
                         });
                     }
@@ -981,7 +963,7 @@ public class DashboardActivity extends AppCompatActivity {
                 editPickupId.setVisibility(View.GONE);
                 addNewTrash.setVisibility(View.GONE);
                 disableEditText(pickupIdList, false);
-                ProgressBarHelper.onProgress(activity, v, true);
+                ProgressBarHelper.onProgress( v, true);
 
                 HashMap<String, String> requestList = new HashMap<>();
                 requestList.put("status", "waiting");
@@ -1003,7 +985,7 @@ public class DashboardActivity extends AppCompatActivity {
                                 editPickupId.setVisibility(View.VISIBLE);
                                 addNewTrash.setVisibility(View.VISIBLE);
                                 disableEditText(pickupIdList, true);
-                                ProgressBarHelper.onProgress(activity, v, false);
+                                ProgressBarHelper.onProgress( v, false);
 
                                 Toast.makeText(activity, "Gagal Melakukan Request Pickup Sampah", Toast.LENGTH_LONG).show();
                             }
@@ -1022,7 +1004,7 @@ public class DashboardActivity extends AppCompatActivity {
                                     editPickupId.setVisibility(View.VISIBLE);
                                     addNewTrash.setVisibility(View.VISIBLE);
                                     disableEditText(pickupIdList, true);
-                                    ProgressBarHelper.onProgress(activity, v, false);
+                                    ProgressBarHelper.onProgress( v, false);
 
                                     try {
                                         System.out.println(response.body().string());
@@ -1054,7 +1036,7 @@ public class DashboardActivity extends AppCompatActivity {
         }
 
         addNewPickupIdBtn.setVisibility(View.GONE);
-        ProgressBarHelper.onProgress(activity.getApplication(), addNewPickupIdBtn, true);
+        ProgressBarHelper.onProgress( addNewPickupIdBtn, true);
         HashMap<String, String> requestList = new HashMap<>();
         requestList.put("address", editableLocVal);
         requestList.put("user_id", userId);
@@ -1074,7 +1056,7 @@ public class DashboardActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         addNewPickupIdBtn.setVisibility(View.VISIBLE);
-                        ProgressBarHelper.onProgress(activity.getApplication(), addNewPickupIdBtn, false);
+                        ProgressBarHelper.onProgress( addNewPickupIdBtn, false);
                         failedConnectToServer(R.string.failed_con_server);
                     }
                 });
@@ -1087,7 +1069,7 @@ public class DashboardActivity extends AppCompatActivity {
                     public void run() {
                         if(response.isSuccessful()){
                             addNewPickupIdBtn.setVisibility(View.VISIBLE);
-                            ProgressBarHelper.onProgress(activity.getApplication(), addNewPickupIdBtn, false);
+                            ProgressBarHelper.onProgress( addNewPickupIdBtn, false);
                             window.dismiss();
                             Toast.makeText(activity, "Pikcup Id Berhasil Dibuat, Tunggu Sesaat..", Toast.LENGTH_SHORT).show();
 
@@ -1258,7 +1240,7 @@ public class DashboardActivity extends AppCompatActivity {
         }
 
         cancelBtn.setVisibility(View.GONE);
-        ProgressBarHelper.onProgress(getApplication(), postBtn, true);
+        ProgressBarHelper.onProgress( postBtn, true);
 
         File trashPhotoDetails = new File(trashPathPhotoLoc);
         RequestBody requestBody = new MultipartBody.Builder()
@@ -1289,7 +1271,7 @@ public class DashboardActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         cancelBtn.setVisibility(View.VISIBLE);
-                        ProgressBarHelper.onProgress(getApplication(), postBtn, false);
+                        ProgressBarHelper.onProgress( postBtn, false);
                         Toast.makeText(
                             getApplicationContext(),
                             R.string.err_network,
@@ -1305,7 +1287,7 @@ public class DashboardActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         cancelBtn.setVisibility(View.VISIBLE);
-                        ProgressBarHelper.onProgress(getApplication(), postBtn, false);
+                        ProgressBarHelper.onProgress( postBtn, false);
 
                         if(response.isSuccessful()){
                             trashPathPhotoLoc = null;
@@ -1333,43 +1315,5 @@ public class DashboardActivity extends AppCompatActivity {
         view.setFocusable(mode);
         view.setEnabled(mode);
         view.setFocusableInTouchMode(mode);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull @NotNull String[] permissions, @NonNull @NotNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        boolean finalResults = true;
-
-        for (int grantResult : grantResults) {
-            if (grantResult != 0) {
-                finalResults = false;
-                break;
-            }
-        }
-
-        if(finalResults){
-            if(permissionRequest != null){
-                switch (permissionRequest){
-                    case "detailAccount" :
-                        detailAccountOnClick(lastMenuPermissionRequest);
-                    break;
-
-                    case "trashDeliver" :
-                        trashDeliverOnClick(lastMenuPermissionRequest);
-                    break;
-
-                    case "pinPointLoc" :
-                        pinPointLocOnClick();
-                    break;
-                }
-            }
-        }
-    }
-
-    public void  readStoragePermission(){
-        String[] permissionList = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
-        ActivityCompat.requestPermissions(
-        this, permissionList, PackageManager.PERMISSION_GRANTED
-        );
     }
 }

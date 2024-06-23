@@ -13,6 +13,7 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 
 import com.desti.saber.LayoutHelper.ProgressBar.ProgressBarHelper;
+import com.desti.saber.LayoutHelper.ReportDownload.PDFCreator;
 import com.desti.saber.LayoutHelper.ReportDownload.ReportDownload;
 import com.desti.saber.LayoutHelper.SingleTrxListLayout.OnClickActionSingleListActivity;
 import com.desti.saber.LayoutHelper.SingleTrxListLayout.ParentSingleListViewGroup;
@@ -28,10 +29,16 @@ import com.desti.saber.utils.dto.ResponseGlobalJsonDTO;
 import com.desti.saber.utils.dto.UserDetailsDTO;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfPTable;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class WithdrawActivity extends AppCompatActivity {
 
@@ -40,6 +47,7 @@ public class WithdrawActivity extends AppCompatActivity {
     private SharedPreferences loginInfo;
     private LinearLayout balanceLayout;
     private View histTrxList;
+    private ReportDownload reportDownload;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +58,7 @@ public class WithdrawActivity extends AppCompatActivity {
 
         loginInfo = getSharedPreferences("LoginInfo", Context.MODE_PRIVATE);
         imageSetterFromStream = new ImageSetterFromStream(this);
+        reportDownload = new ReportDownload(this);
         dashboardActivity = new DashboardActivity();
         dashboardActivity.rootActivity = this;
 
@@ -107,7 +116,6 @@ public class WithdrawActivity extends AppCompatActivity {
 
         histTrxList = getLayoutInflater().inflate(R.layout.history_transaction_layout, findViewById(R.id.rootWithDrawActivity));
         ViewGroup rootParentTrxList = histTrxList.findViewById(R.id.trxListContainer);
-        ReportDownload reportDownload = new ReportDownload(this);
         ProgressBar progressBar = histTrxList.findViewById(R.id.progressBar);
         OkHttpClient okHttpClient = new OkHttpClient();
         Request request = new Request.Builder()
@@ -143,6 +151,40 @@ public class WithdrawActivity extends AppCompatActivity {
                                 ResponseGlobalJsonDTO<DataHistoricalResDTO> globalJsonDTO = new Gson().fromJson(bodyResults, typeToken);
                                 DataHistoricalResDTO[] dataHistoricalResDTOS = globalJsonDTO.getData();
 
+                                if(dataHistoricalResDTOS.length > 0){
+                                    reportDownload.setUserName(loginInfo.getString(UserDetailKeys.USERNAME_KEY, ""));
+                                    reportDownload.setUserId(loginInfo.getString(UserDetailKeys.USER_ID_KEY, ""));
+                                    reportDownload.setPdfName("Historical_Transaction");
+                                    reportDownload.startReport(new PDFCreator() {
+                                        @Override
+                                        public void createReportPDF(Document document) throws Exception{
+                                            PdfPTable pdfPTable = new PdfPTable(5);
+                                            List<String> headerTable = new ArrayList<>();
+                                            int alignLeft = Element.ALIGN_LEFT;
+
+                                            headerTable.add("AKTIVITAS");
+                                            headerTable.add("DETAIL AKTIVTIAS");
+                                            headerTable.add("DESKRIPSI AKTIVITAS");
+                                            headerTable.add("TANGGAL AKTIVITAS");
+                                            headerTable.add("STATUS AKTIVITAS");
+
+                                            for(String header : headerTable){
+                                                pdfPTable.addCell(reportDownload.addCustomCell(header, Element.ALIGN_CENTER, 9));
+                                            }
+
+                                            for(DataHistoricalResDTO historicalResDTO : dataHistoricalResDTOS){
+                                                pdfPTable.addCell(reportDownload.addCustomCell(historicalResDTO.getActivityTitleGroup(), alignLeft, 9));
+                                                pdfPTable.addCell(reportDownload.addCustomCell(historicalResDTO.getActivityTitleDetail(), alignLeft, 9));
+                                                pdfPTable.addCell(reportDownload.addCustomCell(historicalResDTO.getActivityDesc(), alignLeft, 9));
+                                                pdfPTable.addCell(reportDownload.addCustomCell(historicalResDTO.getActivityDate(), alignLeft, 9));
+                                                pdfPTable.addCell(reportDownload.addCustomCell(ActivityStatusDetail.values()[historicalResDTO.getActivityStatus()].toString(), alignLeft, 9));
+                                            }
+
+                                            document.add(pdfPTable);
+                                        }
+                                    });
+                                }
+
                                 for(int i = 0; i < dataHistoricalResDTOS.length; i++){
                                     DataHistoricalResDTO historicalDTO = dataHistoricalResDTOS[i];
                                     ParentSingleListViewGroup parentSingleList = new ParentSingleListViewGroup(activity);
@@ -153,21 +195,21 @@ public class WithdrawActivity extends AppCompatActivity {
                                     parentSingleList.setActivityStatus(String.valueOf(ActivityStatusDetail.values()[historicalDTO.getActivityStatus()]), new OnClickActionSingleListActivity() {
                                         @Override
                                         public void onClick(View view) {
-                                            ProgressBarHelper.onProgress(getApplicationContext(),  view, true);
+                                            ProgressBarHelper.onProgress(  view, true);
                                             Request request = new Request.Builder()
-                                                    .header(
-                                                    "Authorization",
-                                                    "Bearer " + loginInfo.getString(UserDetailKeys.TOKEN_KEY, "")
-                                                    ).delete()
-                                                    .url(PathUrl.ENP_USER_ACTIVITY.concat("?actId=").concat(historicalDTO.getId()))
-                                                    .build();
+                                            .header(
+                                            "Authorization",
+                                            "Bearer " + loginInfo.getString(UserDetailKeys.TOKEN_KEY, "")
+                                            ).delete()
+                                            .url(PathUrl.ENP_USER_ACTIVITY.concat("?actId=").concat(historicalDTO.getId()))
+                                            .build();
                                             okHttpClient.newCall(request).enqueue(new Callback() {
                                                 @Override
                                                 public void onFailure(@NotNull Call call, @NotNull IOException e) {
                                                     WithdrawActivity.this.runOnUiThread(new Runnable() {
                                                         @Override
                                                         public void run() {
-                                                            ProgressBarHelper.onProgress(getApplicationContext(),  view, false);
+                                                            ProgressBarHelper.onProgress(  view, false);
                                                             Toast.makeText(getApplicationContext(), "Gagal Melakukan Penghapusan Histroy, periksa Internet", Toast.LENGTH_LONG).show();
                                                         }
                                                     });
@@ -182,7 +224,7 @@ public class WithdrawActivity extends AppCompatActivity {
                                                             if(response.isSuccessful()){
                                                                 rootParentTrxList.removeView(parentSingleList);
                                                             }else{
-                                                                ProgressBarHelper.onProgress(getApplicationContext(),  view, false);
+                                                                ProgressBarHelper.onProgress(  view, false);
                                                                 message = "Gagal Melakukan Penghapusan Histroy";
                                                             }
                                                             Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
@@ -206,6 +248,7 @@ public class WithdrawActivity extends AppCompatActivity {
     }
 
     private void setBalanceLayout(){
+        reportDownload.closeReport();
         removeTrxLayout();
 
         balanceLayout.setVisibility(View.VISIBLE);

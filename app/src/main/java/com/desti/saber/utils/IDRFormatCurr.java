@@ -8,6 +8,6 @@ public class IDRFormatCurr {
         NumberFormat currNf = NumberFormat.getCurrencyInstance();
         currNf.setMaximumFractionDigits(0);
         currNf.setCurrency(Currency.getInstance("IDR"));
-        return currNf.format(balance).replace("IDR", "Rp. ");
+        return currNf.format(balance).replace("Rp", "IDR ");
     }
 }

@@ -1,5 +1,6 @@
 package com.desti.saber;
 
+import android.Manifest;
 import android.os.StrictMode;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -21,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
         setContentView(R.layout.activity_main);
@@ -51,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
             String viewXmlId = "image_btn_" + i;
             String imageName = "img_btn_" + i + ".png";
             int resourceId = getResources().getIdentifier(viewXmlId, "id", getPackageName());
+            System.out.println(resourceId);
             imageSetter.setAsImageDrawable(imageName, resourceId);
         }
 

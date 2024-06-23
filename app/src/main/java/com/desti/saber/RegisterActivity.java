@@ -97,14 +97,14 @@ public class RegisterActivity extends AppCompatActivity {
         .post(requestBody)
         .build();
 
-        ProgressBarHelper.onProgress(getApplicationContext(), view, true);
+        ProgressBarHelper.onProgress( view, true);
         okHttpHandler.requestAsync(this, request, new OkHttpHandler.MyCallback() {
             @Override
             public void onSuccess(Context context, Response response) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        ProgressBarHelper.onProgress(getApplicationContext(), view, false);
+                        ProgressBarHelper.onProgress( view, false);
                         if(response != null){
                             try {
                                 Gson gson = new Gson();
@@ -136,7 +136,7 @@ public class RegisterActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        ProgressBarHelper.onProgress(getApplicationContext(), view, false);
+                        ProgressBarHelper.onProgress( view, false);
                         Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
