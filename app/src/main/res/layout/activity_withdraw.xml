@@ -31,7 +31,7 @@
 
                 <TextView
                     style="@style/huge_tittle_text"
-                    android:id="@+id/userNameLabel"
+                    android:id="@+id/userNameLabelWithdraw"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
 

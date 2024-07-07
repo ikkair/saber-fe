@@ -1,8 +1,6 @@
 package com.desti.saber;
 
-import android.opengl.Visibility;
 import android.os.StrictMode;
-import android.view.ViewGroup;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -170,7 +168,7 @@ public class LoginActivity extends AppCompatActivity {
                                 loginInfoEditor.apply();
                                 rememberMeData(emailOrNickNameValue, passwordValue);
 
-                                Intent dashboard = new Intent(context, DashboardActivity.class);
+                                Intent dashboard = new Intent(context, MainDashboard.class);
                                 dashboard.putExtra(UserDetailKeys.PASSWORD_KEY, passwordValue);
                                 loginInfo.edit().putString(UserDetailKeys.PASSWORD_KEY, passwordValue).apply();
                                 startActivity(dashboard);

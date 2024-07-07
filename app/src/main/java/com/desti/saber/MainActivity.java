@@ -1,6 +1,5 @@
 package com.desti.saber;
 
-import android.Manifest;
 import android.os.StrictMode;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -38,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
             if (!jwt.isExpired(0)){
                 String role = loginInfo.getString("role", "");
                 if (role.equals("user")){
-                    Intent dashboard = new Intent(this, DashboardActivity.class);
+                    Intent dashboard = new Intent(this, MainDashboard.class);
                     startActivity(dashboard);
                     finish();
                 }

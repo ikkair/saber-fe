@@ -4,19 +4,21 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.os.StrictMode;
 import android.view.*;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.graphics.Bitmap;
 import android.os.Bundle;
 
+import com.desti.saber.LayoutHelper.FailedNotif.FailServerConnectToast;
 import com.desti.saber.LayoutHelper.ProgressBar.ProgressBarHelper;
 import com.desti.saber.LayoutHelper.ReportDownload.PDFCreator;
 import com.desti.saber.LayoutHelper.ReportDownload.ReportDownload;
 import com.desti.saber.LayoutHelper.SingleTrxListLayout.OnClickActionSingleListActivity;
 import com.desti.saber.LayoutHelper.SingleTrxListLayout.ParentSingleListViewGroup;
+import com.desti.saber.LayoutHelper.UserDetails.UserDetails;
 import com.desti.saber.utils.GetUserDetailsCallback;
 import com.desti.saber.utils.IDRFormatCurr;
 import com.desti.saber.utils.ImageSetterFromStream;
@@ -31,7 +33,6 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.Element;
-import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.PdfPTable;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
@@ -42,8 +43,10 @@ import java.util.List;
 
 public class WithdrawActivity extends AppCompatActivity {
 
+    private MainDashboard mainDashboard;
+    private UserDetails userDetails;
+    private FailServerConnectToast failServerConnectToast;
     private ImageSetterFromStream imageSetterFromStream;
-    private DashboardActivity dashboardActivity;
     private SharedPreferences loginInfo;
     private LinearLayout balanceLayout;
     private View histTrxList;
@@ -56,11 +59,12 @@ public class WithdrawActivity extends AppCompatActivity {
         StrictMode.setThreadPolicy(policy);
         setContentView(R.layout.activity_withdraw);
 
+        mainDashboard = new MainDashboard();
         loginInfo = getSharedPreferences("LoginInfo", Context.MODE_PRIVATE);
         imageSetterFromStream = new ImageSetterFromStream(this);
         reportDownload = new ReportDownload(this);
-        dashboardActivity = new DashboardActivity();
-        dashboardActivity.rootActivity = this;
+        userDetails = new UserDetails(loginInfo.getString(UserDetailKeys.USER_ID_KEY, null));
+
 
         ImageView profileImage = findViewById(R.id.profileImage);
         Button balanceNavButton  = findViewById(R.id.balanceNavBtn);
@@ -68,10 +72,9 @@ public class WithdrawActivity extends AppCompatActivity {
         String getLocPickup = getIntent().getStringExtra(UserDetailKeys.PICK_LOCATION_KEY);
 
         imageSetterFromStream.setAsImageBackground("balance_bg.png", R.id.balanceWrapper);
-        dashboardActivity.userId = loginInfo.getString(UserDetailKeys.USER_ID_KEY, null);
         imageSetterFromStream.setAsImageDrawable("def_user_profile.png", profileImage);
         balanceLayout = findViewById(R.id.balanceLayout);
-        dashboardActivity.getImageProfile(
+        mainDashboard.getImageProfile(
             loginInfo.getString("photo", null),
             this,
             new OkHttpClient(),
@@ -263,11 +266,11 @@ public class WithdrawActivity extends AppCompatActivity {
         });
 
         this.setBalanceValue(0L);
-        dashboardActivity.getDetailsUser(new GetUserDetailsCallback() {
+        userDetails.get(new GetUserDetailsCallback(){
             @Override
             public void failure(Call call, IOException e) {
                 e.printStackTrace();
-                dashboardActivity.failedConnectToServer(R.string.failed_con_server);
+                failServerConnectToast.show();
             }
 
             @Override
@@ -285,7 +288,7 @@ public class WithdrawActivity extends AppCompatActivity {
             public void run() {
                 int maxUserNameLength = 25;
                 String newUserName = (userName.length() > maxUserNameLength) ? userName.substring(0, maxUserNameLength) + "..." : userName;
-                ((TextView) findViewById(R.id.userNameLabel)).setText(newUserName);
+                ((TextView) findViewById(R.id.userNameLabelWithdraw)).setText(newUserName);
             }
         });
     }

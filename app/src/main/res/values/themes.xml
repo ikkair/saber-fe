@@ -227,4 +227,15 @@
         <item name="android:layout_width">30dp</item>
         <item name="android:layout_height">wrap_content</item>
     </style>
+
+    <style name="adminButton">
+        <item name="android:layout_marginStart">2.5dp</item>
+        <item name="android:layout_marginEnd">2.5dp</item>
+        <item name="android:paddingStart">7dp</item>
+        <item name="android:paddingEnd">7dp</item>
+        <item name="android:background">@drawable/white_rounded_bg_border</item>
+        <item name="android:textSize">12dp</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">30dp</item>
+    </style>
 </resources>

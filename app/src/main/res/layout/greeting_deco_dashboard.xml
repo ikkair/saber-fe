@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/wrapperDecorationDashboard"
+        android:padding="18dp"
+        android:layout_gravity="center"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    <LinearLayout
+            android:layout_gravity="start|center"
+            android:orientation="vertical"
+            android:layout_marginEnd="115dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        <TextView
+                style="@style/huge_tittle_text_black"
+                android:layout_marginBottom="10dp"
+                android:text="@string/dashboard_title_greeting_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+        <TextView
+                android:textColor="@color/black"
+                android:text="@string/dashboard_greeting_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
+    <ImageView
+            android:id="@+id/imageTopDecoration"
+            android:layout_marginStart="20dp"
+            android:layout_gravity="end|center"
+            android:layout_width="110dp"
+            android:layout_height="110dp"/>
+
+</FrameLayout>

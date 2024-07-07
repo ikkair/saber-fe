@@ -9,4 +9,5 @@ public class UserDetailKeys {
     public static final String SHARED_PREF_LOGIN_KEY = "LoginInfo";
     public static final String TOKEN_KEY = "token";
     public static final String USER_ID_KEY = "user_id";
+    public static final String USER_ROLE_NAME = "role";
 }

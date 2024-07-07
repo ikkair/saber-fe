@@ -14,7 +14,15 @@ public class DetailTrfDto {
     private String transactionDate;
     private String beneficiaryName;
     private String referenceNumber;
+    private String userId;
 
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
 
     public String getBeneficiaryName() {
         return beneficiaryName;

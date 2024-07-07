@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        android:orientation="vertical"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".UserAdminActivity">
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <androidx.appcompat.widget.AppCompatButton
+                    style="@style/adminButton"
+                    android:text="Data Pengguna"
+                    android:id="@+id/userDataBtn"/>
+
+                <androidx.appcompat.widget.AppCompatButton
+                    style="@style/adminButton"
+                    android:text="Data Sampah Masuk"
+                    android:id="@+id/trashDataBtn"/>
+
+                <androidx.appcompat.widget.AppCompatButton
+                    style="@style/adminButton"
+                    android:text="Permintaan Pickup Sampah"
+                    android:id="@+id/pickupDataBtn"/>
+
+                <androidx.appcompat.widget.AppCompatButton
+                    style="@style/adminButton"
+                    android:text="Transaksi Uang Keluar"
+                    android:id="@+id/cashOutDataBtn"/>
+
+                <androidx.appcompat.widget.AppCompatButton
+                    style="@style/adminButton"
+                    android:text="Profile"
+                    android:id="@+id/profileBtn"/>
+
+                <androidx.appcompat.widget.AppCompatButton
+                    style="@style/adminButton"
+                    android:text="Daftar User"
+                    android:id="@+id/registerNewUserBtn"/>
+
+            </LinearLayout>
+
+        </HorizontalScrollView>
+
+        <Space android:layout_width="match_parent" android:layout_height="15dp"/>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:layout_height="0dp">
+
+            <TextView
+                android:gravity="center"
+                android:layout_gravity="center_vertical|center_horizontal"
+                android:id="@+id/adminGreetingText"
+                android:textColor="@color/calmBlack"
+                style="@style/huge_tittle_text_black"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:id="@+id/rootAdminContainerMenu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+        </FrameLayout>
+
+</LinearLayout>

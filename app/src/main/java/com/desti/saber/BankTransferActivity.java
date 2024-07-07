@@ -18,24 +18,21 @@ import com.desti.saber.LayoutHelper.SingleArchiveBankList.OnClickArchiveBankBene
 import com.desti.saber.LayoutHelper.SingleArchiveBankList.OnClickSwitchSaved;
 import com.desti.saber.LayoutHelper.SingleArchiveBankList.SingleArchiveBeneficiaryBankList;
 import com.desti.saber.LayoutHelper.SingleArchiveBankList.SingleStoredBankNameToggle;
+import com.desti.saber.LayoutHelper.UserDetails.UserDetails;
 import com.desti.saber.LayoutHelper.WindowPopUp.CustomWindowPopUp;
 import com.desti.saber.LayoutHelper.WindowPopUp.OnClickPopUpBtn;
-import com.desti.saber.configs.OkHttpHandler;
 import com.desti.saber.utils.GetUserDetailsCallback;
 import com.desti.saber.utils.ImageSetterFromStream;
 import com.desti.saber.utils.constant.PathUrl;
 import com.desti.saber.utils.constant.PropsConstantUtil;
 import com.desti.saber.utils.constant.UserDetailKeys;
-import com.desti.saber.utils.dto.DataHistoricalReqDTO;
-import com.desti.saber.utils.dto.DetailTrfDto;
-import com.desti.saber.utils.dto.UserDetailsDTO;
-import com.desti.saber.utils.dto.WithdrawReqDTO;
+import com.desti.saber.utils.dto.*;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
-import java.math.BigInteger;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -67,18 +64,18 @@ public class BankTransferActivity extends AppCompatActivity {
     private Button nextTrfActionBtn;
     private long transferAmount;
     private Bitmap bankIcons;
-    private DashboardActivity dashboardActivity;
     private long availableBalance;
     private String token;
+    private UserDetails userDetails;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bank_transfer);
         ViewGroup backTopButton = findViewById(R.id.backTopButton);
+        SharedPreferences loginInfo = getSharedPreferences(UserDetailKeys.SHARED_PREF_LOGIN_KEY, Context.MODE_PRIVATE);
 
         trackingMenuHist = new ArrayList<>();
-        dashboardActivity = new DashboardActivity();
         nextTrfActionBtn = findViewById(R.id.nexTrfAction);
         imageSetter = new ImageSetterFromStream(this);
         rootTrfActivity = findViewById(R.id.rootTrfActivity);
@@ -93,10 +90,7 @@ public class BankTransferActivity extends AppCompatActivity {
         transferActivityNavLabel = findViewById(R.id.transferActivityNavLabel);
         transferActivityMenuLabel = findViewById(R.id.transferActivityMenuLabel);
         transferActivityActionLabel = findViewById(R.id.transferActivityActionLabel);
-        SharedPreferences loginInfo = getSharedPreferences(UserDetailKeys.SHARED_PREF_LOGIN_KEY, Context.MODE_PRIVATE);
-
-        dashboardActivity.rootActivity = this;
-        dashboardActivity.userId = loginInfo.getString(UserDetailKeys.USER_ID_KEY, null);
+        userDetails = new UserDetails(loginInfo.getString(UserDetailKeys.USER_ID_KEY, null));
         token = loginInfo.getString(UserDetailKeys.TOKEN_KEY, null);
 
         trackingMenuHist.add("rootDir");
@@ -383,9 +377,7 @@ public class BankTransferActivity extends AppCompatActivity {
         bankIconImageView.setImageBitmap(bankIcons);
         accountOrVaNumberTv.setText(addPrefixAsterisk);
         bankNameBeneficiaryTv.setText(beneficiaryBankName);
-
-        //user balance available, set at below
-        dashboardActivity.getDetailsUser(new GetUserDetailsCallback() {
+        userDetails.get(new GetUserDetailsCallback() {
             @Override
             public void failure(Call call, IOException e) {
                 BankTransferActivity.this.runOnUiThread(new Runnable() {
@@ -422,6 +414,7 @@ public class BankTransferActivity extends AppCompatActivity {
                                     detailTrfDto.setAccountOrVaNumberBeneficiary(accountOrVaNumber);
                                     detailTrfDto.setTransferDescription(trfDesc.getText().toString());
                                     detailTrfDto.setTransactionDate(new Date(System.currentTimeMillis()).toString());
+                                    detailTrfDto.setUserId(userDetailsDTO.getId());
 
                                     withdrawReqDTO.setAmount(transferAmount);
                                     withdrawReqDTO.setBankDest(beneficiaryBankName);
@@ -430,7 +423,8 @@ public class BankTransferActivity extends AppCompatActivity {
                                     withdrawReqDTO.setAccNumber(Integer.parseInt(accountOrVaNumber));
 
                                     //section for sending data
-                                    String jsonDataSending = new Gson().toJson(withdrawReqDTO);
+                                    Gson gson = new Gson();
+                                    String jsonDataSending = gson.toJson(withdrawReqDTO);
                                     OkHttpClient okHttpClient = new OkHttpClient();
                                     RequestBody requestBody = RequestBody.create(jsonDataSending.getBytes());
                                     Request request = new Request.Builder()
@@ -470,14 +464,29 @@ public class BankTransferActivity extends AppCompatActivity {
 
                                                             @Override
                                                             public void onClickRightButton() {
-                                                                Intent intent = new Intent(getApplicationContext(), DetailBankTrasnfer.class);
-                                                                intent.putExtra("detailsData", new Gson().toJson(detailTrfDto));
-                                                                startActivity(intent);
+                                                                if(response.body() != null){
+                                                                    try {
+                                                                        String resString = response.body().string();
+                                                                        System.out.println(resString);
+                                                                        TypeToken<ResponseGlobalJsonDTO<WithdrawResponseDTO>> jsonDTOTypeToken = new TypeToken<ResponseGlobalJsonDTO<WithdrawResponseDTO>>(){};
+                                                                        ResponseGlobalJsonDTO<WithdrawResponseDTO> globalJsonDTO = gson.fromJson(resString, jsonDTOTypeToken);
+                                                                        WithdrawResponseDTO[]  withdrawResponseDTOS = globalJsonDTO.getData();
+
+                                                                        if(withdrawResponseDTOS != null){
+                                                                            detailTrfDto.setReferenceNumber(withdrawResponseDTOS[0].getTransactionId());
+                                                                        }
+
+                                                                        Intent intent = new Intent(getApplicationContext(), DetailBankTrasnfer.class);
+                                                                        intent.putExtra("detailsData", gson.toJson(detailTrfDto));
+                                                                        startActivity(intent);
+                                                                    } catch (Exception e) {
+                                                                        e.printStackTrace();
+                                                                    }
+                                                                }
                                                             }
                                                         });
                                                     } else {
                                                         assert request.body() != null;
-                                                        System.out.println(jsonDataSending);
                                                         Toast.makeText(getApplicationContext(),"Silahkan Periksa Riwayat Transaksi, Pemindahan Dana Gagal", Toast.LENGTH_LONG).show();
                                                     }
                                                 }
@@ -491,7 +500,6 @@ public class BankTransferActivity extends AppCompatActivity {
                 });
             }
         });
-
         transferAmountEt.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View view, int i, KeyEvent keyEvent) {
