@@ -61,7 +61,7 @@ public class MainDashboard extends AppCompatActivity {
             System.exit(0);
         }
 
-        setUserNameTittle(loginInfo.getString(UserDetailKeys.USERNAME_KEY, "Cannot get the name"));
+        setUserNameTittle(loginInfo.getString(UserDetailKeys.USERNAME_KEY, "Cannot get the name"), this);
         isfs.setAsImageDrawable("def_user_profile.png", iconProfileImage);
 
         getImageProfile(
@@ -82,13 +82,13 @@ public class MainDashboard extends AppCompatActivity {
         );
     }
 
-    public void setUserNameTittle(String userName){
+    public void setUserNameTittle(String userName, Activity activity){
         MainDashboard.this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 int maxUserNameLength = 25;
                 String newUserName = (userName.length() > maxUserNameLength) ? userName.substring(0, maxUserNameLength) + "..." : userName;
-                ((TextView) findViewById(R.id.userNameLabelWithdraw)).setText(newUserName);
+                ((TextView) activity.findViewById(R.id.userNameLabelWithdraw)).setText(newUserName);
             }
         });
     }

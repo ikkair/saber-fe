@@ -9,6 +9,12 @@ import com.desti.saber.LayoutHelper.UserAccountDetails.UserAccountDetails;
 import com.desti.saber.LayoutHelper.UserDetails.UserDetails;
 import com.desti.saber.utils.ImageSetterFromStream;
 import com.desti.saber.utils.constant.UserDetailKeys;
+import com.google.gson.JsonObject;
+import okhttp3.OkHttp;
+import okhttp3.OkHttpClient;
+
+import java.util.HashMap;
+import java.util.UUID;
 
 public class UserAdminActivity {
 
@@ -64,11 +70,37 @@ public class UserAdminActivity {
         clearMenu();
         activity.getLayoutInflater().inflate(R.layout.admin_register_user_menu, (ViewGroup) rootViewContainer);
 
-        String[] roleList = {"Administrator", "Pengguna", "Kurir"};
+        String[] roleList = {"Admin", "User", "Courier"};
         Spinner roleTypeList = activity.findViewById(R.id.fieldInputRoleType);
+        Button registerUserBtn = activity.findViewById(R.id.admRegisterUserBtn);
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(activity, R.layout.trash_list_dialog_dropdown, roleList);
 
         roleTypeList.setAdapter(arrayAdapter);
+        imageSetterFromStream.setAsImageDrawable("user_icon.png", R.id.userInputNameAdmIcon);
+        imageSetterFromStream.setAsImageDrawable("email_icon.png", R.id.userInputEmailAdmIcon);
+        imageSetterFromStream.setAsImageDrawable("role_icon.png", R.id.roleTypeAdmIcon);
+
+        registerUserBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                RegisterActivity registerActivity = new RegisterActivity();
+                EditText fieldUsername = activity.findViewById(R.id.fieldInputNameAdmRegister);
+                EditText fieldEmail = activity.findViewById(R.id.fieldInputEmailAdmRegister);
+                String roleSelected = roleList[roleTypeList.getSelectedItemPosition()];
+                String username = fieldUsername.getText().toString();
+                String email = fieldEmail.getText().toString();
+                String password = UUID.randomUUID().toString();
+                password = password.substring((password.length()-8));
+                HashMap<String, Object> requestPayload = new HashMap<>();
+
+                requestPayload.put("role", roleSelected);
+                requestPayload.put("password", password);
+                requestPayload.put("name", username);
+                requestPayload.put("email", email);
+
+                registerActivity.onClickedButtonSignUpRegister(v, activity, requestPayload);
+            }
+        });
     }
 
     private void clearMenu(){

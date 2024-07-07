@@ -252,7 +252,7 @@ public class UserAccountDetails {
                                                                 Toast.makeText(activity,"Sukses Melakukan Update Profile", Toast.LENGTH_LONG).show();
                                                                 userDetailsDTO.setName(newUsername);
 
-                                                                mainDashboard.setUserNameTittle(newUsername);
+                                                                mainDashboard.setUserNameTittle(newUsername, activity);
                                                                 popupWindow.dismiss();
                                                                 show(v);
                                                             }else{
