@@ -107,14 +107,17 @@ public class RegisterActivity extends AppCompatActivity {
         );
         OkHttpHandler okHttpHandler = new OkHttpHandler();
 
-        Request request = new Request
+       Request.Builder request = new Request
         .Builder()
         .url(PathUrl.ENP_REGISTER_USER)
-        .post(requestBody)
-        .build();
+        .post(requestBody);
+
+        if(payload != null && payload.containsKey("token")){
+           request.header("Authorization", "Bearer " + payload.get("token"));
+        }
 
         ProgressBarHelper.onProgress( view, true);
-        okHttpHandler.requestAsync(this, request, new OkHttpHandler.MyCallback() {
+        okHttpHandler.requestAsync(this, request.build(), new OkHttpHandler.MyCallback() {
             @Override
             public void onSuccess(Context context, Response response) {
                 activity.runOnUiThread(new Runnable() {
@@ -147,7 +150,6 @@ public class RegisterActivity extends AppCompatActivity {
                             }
                         }
 
-                        System.out.println(results);
                         Toast.makeText(activity, "Failed Register", Toast.LENGTH_SHORT).show();
                     }
                 });

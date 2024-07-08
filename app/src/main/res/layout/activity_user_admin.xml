@@ -39,40 +39,35 @@
 
                 <androidx.appcompat.widget.AppCompatButton
                     style="@style/adminButton"
-                    android:text="Profile"
-                    android:id="@+id/profileBtn"/>
+                    android:text="Daftar User"
+                    android:id="@+id/registerNewUserBtn"/>
 
                 <androidx.appcompat.widget.AppCompatButton
                     style="@style/adminButton"
-                    android:text="Daftar User"
-                    android:id="@+id/registerNewUserBtn"/>
+                    android:text="Profile"
+                    android:id="@+id/profileBtn"/>
 
             </LinearLayout>
 
         </HorizontalScrollView>
 
-        <Space android:layout_width="match_parent" android:layout_height="15dp"/>
+        <Space android:layout_width="match_parent" android:layout_height="30dp"/>
 
-        <FrameLayout
+        <LinearLayout
+            android:orientation="vertical"
+            android:id="@+id/rootAdminContainerMenu"
             android:layout_width="match_parent"
-            android:layout_weight="1"
-            android:layout_height="0dp">
+            android:layout_height="wrap_content">
 
             <TextView
                 android:gravity="center"
-                android:layout_gravity="center_vertical|center_horizontal"
+                android:layout_gravity="center"
                 android:id="@+id/adminGreetingText"
-                android:textColor="@color/calmBlack"
-                style="@style/huge_tittle_text_black"
+                android:textColor="@color/transparent_blue_dark"
+                android:textSize="18sp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 
-            <LinearLayout
-                android:orientation="vertical"
-                android:id="@+id/rootAdminContainerMenu"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-
-        </FrameLayout>
+        </LinearLayout>
 
 </LinearLayout>

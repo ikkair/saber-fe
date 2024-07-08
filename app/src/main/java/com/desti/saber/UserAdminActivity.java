@@ -1,34 +1,50 @@
 package com.desti.saber;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
+import android.text.Layout;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
+import com.desti.saber.LayoutHelper.ProgressBar.ProgressBarHelper;
+import com.desti.saber.LayoutHelper.ReportDownload.PDFCreator;
+import com.desti.saber.LayoutHelper.ReportDownload.ReportDownload;
 import com.desti.saber.LayoutHelper.UserAccountDetails.UserAccountDetails;
 import com.desti.saber.LayoutHelper.UserDetails.UserDetails;
+import com.desti.saber.configs.OkHttpHandler;
 import com.desti.saber.utils.ImageSetterFromStream;
+import com.desti.saber.utils.constant.PathUrl;
 import com.desti.saber.utils.constant.UserDetailKeys;
+import com.desti.saber.utils.dto.ResponseGlobalJsonDTO;
+import com.desti.saber.utils.dto.UserDetailsDTO;
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import okhttp3.OkHttp;
-import okhttp3.OkHttpClient;
+import com.google.gson.reflect.TypeToken;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.pdf.PdfPTable;
+import okhttp3.*;
 
 import java.util.HashMap;
 import java.util.UUID;
 
 public class UserAdminActivity {
 
+    private String token;
     private final Activity activity;
     private final ViewGroup viewGroup;
+    private SharedPreferences loginInfo;
     private final UserDetails userDetails;
     private LinearLayout rootViewContainer;
-    private SharedPreferences loginInfo;
+    private final ReportDownload reportDownload;
     private ImageSetterFromStream imageSetterFromStream;
 
     public UserAdminActivity(Activity activity, ViewGroup viewGroup, UserDetails userDetails) {
         this.activity = activity;
         this.viewGroup = viewGroup;
         this.userDetails = userDetails;
+        this.reportDownload = new ReportDownload(activity);
     }
 
     protected void onCreate() {
@@ -49,6 +65,7 @@ public class UserAdminActivity {
         MainDashboard mainDashboard = new MainDashboard();
 
         greetingTextWelcome.setText(greetingText);
+        token = loginInfo.getString(UserDetailKeys.TOKEN_KEY, null);
 
         profileBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -62,6 +79,13 @@ public class UserAdminActivity {
             @Override
             public void onClick(View v) {
                 registerMenuOnClicked(v);
+            }
+        });
+
+        cashOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cashOutMenuOnClicked(v);
             }
         });
     }
@@ -97,8 +121,64 @@ public class UserAdminActivity {
                 requestPayload.put("password", password);
                 requestPayload.put("name", username);
                 requestPayload.put("email", email);
+                requestPayload.put("token", token);
 
                 registerActivity.onClickedButtonSignUpRegister(v, activity, requestPayload);
+            }
+        });
+    }
+
+    private void cashOutMenuOnClicked(View v){
+        clearMenu();
+
+        OkHttpHandler okHttpHandler = new OkHttpHandler();
+        Request.Builder request = new Request.Builder().url(PathUrl.ROOT_PATH_USER).get();
+
+        request.header("Authorization", "Bearer " + token);
+        ProgressBarHelper.onProgress(v, false);
+
+        okHttpHandler.requestAsync(activity, request.build(), new OkHttpHandler.MyCallback() {
+            @Override
+            public void onSuccess(Context context, Response response) {
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ProgressBarHelper.onProgress(v, false);
+                        if(response.isSuccessful() && response.body() != null){
+                            try {
+                                TypeToken<ResponseGlobalJsonDTO<UserDetailsDTO>> dtoTypeToken = new TypeToken<ResponseGlobalJsonDTO<UserDetailsDTO>>(){};
+                                ResponseGlobalJsonDTO<UserDetailsDTO> globalJsonDTO = new Gson().fromJson(response.body().string(), dtoTypeToken);
+
+                                if(globalJsonDTO.getData().length > 0){
+                                    reportDownload.startReport(new PDFCreator() {
+                                        @Override
+                                        public void createReportPDF(Document document) throws Exception {
+                                            PdfPTable pdfPTable = new PdfPTable(2);
+                                            int alignLeft = Element.ALIGN_LEFT;
+
+                                            pdfPTable.addCell(reportDownload.addCustomCell("USERNAME", alignLeft, 12));
+                                            pdfPTable.addCell(reportDownload.addCustomCell("ROLE", alignLeft, 12));
+
+                                            for (UserDetailsDTO userDetailsDTO : (UserDetailsDTO[]) globalJsonDTO.getData()) {
+                                                pdfPTable.addCell(reportDownload.addCustomCell(userDetailsDTO.getName(), alignLeft, 12));
+                                                pdfPTable.addCell(reportDownload.addCustomCell(userDetailsDTO.getRole(), alignLeft, 12));
+                                            }
+
+                                            document.add(pdfPTable);
+                                        }
+                                    });
+                                }
+                            }catch (Exception e){
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+
             }
         });
     }
