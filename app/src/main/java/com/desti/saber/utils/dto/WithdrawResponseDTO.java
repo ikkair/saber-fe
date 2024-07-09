@@ -1,24 +1,68 @@
 package com.desti.saber.utils.dto;
 
-import com.desti.saber.utils.constant.ActivityStatusDetail;
-
 public class WithdrawResponseDTO {
-    private String transactionId;
-    private String transactionStatus;
+    private String refnumber;
+    private String transactionstatus;
+    private String username;
+    private String userid;
+    private String transactiondate;
+    private String useremail;
+    private String amount;
 
-    public String getTransactionId() {
-        return transactionId;
+
+    public String getAmount() {
+        return amount;
     }
 
-    public void setTransactionId(String transactionId) {
-        this.transactionId = transactionId;
+    public void setAmount(String amount) {
+        this.amount = amount;
     }
 
-    public String getTransactionStatus() {
-        return (transactionStatus != null) ? ActivityStatusDetail.values()[Integer.parseInt(transactionStatus)].toString() : "-";
+    public String getUseremail() {
+        return useremail;
     }
 
-    public void setTransactionStatus(String transactionStatus) {
-        this.transactionStatus = transactionStatus;
+    public void setUseremail(String useremail) {
+        this.useremail = useremail;
+    }
+
+    public String getRefnumber() {
+        return refnumber;
+    }
+
+    public void setRefnumber(String refnumber) {
+        this.refnumber = refnumber;
+    }
+
+    public String getTransactionstatus() {
+        return transactionstatus;
+    }
+
+    public void setTransactionstatus(String transactionstatus) {
+        this.transactionstatus = transactionstatus;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getUserid() {
+        return userid;
+    }
+
+    public void setUserid(String userid) {
+        this.userid = userid;
+    }
+
+    public String getTransactiondate() {
+        return transactiondate;
+    }
+
+    public void setTransactiondate(String transactiondate) {
+        this.transactiondate = transactiondate;
     }
 }

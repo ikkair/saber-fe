@@ -1,6 +1,5 @@
 package com.desti.saber.utils.dto;
 
-import androidx.annotation.NonNull;
 import org.jetbrains.annotations.NotNull;
 
 public class DetailTrfDto {
@@ -13,7 +12,7 @@ public class DetailTrfDto {
     private String transferDescription;
     private String transactionDate;
     private String beneficiaryName;
-    private String referenceNumber;
+    private String refnumber;
     private String userId;
 
     public String getUserId() {
@@ -28,12 +27,12 @@ public class DetailTrfDto {
         return beneficiaryName;
     }
 
-    public String getReferenceNumber() {
-        return referenceNumber;
+    public String getRefnumber() {
+        return refnumber;
     }
 
-    public void setReferenceNumber(String referenceNumber) {
-        this.referenceNumber = referenceNumber;
+    public void setRefnumber(String refnumber) {
+        this.refnumber = refnumber;
     }
 
     public void setBeneficiaryName(String beneficiaryName) {
@@ -107,12 +106,13 @@ public class DetailTrfDto {
 
     @NotNull
     public String toString() {
-        return "Nama Bank\t: " + getBeneficiaryBankName() + "\n" +
-        "No Rekening\t: " + getAccountOrVaNumberBeneficiary() +"\n" +
-        "Nama\t: " + getBeneficiaryName() + "\n" +
-        "Tanggal Transaksi\t: " + getTransactionDate() + "\n" +
-        "No Transaksi\t: " + getReferenceNumber() + "\n" +
-        "Jumlah Transfer\t: " + getTransferAmount() + "\n" +
-        "Deskripsi\t: " + getTransferDescription();
+        return
+        "Nama Pemilik Rekening  : " + getBeneficiaryName() + "\n" +
+        "Tanggal Transaksi            : " + getTransactionDate() + "\n" +
+        "Jumlah Transfer               : " + getTransferAmount() + "\n" +
+        "Nama Bank                        : " + getBeneficiaryBankName() + "\n" +
+        "No Rekening                      : " + getAccountOrVaNumberBeneficiary() + "\n" +
+        "Ref Number                       : " + getRefnumber() + "\n" +
+        "Deskripsi                            : " + getTransferDescription();
     }
 }

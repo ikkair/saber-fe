@@ -22,6 +22,7 @@ import com.desti.saber.LayoutHelper.UserDetails.UserDetails;
 import com.desti.saber.LayoutHelper.WindowPopUp.CustomWindowPopUp;
 import com.desti.saber.LayoutHelper.WindowPopUp.OnClickPopUpBtn;
 import com.desti.saber.utils.GetUserDetailsCallback;
+import com.desti.saber.utils.IDRFormatCurr;
 import com.desti.saber.utils.ImageSetterFromStream;
 import com.desti.saber.utils.constant.PathUrl;
 import com.desti.saber.utils.constant.PropsConstantUtil;
@@ -394,7 +395,7 @@ public class BankTransferActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         availableBalance = Long.parseLong(userDetailsDTO.getBalance());
-                        balanceReadyToTransferTv.setText(String.valueOf(availableBalance));
+                        balanceReadyToTransferTv.setText(IDRFormatCurr.currFormat(availableBalance));
                         nextTrfActionBtn.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
@@ -467,16 +468,15 @@ public class BankTransferActivity extends AppCompatActivity {
                                                                 if(response.body() != null){
                                                                     try {
                                                                         String resString = response.body().string();
-                                                                        System.out.println(resString);
                                                                         TypeToken<ResponseGlobalJsonDTO<WithdrawResponseDTO>> jsonDTOTypeToken = new TypeToken<ResponseGlobalJsonDTO<WithdrawResponseDTO>>(){};
                                                                         ResponseGlobalJsonDTO<WithdrawResponseDTO> globalJsonDTO = gson.fromJson(resString, jsonDTOTypeToken);
                                                                         WithdrawResponseDTO[]  withdrawResponseDTOS = globalJsonDTO.getData();
 
                                                                         if(withdrawResponseDTOS != null){
-                                                                            detailTrfDto.setReferenceNumber(withdrawResponseDTOS[0].getTransactionId());
+                                                                            detailTrfDto.setRefnumber(withdrawResponseDTOS[0].getRefnumber());
                                                                         }
 
-                                                                        Intent intent = new Intent(getApplicationContext(), DetailBankTrasnfer.class);
+                                                                        Intent intent = new Intent(getApplicationContext(), DetailBankTransfer.class);
                                                                         intent.putExtra("detailsData", gson.toJson(detailTrfDto));
                                                                         startActivity(intent);
                                                                     } catch (Exception e) {

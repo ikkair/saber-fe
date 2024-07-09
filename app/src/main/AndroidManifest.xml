@@ -33,7 +33,7 @@
                     android:value=""/>
         </activity>
         <activity
-                android:name=".DetailBankTrasnfer"
+                android:name=".DetailBankTransfer"
                 android:exported="false"
                 android:screenOrientation="portrait"/>
         <activity

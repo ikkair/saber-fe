@@ -233,7 +233,7 @@ public class ReportDownload {
     }
 
     private void addTableHeader(PdfPTable tbl, String[] tblHead){
-        Font font = FontFactory.getFont("Calibri", 11, BaseColor.DARK_GRAY);
+        Font font = FontFactory.getFont("Calibri", 11, new BaseColor(242, 242, 242));
         PdfPCell header = new PdfPCell();
         header.setVerticalAlignment(Element.ALIGN_MIDDLE);
         header.setBackgroundColor(BaseColor.LIGHT_GRAY);
