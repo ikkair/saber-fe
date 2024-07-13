@@ -6,7 +6,7 @@ public class WithdrawResponseDTO {
     private String username;
     private String userid;
     private String transactiondate;
-    private String useremail;
+    private String usermail;
     private String amount;
 
 
@@ -19,11 +19,11 @@ public class WithdrawResponseDTO {
     }
 
     public String getUseremail() {
-        return useremail;
+        return usermail;
     }
 
     public void setUseremail(String useremail) {
-        this.useremail = useremail;
+        this.usermail = useremail;
     }
 
     public String getRefnumber() {

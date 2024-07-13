@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
+        android:padding="10dp"
+        android:background="@drawable/white_rounded_bg_border"
         android:orientation="vertical"
         android:layout_gravity="center_vertical|center_horizontal"
-        android:layout_margin="20dp"
+        android:layout_margin="5dp"
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -13,86 +15,25 @@
             android:layout_height="wrap_content">
 
         <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             style="@style/huge_tittle_text_black"
-            android:text="Detail Pengguna"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:text="Detail Pengguna"/>
 
-        <LinearLayout
-            android:layout_marginTop="12dp"
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:textSize="14dp"
-                android:layout_gravity="center_vertical"
-                android:text="ID Pengguna"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"/>
-
-            <TextView
-                android:textSize="14dp"
-                android:id="@+id/trxCashOutUserIs"
-                android:layout_gravity="center_vertical"
-                android:text="Nama Pengguna"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"/>
-
+        <LinearLayout style="@style/cashOutDetailsWrapper">
+            <TextView style="@style/cashOutDetails" android:text="ID Pengguna"/>
+            <TextView style="@style/cashOutDetails" android:id="@+id/trxCashOutUserId"/>
         </LinearLayout>
 
-        <LinearLayout
-                android:layout_marginTop="12dp"
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-            <TextView
-                    android:textSize="14dp"
-                    android:layout_gravity="center_vertical"
-                    android:text="Nama Pengguna"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"/>
-
-            <TextView
-                    android:textSize="14dp"
-                    android:id="@+id/trxCashOutUserName"
-                    android:layout_gravity="center_vertical"
-                    android:text="Nama Pengguna"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"/>
-
+        <LinearLayout style="@style/cashOutDetailsWrapper">
+            <TextView style="@style/cashOutDetails" android:text="Nama Pengguna"/>
+            <TextView style="@style/cashOutDetails" android:id="@+id/trxCashOutUserName"/>
         </LinearLayout>
 
-        <LinearLayout
-                android:layout_marginTop="12dp"
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-            <TextView
-                    android:textSize="14dp"
-                    android:layout_gravity="center_vertical"
-                    android:text="Email Pengguna"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"/>
-
-            <TextView
-                    android:textSize="14dp"
-                    android:id="@+id/trxCashOutUserEmail"
-                    android:layout_gravity="center_vertical"
-                    android:text="Nama Pengguna"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"/>
-
+        <LinearLayout style="@style/cashOutDetailsWrapper">
+            <TextView style="@style/cashOutDetailsWrapper" android:text="Email Pengguna"/>
+            <TextView style="@style/cashOutDetailsWrapper" android:id="@+id/trxCashOutUserEmail"/>
         </LinearLayout>
-
     </LinearLayout>
 
     <Space android:layout_width="match_parent" android:layout_height="30dp"/>
@@ -103,84 +44,24 @@
             android:layout_height="wrap_content">
 
         <TextView
-                style="@style/huge_tittle_text_black"
-                android:text="Detail Transaksi"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/huge_tittle_text_black"
+            android:text="Detail Transaksi"/>
 
-        <LinearLayout
-                android:layout_marginTop="12dp"
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-            <TextView
-                    android:textSize="14dp"
-                    android:layout_gravity="center_vertical"
-                    android:text="ID Pengguna"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"/>
-
-            <TextView
-                    android:textSize="14dp"
-                    android:id="@+id/trxCashOutUserIs"
-                    android:layout_gravity="center_vertical"
-                    android:text="Nama Pengguna"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"/>
-
+        <LinearLayout style="@style/cashOutDetailsWrapper">
+            <TextView style="@style/cashOutDetails" android:text="Nomor Refrensi"/>
+            <TextView style="@style/cashOutDetails" android:id="@+id/trxCashOutRefNUmber"/>
         </LinearLayout>
 
-        <LinearLayout
-                android:layout_marginTop="12dp"
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-            <TextView
-                    android:textSize="14dp"
-                    android:layout_gravity="center_vertical"
-                    android:text="Ref Number"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"/>
-
-            <TextView
-                    android:textSize="14dp"
-                    android:id="@+id/trxCashOutRefNumber"
-                    android:layout_gravity="center_vertical"
-                    android:text="Nama Pengguna"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"/>
-
+        <LinearLayout style="@style/cashOutDetailsWrapper">
+            <TextView android:text="Total" style="@style/cashOutDetails"/>
+            <TextView style="@style/cashOutDetails" android:id="@+id/trxCashOutAmount"/>
         </LinearLayout>
 
-        <LinearLayout
-                android:layout_marginTop="12dp"
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-            <TextView
-                    android:textSize="14dp"
-                    android:layout_gravity="center_vertical"
-                    android:text="Email Pengguna"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"/>
-
-            <TextView
-                    android:textSize="14dp"
-                    android:id="@+id/trxCashOutUserEmail"
-                    android:layout_gravity="center_vertical"
-                    android:text="Nama Pengguna"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"/>
-
+        <LinearLayout style="@style/cashOutDetailsWrapper">
+            <TextView style="@style/cashOutDetails" android:text="Tanggal Penarikan"/>
+            <TextView style="@style/cashOutDetails" android:id="@+id/trxCashOutUDate"/>
         </LinearLayout>
 
     </LinearLayout>

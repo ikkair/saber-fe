@@ -158,6 +158,22 @@ public class UserAdminActivity {
                                 ResponseGlobalJsonDTO<WithdrawResponseDTO> globalJsonDTO = new Gson().fromJson(response.body().string(), dtoTypeToken);
 
                                 if(globalJsonDTO.getData().length > 0){
+                                    View inflateCashOutContainer = activity.getLayoutInflater().inflate(R.layout.cash_out_container, rootViewContainer);
+                                    ViewGroup cashOutContainer = (ViewGroup) inflateCashOutContainer.findViewById(R.id.cashOutContainer);
+
+                                    for(WithdrawResponseDTO withdrawResponseDTO : globalJsonDTO.getData()){
+                                        View detailsRootView = activity.getLayoutInflater().inflate(R.layout.single_cash_out_detail, cashOutContainer, false);
+                                        TextView trxCashOutUserId = detailsRootView.findViewById(R.id.trxCashOutUserId);
+                                        TextView trxCashOutUserName = detailsRootView.findViewById(R.id.trxCashOutUserName);
+                                        TextView trxCashOutUserEmail = detailsRootView.findViewById(R.id.trxCashOutUserEmail);
+
+                                        trxCashOutUserId.setText(withdrawResponseDTO.getUserid());
+                                        trxCashOutUserName.setText(withdrawResponseDTO.getUsername());
+                                        trxCashOutUserEmail.setText(withdrawResponseDTO.getUseremail());
+
+                                        cashOutContainer.addView(detailsRootView);
+                                    }
+
                                     reportDownload.setPdfName("Cash Out Transaction");
                                     reportDownload.setUserName(username);
                                     reportDownload.setUserId(userId);
@@ -181,11 +197,13 @@ public class UserAdminActivity {
                                                 long amount = (singleWithdraw.getAmount() != null) ? Long.valueOf(singleWithdraw.getAmount()) : 0L;
                                                 String finalAmount = IDRFormatCurr.currFormat(amount);
 
+
                                                 pdfPTable.addCell(valueTable(singleWithdraw.getUsername()));
                                                 pdfPTable.addCell(valueTable(singleWithdraw.getUseremail()));
                                                 pdfPTable.addCell(valueTable(finalAmount));
                                                 pdfPTable.addCell(valueTable(singleWithdraw.getRefnumber()));
                                                 pdfPTable.addCell(valueTable(singleWithdraw.getTransactiondate()));
+
                                             }
 
                                             document.add(pdfPTable);
