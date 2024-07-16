@@ -30,11 +30,11 @@
                 <androidx.appcompat.widget.AppCompatButton
                     style="@style/adminButton"
                     android:text="Permintaan Pickup Sampah"
-                    android:id="@+id/pickupDataBtn"/>
+                    android:id="@+id/pickupTrashRequestDataBtn"/>
 
                 <androidx.appcompat.widget.AppCompatButton
                     style="@style/adminButton"
-                    android:text="Transaksi Uang Keluar"
+                    android:text="Transaksi Dana Keluar"
                     android:id="@+id/cashOutDataBtn"/>
 
                 <androidx.appcompat.widget.AppCompatButton

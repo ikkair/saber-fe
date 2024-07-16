@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        android:padding="10dp"
+        android:background="@drawable/white_rounded_bg_border"
+        android:orientation="vertical"
+        android:layout_gravity="center_vertical|center_horizontal"
+        android:layout_margin="5dp"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/huge_tittle_text_black"
+            android:text="Detail Permintaan Pickup Sampah"/>
+
+        <LinearLayout style="@style/cashOutDetailsWrapper">
+            <TextView style="@style/cashOutDetails" android:text="ID Pickup"/>
+            <TextView style="@style/cashOutDetails" android:id="@+id/trashReqPickId"/>
+        </LinearLayout>
+
+        <LinearLayout style="@style/cashOutDetailsWrapper">
+            <TextView style="@style/cashOutDetails" android:text="Waktu Permintaan Pickup"/>
+            <TextView style="@style/cashOutDetails" android:id="@+id/trashReqPickDate"/>
+        </LinearLayout>
+
+        <LinearLayout style="@style/cashOutDetailsWrapper">
+            <TextView style="@style/cashOutDetails" android:text="Alamat Pickup"/>
+            <TextView style="@style/cashOutDetails" android:id="@+id/trashReqPickAddress"/>
+        </LinearLayout>
+
+        <LinearLayout style="@style/cashOutDetailsWrapper">
+            <TextView style="@style/cashOutDetails" android:text="Status Pickup"/>
+            <TextView style="@style/cashOutDetails" android:id="@+id/trashReqPickStatus"/>
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

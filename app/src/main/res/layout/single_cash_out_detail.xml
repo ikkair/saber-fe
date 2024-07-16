@@ -31,8 +31,8 @@
         </LinearLayout>
 
         <LinearLayout style="@style/cashOutDetailsWrapper">
-            <TextView style="@style/cashOutDetailsWrapper" android:text="Email Pengguna"/>
-            <TextView style="@style/cashOutDetailsWrapper" android:id="@+id/trxCashOutUserEmail"/>
+            <TextView style="@style/cashOutDetails" android:text="Email Pengguna"/>
+            <TextView style="@style/cashOutDetails" android:id="@+id/trxCashOutUserEmail"/>
         </LinearLayout>
     </LinearLayout>
 

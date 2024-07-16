@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+        android:id="@+id/rootLayoutTrashPickup"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:background="@color/transparent_blue_dark"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:padding="10dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="30dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:background="@drawable/white_rounded_bg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <include
+            layout="@layout/single_trash_pickup"
+            android:layout_gravity="top"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <Space android:layout_width="match_parent" android:layout_height="30dp"/>
+        
+        <TextView
+            android:text="Daftar Sampah"
+            style="@style/huge_tittle_text_black"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <Space android:layout_width="match_parent" android:layout_height="18dp"/>
+
+        <ScrollView
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="0dp">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:id="@+id/trashListContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+        </ScrollView>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:layout_gravity="center"
+            android:layout_margin="20dp"
+            style="@style/popUpBtn"
+            android:text="TUTUP"
+            android:id="@+id/trashListCloseBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"/>
+    </LinearLayout>
+
+</FrameLayout>
