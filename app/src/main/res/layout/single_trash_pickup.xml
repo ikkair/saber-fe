@@ -21,6 +21,16 @@
             android:text="Detail Permintaan Pickup Sampah"/>
 
         <LinearLayout style="@style/cashOutDetailsWrapper">
+            <TextView style="@style/cashOutDetails" android:text="Pengguna"/>
+            <TextView style="@style/cashOutDetails" android:id="@+id/trashReqName"/>
+        </LinearLayout>
+
+        <LinearLayout style="@style/cashOutDetailsWrapper">
+            <TextView style="@style/cashOutDetails" android:text="No Hp"/>
+            <TextView style="@style/cashOutDetails" android:id="@+id/trashReqPhoneNumber"/>
+        </LinearLayout>
+
+        <LinearLayout style="@style/cashOutDetailsWrapper">
             <TextView style="@style/cashOutDetails" android:text="ID Pickup"/>
             <TextView style="@style/cashOutDetails" android:id="@+id/trashReqPickId"/>
         </LinearLayout>
