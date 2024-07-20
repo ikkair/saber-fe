@@ -90,45 +90,41 @@ public class CustomFileChooser {
         }
 
         if(checkStorageRead == PackageManager.PERMISSION_GRANTED && checkStorageWrite == PackageManager.PERMISSION_GRANTED){
-            View checkExistsPopUp = parent.getRootView().findViewById(R.id.parentDirectoryList);
+            if(parent.findViewById(R.id.parentDirectoryList) == null){
+                ViewGroup popParent = parent;
+                ViewGroup inflater = (ViewGroup) LayoutInflater.from(activity).inflate(R.layout.directory_pop_up_layout, popParent, true);
+                dirListLocationView = inflater.findViewById(R.id.rootDirectoryList);
+                File envExternalStorage = Environment.getExternalStorageDirectory();
+                Button backButtonDir = inflater.findViewById(R.id.cancelSelectImg);
+                Button backTraceButton = inflater.findViewById(R.id.backTraceLocBtn);
 
-            if(checkExistsPopUp != null){
-                ((ViewGroup) parent.getRootView()).removeView(checkExistsPopUp);
-            }
+                traceListPath.add(envExternalStorage.getAbsolutePath());
+                listingDir(envExternalStorage.getAbsolutePath(), objectOnClick);
 
-            ViewGroup popParent = parent;
-            ViewGroup inflater = (ViewGroup) LayoutInflater.from(activity).inflate(R.layout.directory_pop_up_layout, popParent, true);
-            dirListLocationView = inflater.findViewById(R.id.rootDirectoryList);
-            File envExternalStorage = Environment.getExternalStorageDirectory();
-            Button backButtonDir = inflater.findViewById(R.id.cancelSelectImg);
-            Button backTraceButton = inflater.findViewById(R.id.backTraceLocBtn);
-
-            traceListPath.add(envExternalStorage.getAbsolutePath());
-            listingDir(envExternalStorage.getAbsolutePath(), objectOnClick);
-
-            backButtonDir.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    objectOnClick.onCancelPressed(v);
-                    closeCustomChooser(parent);
-                }
-            });
-
-            backTraceButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if(traceListPath.size() >= 1){
-                        int calcBackTraceIndex = traceListPath.size()-1;
-                        String copyIndex = String.valueOf(traceListPath.get(calcBackTraceIndex));
-
-                        if(calcBackTraceIndex > 0){
-                            traceListPath.remove(calcBackTraceIndex);
-                        }
-
-                        listingDir(copyIndex, objectOnClick);
+                backButtonDir.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        objectOnClick.onCancelPressed(v);
+                        closeCustomChooser(parent);
                     }
-                }
-            });
+                });
+
+                backTraceButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (traceListPath.size() >= 1) {
+                            int calcBackTraceIndex = traceListPath.size() - 1;
+                            String copyIndex = String.valueOf(traceListPath.get(calcBackTraceIndex));
+
+                            if (calcBackTraceIndex > 0) {
+                                traceListPath.remove(calcBackTraceIndex);
+                            }
+
+                            listingDir(copyIndex, objectOnClick);
+                        }
+                    }
+                });
+            }
         }else{
             readStoragePermission();
         }

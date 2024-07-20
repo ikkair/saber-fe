@@ -10,6 +10,7 @@ import com.desti.saber.LayoutHelper.CustomFileChooser.CustomFileChooser;
 import com.desti.saber.LayoutHelper.CustomFileChooser.ObjectOnClick;
 import com.desti.saber.LayoutHelper.ProgressBar.ProgressBarHelper;
 import com.desti.saber.R;
+import com.desti.saber.utils.InputStreamToBytes;
 import com.itextpdf.io.font.FontProgramFactory;
 import com.itextpdf.io.font.constants.StandardFonts;
 import com.itextpdf.io.image.ImageData;
@@ -69,144 +70,120 @@ public class ReportDownload {
     }
 
     public void startReport(PDFCreator pdfCreator){
-        closeReport();
-
         ViewGroup view = (ViewGroup) activity.getLayoutInflater().inflate(R.layout.download_report_layout, viewGroup);
-        FrameLayout progressBar = view.findViewById(R.id.progressBarReportDownload);
-        CustomFileChooser customFileChooser = new CustomFileChooser(activity);
         Button button = view.findViewById(R.id.mainBtnReportDownload);
-
-        customFileChooser.setParent(view);
-
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ObjectOnClick objectOnClick = new ObjectOnClick() {
-                    @Override
-                    public void onFileClick(File file, ViewGroup parentFileChooser) {
-
-                    }
-
-                    @Override
-                    public void onDirectoryClick(File file, ViewGroup parentFileChooser) {
-
-                    }
-
-                    @Override
-                    public void onCancelPressed(View view) {
-
-                    }
-
-                    @Override
-                    public void onDirectoryHoldPress(File file, ViewGroup parentFileChooser, String absolutePathLocation) {
-                        activity.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                ProgressBarHelper.onProgress(button, false);
-                                try {
-                                    String pdfName = absolutePathLocation + "/Saber_Report" + getPdfName() + timePrintReport + ".pdf";
-                                    Document document = new Document(PageSize.A4, 20, 20, 90, 100);
-                                    PdfWriter pdfWriter = PdfWriter.getInstance(document, new FileOutputStream(pdfName));
-                                    Font font = FontFactory.getFont("Calibri", 11, BaseColor.BLACK);
-                                    PdfPageEventHelper pdfPageEventHelper = new PdfPageEventHelper(){
-                                        @Override
-                                        public void onStartPage(PdfWriter writer, Document document) {
-                                            super.onStartPage(writer, document);
-                                            try {
-                                                InputStream inputStream = activity.getResources().getAssets().open("logIn_picture_decoration.png");
-                                                Font fontSet = FontFactory.getFont("Calibri", 14);
-                                                Image image = Image.getInstance(getBytes(inputStream));
-                                                PdfContentByte direction = writer.getDirectContent();
-                                                PdfContentByte canvas = writer.getDirectContent();
-                                                PdfPTable tabHead = new PdfPTable(2);
-                                                Rectangle pageSize = document.getPageSize();
-                                                Float centerPointVal = pageSize.getWidth()/2;
-                                                Float documentHeight = pageSize.getHeight();
-
-                                                tabHead.addCell(addCustomCell("Dicetak Oleh", Element.ALIGN_LEFT, 10));
-                                                tabHead.addCell(addCustomCell(getUserName(), Element.ALIGN_LEFT, 10));
-                                                tabHead.addCell(addCustomCell("Tanggal Dicetak", Element.ALIGN_LEFT, 10));
-                                                tabHead.addCell(addCustomCell(timePrintReport, Element.ALIGN_LEFT, 10));
-                                                tabHead.addCell(addCustomCell("ID Pengguna", Element.ALIGN_LEFT, 10));
-                                                tabHead.addCell(addCustomCell(getUserId(), Element.ALIGN_LEFT, 10));
-                                                tabHead.addCell(addCustomCell("No Halaman", Element.ALIGN_LEFT, 10));
-                                                tabHead.addCell(addCustomCell(String.valueOf(document.getPageNumber()), Element.ALIGN_LEFT, 10));
-
-                                                tabHead.setTotalWidth(new float[] {120.0f, 210.0f});
-                                                tabHead.writeSelectedRows(0, -1, (pageSize.getWidth() - tabHead.getTotalWidth()) - document.rightMargin(), documentHeight - (tabHead.getTotalHeight()/2) + 26, writer.getDirectContent());
-
-                                                fontSet.setStyle(Font.BOLD);
-                                                canvas.setColorStroke(BaseColor.BLACK);
-                                                canvas.moveTo(10, documentHeight - 85);
-                                                canvas.lineTo(pageSize.getWidth() - 10, documentHeight - 85);
-                                                canvas.closePathStroke();
-
-                                                image.setAlignment(Element.ALIGN_LEFT);
-                                                image.scalePercent(20f, 20f);
-                                                image.setAbsolutePosition(23,( documentHeight-image.getScaledHeight())-5);
-                                                document.add(image);
-                                                document.add(Chunk.NEWLINE);
-                                                document.add(Chunk.NEWLINE);
-                                            } catch (IOException | DocumentException e) {
-                                               e.printStackTrace();
-                                            }
-                                        }
-
-
-                                    };
-                                    Paragraph headerParagraph = new Paragraph("SABER " + getPdfName().replace("_", "").toUpperCase() + " REPORT DOCUMENT", font);
-
-                                    headerParagraph.setAlignment(Element.ALIGN_CENTER);
-                                    headerParagraph.setSpacingAfter(12);
-                                    pdfWriter.setPageEvent(pdfPageEventHelper);
-                                    document.open();
-                                    document.add(headerParagraph);
-                                    document.add(Chunk.NEWLINE);
-                                    pdfCreator.createReportPDF(document);
-                                    document.close();
-
-//                                    PdfDocument document = new PdfDocument(new PdfWriter(pdfName));
-//                                    document.setDefaultPageSize(PageSize.A4);
-//                                    InputStream inputStream = activity.getResources().getAssets().open("logIn_picture_decoration.png");
-//                                    ImageData img = ImageDataFactory.create(getBytes(inputStream));
-//                                    PdfExtGState gs1 = new PdfExtGState().setFillOpacity(0.2f);
-//                                    PdfFont font = PdfFontFactory.createFont(FontProgramFactory.createFont(StandardFonts.HELVETICA));
-//                                    PdfPage pdfPage = document.addNewPage();
-//                                    PdfCanvas over = new PdfCanvas(pdfPage);
-//                                    Rectangle pageSize = pdfPage.getPageSize();
-//                                    float w = img.getWidth();
-//                                    float h = img.getHeight();
-//                                    float x = (pageSize.getLeft() + pageSize.getRight()) / 2;
-//                                    float y = (pageSize.getTop() + pageSize.getBottom()) / 2;
-//
-//                                    over.saveState();
-//                                    over.setExtGState(gs1);
-//                                    over.addImageWithTransformationMatrix(img, w, 0, 0, h, x - (w / 2), y - (h / 2), true);
-//                                    over.restoreState();
-//                                    pdfCreator.createReportPDF();
-//                                    pdfDocument.close();
-
-                                    customFileChooser.closeCustomChooser(parentFileChooser);
-                                    Toast.makeText(activity.getApplicationContext(), "Download PDF Sukses, Disimpan Pada Lokasi : " + pdfName, Toast.LENGTH_LONG).show();
-                                } catch (Exception e) {
-                                    Toast.makeText(activity.getApplicationContext(), "Gagal Mengunduh Report Alasan : " + e.getMessage(), Toast.LENGTH_LONG).show();
-                                    e.printStackTrace();
-                                } finally {
-                                    progressBar.setVisibility(View.GONE);
-                                    v.setVisibility(View.VISIBLE);
-                                }
-                            }
-                        });
-                    }
-                };
-
-                customFileChooser.baseChooser(objectOnClick);
+                baseReport(pdfCreator, view);
             }
         });
     }
 
+    public void baseReport(PDFCreator pdfCreator, ViewGroup rootView){
+        closeReport();
+
+        CustomFileChooser customFileChooser = new CustomFileChooser(activity);
+        ObjectOnClick objectOnClick = new ObjectOnClick() {
+            @Override
+            public void onFileClick(File file, ViewGroup parentFileChooser) {
+
+            }
+
+            @Override
+            public void onDirectoryClick(File file, ViewGroup parentFileChooser) {
+
+            }
+
+            @Override
+            public void onCancelPressed(View view) {
+
+            }
+
+            @Override
+            public void onDirectoryHoldPress(File file, ViewGroup parentFileChooser, String absolutePathLocation) {
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            String pdfName = absolutePathLocation + "/Saber_Report" + getPdfName() + timePrintReport + ".pdf";
+                            Document document = new Document(PageSize.A4, 20, 20, 90, 100);
+                            PdfWriter pdfWriter = PdfWriter.getInstance(document, new FileOutputStream(pdfName));
+                            Font font = FontFactory.getFont("Calibri", 11, BaseColor.BLACK);
+                            PdfPageEventHelper pdfPageEventHelper = new PdfPageEventHelper(){
+                                @Override
+                                public void onStartPage(PdfWriter writer, Document document) {
+                                    super.onStartPage(writer, document);
+                                    try {
+                                        InputStream inputStream = activity.getResources().getAssets().open("logIn_picture_decoration.png");
+                                        Font fontSet = FontFactory.getFont("Calibri", 14);
+                                        Image image = Image.getInstance(InputStreamToBytes.getBytes(inputStream));
+                                        PdfContentByte direction = writer.getDirectContent();
+                                        PdfContentByte canvas = writer.getDirectContent();
+                                        PdfPTable tabHead = new PdfPTable(2);
+                                        Rectangle pageSize = document.getPageSize();
+                                        Float centerPointVal = pageSize.getWidth()/2;
+                                        Float documentHeight = pageSize.getHeight();
+
+                                        tabHead.addCell(addCustomCell("Dicetak Oleh", Element.ALIGN_LEFT, 10));
+                                        tabHead.addCell(addCustomCell(getUserName(), Element.ALIGN_LEFT, 10));
+                                        tabHead.addCell(addCustomCell("Tanggal Dicetak", Element.ALIGN_LEFT, 10));
+                                        tabHead.addCell(addCustomCell(timePrintReport, Element.ALIGN_LEFT, 10));
+                                        tabHead.addCell(addCustomCell("ID Pengguna", Element.ALIGN_LEFT, 10));
+                                        tabHead.addCell(addCustomCell(getUserId(), Element.ALIGN_LEFT, 10));
+                                        tabHead.addCell(addCustomCell("No Halaman", Element.ALIGN_LEFT, 10));
+                                        tabHead.addCell(addCustomCell(String.valueOf(document.getPageNumber()), Element.ALIGN_LEFT, 10));
+
+                                        tabHead.setTotalWidth(new float[] {120.0f, 210.0f});
+                                        tabHead.writeSelectedRows(0, -1, (pageSize.getWidth() - tabHead.getTotalWidth()) - document.rightMargin(), documentHeight - (tabHead.getTotalHeight()/2) + 26, writer.getDirectContent());
+
+                                        fontSet.setStyle(Font.BOLD);
+                                        canvas.setColorStroke(BaseColor.BLACK);
+                                        canvas.moveTo(10, documentHeight - 85);
+                                        canvas.lineTo(pageSize.getWidth() - 10, documentHeight - 85);
+                                        canvas.closePathStroke();
+
+                                        image.setAlignment(Element.ALIGN_LEFT);
+                                        image.scalePercent(20f, 20f);
+                                        image.setAbsolutePosition(23,( documentHeight-image.getScaledHeight())-5);
+                                        document.add(image);
+                                        document.add(Chunk.NEWLINE);
+                                        document.add(Chunk.NEWLINE);
+                                    } catch (IOException | DocumentException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+
+
+                            };
+                            Paragraph headerParagraph = new Paragraph("SABER " + getPdfName().replace("_", "").toUpperCase() + " REPORT DOCUMENT", font);
+
+                            headerParagraph.setAlignment(Element.ALIGN_CENTER);
+                            headerParagraph.setSpacingAfter(12);
+                            pdfWriter.setPageEvent(pdfPageEventHelper);
+                            document.open();
+                            document.add(headerParagraph);
+                            document.add(Chunk.NEWLINE);
+                            pdfCreator.createReportPDF(document);
+                            document.close();
+                            customFileChooser.closeCustomChooser(parentFileChooser);
+                            Toast.makeText(activity.getApplicationContext(), "Download PDF Sukses, Disimpan Pada Lokasi : " + pdfName, Toast.LENGTH_LONG).show();
+                        } catch (Exception e) {
+                            Toast.makeText(activity.getApplicationContext(), "Gagal Mengunduh Report Alasan : " + e.getMessage(), Toast.LENGTH_LONG).show();
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
+        };
+
+        customFileChooser.setParent(rootView);
+        customFileChooser.baseChooser(objectOnClick);
+    }
+
     public void closeReport(){
         View viewById = viewGroup.findViewById(R.id.downloadReportButton);
+
         if(viewById != null){
             viewGroup.removeView(viewById);
         }
@@ -218,18 +195,6 @@ public class ReportDownload {
 
     public void setPdfName(String pdfName) {
         this.pdfName = pdfName;
-    }
-
-    public byte[] getBytes(InputStream inputStream) throws IOException {
-        ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
-        int bufferSize = 1024;
-        byte[] buffer = new byte[bufferSize];
-
-        int len = 0;
-        while ((len = inputStream.read(buffer)) != -1) {
-            byteBuffer.write(buffer, 0, len);
-        }
-        return byteBuffer.toByteArray();
     }
 
     private void addTableHeader(PdfPTable tbl, String[] tblHead){
@@ -259,6 +224,10 @@ public class ReportDownload {
         cell.setHorizontalAlignment(alignment);
 
         return cell;
+    }
+
+    public void setToFront(){
+        closeReport();
     }
 
 }

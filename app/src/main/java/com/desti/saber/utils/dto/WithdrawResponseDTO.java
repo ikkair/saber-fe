@@ -1,30 +1,15 @@
 package com.desti.saber.utils.dto;
 
+import com.google.gson.annotations.JsonAdapter;
+
 public class WithdrawResponseDTO {
     private String refnumber;
     private String transactionstatus;
     private String username;
     private String userid;
-    private String transactiondate;
-    private String usermail;
+    private String withdrawaldate;
+    private String email;
     private String amount;
-
-
-    public String getAmount() {
-        return amount;
-    }
-
-    public void setAmount(String amount) {
-        this.amount = amount;
-    }
-
-    public String getUseremail() {
-        return usermail;
-    }
-
-    public void setUseremail(String useremail) {
-        this.usermail = useremail;
-    }
 
     public String getRefnumber() {
         return refnumber;
@@ -58,11 +43,27 @@ public class WithdrawResponseDTO {
         this.userid = userid;
     }
 
-    public String getTransactiondate() {
-        return transactiondate;
+    public String getWithdrawaldate() {
+        return withdrawaldate;
     }
 
-    public void setTransactiondate(String transactiondate) {
-        this.transactiondate = transactiondate;
+    public void setWithdrawaldate(String withdrawaldate) {
+        this.withdrawaldate = withdrawaldate;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getAmount() {
+        return amount;
+    }
+
+    public void setAmount(String amount) {
+        this.amount = amount;
     }
 }

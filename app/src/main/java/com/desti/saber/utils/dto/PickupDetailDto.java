@@ -7,6 +7,33 @@ public class PickupDetailDto {
     private String status;
     private String balance;
     private String user_id;
+    private String name;
+    private String email;
+    private String phone;
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getUseremail() {
+        return email;
+    }
+
+    public void setUseremail(String email) {
+        this.email = email;
+    }
 
     public String getId() {
         return id;

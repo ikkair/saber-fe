@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 
-public class UserDetails {
+public class    UserDetails {
 
     private String userId;
 
