@@ -9,12 +9,8 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.location.Address;
 import android.location.Geocoder;
-import android.os.Bundle;
 import android.view.*;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
-
-import androidx.appcompat.app.AppCompatActivity;
 
 import androidx.core.app.ActivityCompat;
 import com.desti.saber.LayoutHelper.CustomFileChooser.CustomFileChooser;
@@ -25,16 +21,13 @@ import com.desti.saber.LayoutHelper.ProgressBar.ProgressBarHelper;
 import com.desti.saber.LayoutHelper.UserAccountDetails.UserAccountDetails;
 import com.desti.saber.LayoutHelper.UserDetails.UserDetails;
 import com.desti.saber.utils.GPSTrackerHelper;
-import com.desti.saber.utils.GetUserDetailsCallback;
 import com.desti.saber.utils.IDRFormatCurr;
 import com.desti.saber.utils.ImageSetterFromStream;
-import com.desti.saber.utils.constant.GetImageProfileCallback;
 import com.desti.saber.utils.constant.PathUrl;
 import com.desti.saber.utils.constant.UserDetailKeys;
 import com.desti.saber.utils.dto.PickupDetailDto;
 import com.desti.saber.utils.dto.ResponseGlobalJsonDTO;
 import com.desti.saber.utils.dto.TrashType;
-import com.desti.saber.utils.dto.UserDetailsDTO;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import okhttp3.*;
@@ -51,12 +44,10 @@ import java.io.IOException;
 import java.sql.Date;
 import java.util.*;
 
-public class UserActivity {
+public class UserActivity extends CommonObject{
 
-    private final Activity activity;
     private FailServerConnectToast failServerConnectToast;
     private MainDashboard mainDashboard;
-    private ImageView profileImage;
     private String tempLocPickup;
     private String finalLocPickUp;
     private ImageView trashPhoto;
@@ -68,29 +59,29 @@ public class UserActivity {
     private boolean disableBackPress = false;
     private View trashDeliverOnClickBtn;
     private String password;
-    private UserDetails userDetails;
     private SharedPreferences sharedPreferences;
+    private GeoPoint geoPoint;
 
     public UserActivity(Activity activity, ViewGroup rootView, UserDetails userDetails) {
-        activity.getLayoutInflater().inflate(R.layout.user_activity_dashboard, rootView);
+        super(activity, rootView, userDetails);
+
+        getActivity().getLayoutInflater().inflate(R.layout.activity_user_dashboard, rootView);
         mainDashboard = new MainDashboard();
-        this.userDetails = userDetails;
-        this.activity = activity;
     }
 
     public void onCreate() {
         password = getSharedPreferences().getString(UserDetailKeys.PASSWORD_KEY, null);
         userId = getSharedPreferences().getString(UserDetailKeys.USER_ID_KEY, null);
         token = getSharedPreferences().getString(UserDetailKeys.TOKEN_KEY, null);
-        failServerConnectToast = new FailServerConnectToast(activity);
-        notFoundLoc = activity.getString(R.string.not_found_loc);
+        failServerConnectToast = new FailServerConnectToast(getActivity());
+        notFoundLoc = getActivity().getString(R.string.not_found_loc);
 
-        ImageSetterFromStream isfs = new ImageSetterFromStream(activity);
-        LinearLayout withdrawLabelClickable = activity.findViewById(R.id.withdrawLabelClickable);
-        LinearLayout detailAccountClickable = activity.findViewById(R.id.detailAccountClickable);
-        LinearLayout trashDeliverClickable = activity.findViewById(R.id.trashDeliverClickable);
-        LinearLayout pinPointLocClickable = activity.findViewById(R.id.pinPointLocClickable);
-        GreetingDecoDashboard greetingDecoDashboard = new GreetingDecoDashboard(activity, activity.findViewById(R.id.decoContainer));
+        ImageSetterFromStream isfs = new ImageSetterFromStream(getActivity());
+        LinearLayout withdrawLabelClickable = getActivity().findViewById(R.id.withdrawLabelClickable);
+        LinearLayout detailAccountClickable = getActivity().findViewById(R.id.detailAccountClickable);
+        LinearLayout trashDeliverClickable = getActivity().findViewById(R.id.trashDeliverClickable);
+        LinearLayout pinPointLocClickable = getActivity().findViewById(R.id.pinPointLocClickable);
+        GreetingDecoDashboard greetingDecoDashboard = new GreetingDecoDashboard(getActivity(), getActivity().findViewById(R.id.decoContainer));
 
         greetingDecoDashboard.show();
         //set pinpoint loc title
@@ -110,7 +101,7 @@ public class UserActivity {
         detailAccountClickable.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                UserAccountDetails userAccountDetails = new UserAccountDetails(userDetails, activity, sharedPreferences);
+                UserAccountDetails userAccountDetails = new UserAccountDetails(getUserDetails(), getActivity(), sharedPreferences);
                 userAccountDetails.show(v);
             }
         });
@@ -129,14 +120,14 @@ public class UserActivity {
     }
 
     private void withdrawLabelOnClick(){
-        Intent withDrawIntent = new Intent(activity.getApplicationContext(), WithdrawActivity.class);
+        Intent withDrawIntent = new Intent(getActivity().getApplicationContext(), WithdrawActivity.class);
         withDrawIntent.putExtra(UserDetailKeys.PICK_LOCATION_KEY, finalLocPickUp);
-        activity.startActivity(withDrawIntent);
+        getActivity().startActivity(withDrawIntent);
     }
 
     private void pinPointLocOnClick(){
-        int checkPermissionFineLoc = ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION);
-        int checkPermissionCoarse = ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION);
+        int checkPermissionFineLoc = ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION);
+        int checkPermissionCoarse = ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION);
         int permissionGrantedCode = PackageManager.PERMISSION_GRANTED;
 
         if (checkPermissionFineLoc != permissionGrantedCode &&
@@ -148,26 +139,26 @@ public class UserActivity {
             };
 
             ActivityCompat.requestPermissions(
-                activity,
+                getActivity(),
                 permissionList,
                 PackageManager.PERMISSION_GRANTED
             );
         }else {
             try {
                 Configuration.getInstance().setUserAgentValue(BuildConfig.APPLICATION_ID);
-                View layoutInflater = activity.getLayoutInflater().inflate(R.layout.maps_pop_up_layout, null);
+                View layoutInflater = getActivity().getLayoutInflater().inflate(R.layout.maps_pop_up_layout, null);
                 PopupWindow popupWindow = new PopupWindow(layoutInflater, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
                 Button cancelButton = layoutInflater.findViewById(R.id.cancelSetLoc);
-                GPSTrackerHelper gpsTrackerHelper = new GPSTrackerHelper(activity);
-                MapView mapView = layoutInflater.findViewById(R.id.maps);
+                GPSTrackerHelper gpsTrackerHelper = new GPSTrackerHelper(getActivity());
+                MapView mapView = layoutInflater.findViewById(R.id.mapsSetLoc);
                 EditText searchMapField = popupWindow.getContentView().findViewById(R.id.searchMapField);
                 GeoPoint geoPoint = new GeoPoint(
-                        gpsTrackerHelper.getLatitude(),
-                        gpsTrackerHelper.getLongitude()
+                    gpsTrackerHelper.getLatitude(),
+                    gpsTrackerHelper.getLongitude()
                 );
                 Marker markerPin = new Marker(mapView);
 
-                Overlay overlay = new Overlay(activity) {
+                Overlay overlay = new Overlay(getActivity()) {
                     @Override
                     public boolean onSingleTapConfirmed(MotionEvent e, MapView mapView) {
                         try {
@@ -221,7 +212,7 @@ public class UserActivity {
                                 }
                             }
                         } catch (IOException e) {
-                            throw new RuntimeException(e);
+                            e.printStackTrace();
                         }
                         return false;
                     }
@@ -237,6 +228,8 @@ public class UserActivity {
     }
 
     private void getGeocoder(GeoPoint loc, PopupWindow popupWindow, Marker marker, MapView mapView) throws IOException{
+        setGeoPoint(geoPoint);
+
         Context appCon = popupWindow.getContentView().getContext();
         View popUpView = popupWindow.getContentView();
         Geocoder geocoder = new Geocoder(appCon, Locale.getDefault());
@@ -264,6 +257,7 @@ public class UserActivity {
                     locByPin.setText(tempLocPickup);
                     marker.setPosition(geoPoint);
                     mapView.getController().animateTo(geoPoint);
+                    setGeoPoint(geoPoint);
                 }
             }
 
@@ -284,6 +278,7 @@ public class UserActivity {
                         locByPin.setText(tempLocPickup);
                         marker.setPosition(geoPoint);
                         mapView.getController().animateTo(geoPoint);
+                        setGeoPoint(geoPoint);
                     }
                 }
 
@@ -321,8 +316,8 @@ public class UserActivity {
     private void trashDeliverOnClick(View view){
         trashDeliverOnClickBtn = view;
 
-        if (finalLocPickUp == null || finalLocPickUp.equals(notFoundLoc)) {
-            Toast.makeText(activity, R.string.loc_details, Toast.LENGTH_LONG).show();
+        if ((finalLocPickUp == null || finalLocPickUp.equals(notFoundLoc)) && geoPoint == null) {
+            Toast.makeText(getActivity(), R.string.loc_details, Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -334,7 +329,7 @@ public class UserActivity {
         okHttpClient.newCall(getAllPickup).enqueue(new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                activity.runOnUiThread(new Runnable() {
+                getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         disableBackPress = false;
@@ -346,7 +341,7 @@ public class UserActivity {
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                activity.runOnUiThread(new Runnable() {
+                getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         ProgressBarHelper.onProgress( view, false);
@@ -371,11 +366,11 @@ public class UserActivity {
                                     }
 
                                     trashStorePickupIdScreening(
-                                            activity,
-                                            okHttpClient,
-                                            view,
-                                            pickupIdEditedStatus,
-                                            pickupId
+                                        getActivity(),
+                                        okHttpClient,
+                                        view,
+                                        pickupIdEditedStatus,
+                                        pickupId
                                     );
                                     return;
                                 }
@@ -392,7 +387,7 @@ public class UserActivity {
     }
 
     private void trashStorePickupIdScreening(Activity activity, OkHttpClient okHttpClient, View view,  HashMap<String, PickupDetailDto> pickupIdKey, List<String> pickupId){
-        View screeningLayout = activity.getLayoutInflater().inflate(R.layout.user_pickup_screening_pop_up, null);
+        View screeningLayout = getActivity().getLayoutInflater().inflate(R.layout.user_pickup_screening_pop_up, null);
         PopupWindow window = new PopupWindow(screeningLayout, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         View windowContentView = window.getContentView();
         View wrapperPickupId = windowContentView.findViewById(R.id.wrapperPickupID);
@@ -511,7 +506,7 @@ public class UserActivity {
         saveEdited.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                activity.runOnUiThread(new Runnable() {
+                getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         HashMap<String, String> requestList = new HashMap<>();
@@ -533,7 +528,7 @@ public class UserActivity {
                         okHttpClient.newCall(requestCreatePickupId).enqueue(new Callback() {
                             @Override
                             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                                activity.runOnUiThread(new Runnable() {
+                                getActivity().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
                                         cancelEditPickId.setVisibility(View.VISIBLE);
@@ -545,7 +540,7 @@ public class UserActivity {
                                             newDetailsPickupId.setAddress(locPickUp.getText().toString());
                                             newDetailsPickupId.setTime(pickupDate.getText().toString());
                                             pickupIdKey.put(newDetailsPickupId.getId(), newDetailsPickupId);
-                                            Toast.makeText(activity, "Berhasil Memperbarui Detail Puickup", Toast.LENGTH_LONG).show();
+                                            Toast.makeText(getActivity(), "Berhasil Memperbarui Detail Puickup", Toast.LENGTH_LONG).show();
                                         }
                                     }
 
@@ -554,7 +549,7 @@ public class UserActivity {
 
                             @Override
                             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                                activity.runOnUiThread(new Runnable() {
+                                getActivity().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
                                         cancelEditPickId.setVisibility(View.VISIBLE);
@@ -579,7 +574,7 @@ public class UserActivity {
                 okHttpClient.newCall(request).enqueue(new Callback() {
                     @Override
                     public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                        activity.runOnUiThread(new Runnable() {
+                        getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 disableEditText(pickupIdList, true);
@@ -593,7 +588,7 @@ public class UserActivity {
 
                     @Override
                     public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                        activity.runOnUiThread(new Runnable() {
+                        getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 onResponseTrashMenuSuccess(
@@ -638,7 +633,7 @@ public class UserActivity {
                 okHttpClient.newCall(requestPickupTrash).enqueue(new Callback() {
                     @Override
                     public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                        activity.runOnUiThread(new Runnable() {
+                        getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 editPickupId.setVisibility(View.VISIBLE);
@@ -646,18 +641,18 @@ public class UserActivity {
                                 disableEditText(pickupIdList, true);
                                 ProgressBarHelper.onProgress( v, false);
 
-                                Toast.makeText(activity, "Gagal Melakukan Request Pickup Sampah", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getActivity(), "Gagal Melakukan Request Pickup Sampah", Toast.LENGTH_LONG).show();
                             }
                         });
                     }
 
                     @Override
                     public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                        activity.runOnUiThread(new Runnable() {
+                        getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 if(response.isSuccessful()){
-                                    Toast.makeText(activity, "Sukses Melakukan Request Pickup Sampah", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(getActivity(), "Sukses Melakukan Request Pickup Sampah", Toast.LENGTH_LONG).show();
                                     window.dismiss();
                                 }else{
                                     editPickupId.setVisibility(View.VISIBLE);
@@ -665,16 +660,10 @@ public class UserActivity {
                                     disableEditText(pickupIdList, true);
                                     ProgressBarHelper.onProgress( v, false);
 
-                                    try {
-                                        System.out.println(response.body().string());
-                                    } catch (IOException e) {
-                                        throw new RuntimeException(e);
-                                    }
-
                                     if(response.code() == 403){
-                                        Toast.makeText(activity, "Silahkan Tambahkan Sampah Terlebih Dahulu", Toast.LENGTH_LONG).show();
+                                        Toast.makeText(getActivity(), "Silahkan Tambahkan Sampah Terlebih Dahulu", Toast.LENGTH_LONG).show();
                                     }else{
-                                        Toast.makeText(activity, "Gagal Melakuan Request Pickup Sampah", Toast.LENGTH_LONG).show();
+                                        Toast.makeText(getActivity(), "Gagal Melakuan Request Pickup Sampah", Toast.LENGTH_LONG).show();
                                     }
                                 }
                             }
@@ -690,7 +679,7 @@ public class UserActivity {
 
     private void createPickupId(OkHttpClient okHttpClient, PopupWindow window, Activity activity, String editableLocVal, String pickUpDate, View addNewPickupIdBtn){
         if(pickUpDate.equals("") || editableLocVal.equals("")) {
-            Toast.makeText(activity, "Silahkan  Lengkapi Tanggal Serta Lokasi Pickup", Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), "Silahkan  Lengkapi Tanggal Serta Lokasi Pickup", Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -700,6 +689,8 @@ public class UserActivity {
         requestList.put("address", editableLocVal);
         requestList.put("user_id", userId);
         requestList.put("time", pickUpDate);
+        requestList.put("latitude", String.valueOf(geoPoint.getLatitude()));
+        requestList.put("longitude", String.valueOf(geoPoint.getLongitude()));
 
         String finalJsonPayload = new Gson().toJson(requestList);
         RequestBody requestBody = RequestBody.create(finalJsonPayload, MediaType.parse("application/json"));
@@ -711,10 +702,9 @@ public class UserActivity {
         okHttpClient.newCall(requestCreatePickupId).enqueue(new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                activity.runOnUiThread(new Runnable() {
+                getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        System.out.println(">>>>");
                         addNewPickupIdBtn.setVisibility(View.VISIBLE);
                         ProgressBarHelper.onProgress( addNewPickupIdBtn, false);
                         failServerConnectToast.show();
@@ -724,19 +714,14 @@ public class UserActivity {
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                activity.runOnUiThread(new Runnable() {
+                getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        try {
-                            System.out.println(">>>>||" + response.body().string());
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
                         if(response.isSuccessful()){
                             addNewPickupIdBtn.setVisibility(View.VISIBLE);
                             ProgressBarHelper.onProgress( addNewPickupIdBtn, false);
                             window.dismiss();
-                            Toast.makeText(activity, "Pikcup Id Berhasil Dibuat, Tunggu Sesaat..", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(), "Pikcup Id Berhasil Dibuat, Tunggu Sesaat..", Toast.LENGTH_SHORT).show();
 
                             if(trashDeliverOnClickBtn != null){
                                 trashDeliverOnClick(trashDeliverOnClickBtn);
@@ -749,18 +734,18 @@ public class UserActivity {
     }
 
     private void setPinPointLocTitle(String location){
-        activity.runOnUiThread(new Runnable() {
+        getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 int maxLocLength = 25;
                 String newLocation = (location.length() > maxLocLength) ? location.substring(0, maxLocLength) + "..." : location;
-                ((TextView) activity.findViewById(R.id.pinPointLocTitle)).setText(newLocation);
+                ((TextView) getActivity().findViewById(R.id.pinPointLocTitle)).setText(newLocation);
             }
         });
     }
 
     private void onResponseTrashMenuSuccess(Activity activity, Response response, View view, OkHttpClient okHttpClient, String pickupId, View wrapperPickupId){
-        ImageSetterFromStream imageSetterFromStream = new ImageSetterFromStream(activity);
+        ImageSetterFromStream imageSetterFromStream = new ImageSetterFromStream(getActivity());
         if(response.isSuccessful() && response.body() != null){
             try {
                 Gson gson = new Gson();
@@ -780,12 +765,12 @@ public class UserActivity {
                 ViewGroup inflateTrashLay = (ViewGroup) LayoutInflater.from(activity).inflate(R.layout.store_trash_popup, null);
                 PopupWindow  popupWindow = new PopupWindow(inflateTrashLay, wrapperParam, wrapperParam);
 
-                ArrayAdapter<String> adapter = new ArrayAdapter<>(activity, R.layout.trash_list_dialog_dropdown, trashTypeNames);
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), R.layout.trash_list_dialog_dropdown, trashTypeNames);
                 Spinner listTrashType = inflateTrashLay.findViewById(R.id.trashTypeLists);
                 TextView trashAmount = inflateTrashLay.findViewById(R.id.trashAmount);
                 Button cancel = inflateTrashLay.findViewById(R.id.cancelTrashProcess);
                 Button storeTrashesButton = inflateTrashLay.findViewById(R.id.processStoreTrash);
-                CustomFileChooser customFileChooser = new CustomFileChooser(activity);
+                CustomFileChooser customFileChooser = new CustomFileChooser(getActivity());
 
                 trashPhoto = inflateTrashLay.findViewById(R.id.trashPhoto);
                 imageSetterFromStream.setAsImageDrawable("defImage.png", trashPhoto);
@@ -856,10 +841,10 @@ public class UserActivity {
 
     private void doPostStoreTrash(ViewGroup inflater, OkHttpClient okHttpClient, View postBtn, View cancelBtn, PopupWindow popupWindow, String pickupId, View wrapperPickupId){
         if(token == null){
-            Intent intent = new Intent(activity.getApplicationContext(), LoginActivity.class);
-            activity.finishAffinity();
-            activity.finish();
-            activity.startActivity(intent);
+            Intent intent = new Intent(getActivity().getApplicationContext(), LoginActivity.class);
+            getActivity().finishAffinity();
+            getActivity().finish();
+            getActivity().startActivity(intent);
             return;
         }
 
@@ -867,7 +852,7 @@ public class UserActivity {
         String trashWeight = String.valueOf(((EditText)  inflater.findViewById(R.id.trashWeight)).getText());
 
         if(trashDesc.equals("") || trashWeight.equals("") || trashTypeSelectedId == null || trashPathPhotoLoc == null){
-            Toast.makeText(activity.getApplicationContext(), R.string.empty_field, Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity().getApplicationContext(), R.string.empty_field, Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -899,13 +884,13 @@ public class UserActivity {
         okHttpClient.newCall(uploadTrashRequest).enqueue(new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                activity.runOnUiThread(new Runnable() {
+                getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         cancelBtn.setVisibility(View.VISIBLE);
                         ProgressBarHelper.onProgress( postBtn, false);
                         Toast.makeText(
-                        activity.getApplicationContext(),
+                        getActivity().getApplicationContext(),
                             R.string.err_network,
                             Toast.LENGTH_LONG
                         ).show();
@@ -915,7 +900,7 @@ public class UserActivity {
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                activity.runOnUiThread(new Runnable() {
+                getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         cancelBtn.setVisibility(View.VISIBLE);
@@ -926,13 +911,13 @@ public class UserActivity {
                             wrapperPickupId.setVisibility(View.VISIBLE);
                             popupWindow.dismiss();
                             Toast.makeText(
-                            activity.getApplicationContext(),
-                            activity.getString(R.string.success_trash_store) + " Dengan Pickup Id " + pickupId,
+                            getActivity().getApplicationContext(),
+                            getActivity().getString(R.string.success_trash_store) + " Dengan Pickup Id " + pickupId,
                                 Toast.LENGTH_LONG
                             ).show();
                         }else{
                             Toast.makeText(
-                                activity.getApplicationContext(),
+                                getActivity().getApplicationContext(),
                                 R.string.fail_trash_store,
                                 Toast.LENGTH_LONG
                             ).show();
@@ -955,5 +940,9 @@ public class UserActivity {
 
     public void setSharedPreferences(SharedPreferences sharedPreferences) {
         this.sharedPreferences = sharedPreferences;
+    }
+
+    public void setGeoPoint(GeoPoint geoPoint) {
+        this.geoPoint = geoPoint;
     }
 }

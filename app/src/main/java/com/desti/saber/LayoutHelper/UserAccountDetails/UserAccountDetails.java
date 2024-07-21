@@ -20,7 +20,7 @@ import com.desti.saber.MainDashboard;
 import com.desti.saber.R;
 import com.desti.saber.utils.GetUserDetailsCallback;
 import com.desti.saber.utils.ImageSetterFromStream;
-import com.desti.saber.utils.constant.GetImageProfileCallback;
+import com.desti.saber.LayoutHelper.UserDetails.GetImageProfileCallback;
 import com.desti.saber.utils.constant.PathUrl;
 import com.desti.saber.utils.constant.UserDetailKeys;
 import com.desti.saber.utils.dto.UserDetailsDTO;
@@ -46,11 +46,11 @@ public class UserAccountDetails {
         this.activity = activity;
     }
 
-    public void show(View v){
+    public void show(View buttonAtClicked){
         String password = sharedPreferences.getString(UserDetailKeys.PASSWORD_KEY, null);
         String token = sharedPreferences.getString(UserDetailKeys.TOKEN_KEY, null);
         OkHttpClient okHttpClient = new OkHttpClient();
-        ProgressBarHelper.onProgress( v, true);
+        ProgressBarHelper.onProgress(buttonAtClicked, true);
 
         userDetails.get(new GetUserDetailsCallback() {
             @Override
@@ -58,7 +58,7 @@ public class UserAccountDetails {
                 activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        ProgressBarHelper.onProgress( v, false);
+                        ProgressBarHelper.onProgress( buttonAtClicked, false);
                         failServerConnectToast.show();
                     }
                 });
@@ -69,7 +69,7 @@ public class UserAccountDetails {
                 activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        ProgressBarHelper.onProgress( v, false);
+                        ProgressBarHelper.onProgress( buttonAtClicked, false);
                         if (userDetailsDTO != null) {
                             View inflateProfileDetail = activity.getLayoutInflater().inflate(R.layout.profile_detail_layout, null);
                             PopupWindow popupWindow = new PopupWindow(inflateProfileDetail, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
@@ -96,9 +96,9 @@ public class UserAccountDetails {
                             profileRowTable(tL, "Email", userDetailsDTO.getEmail());
 
                             if (userDetailsDTO.getPhoto() != null) {
-                                mainDashboard.getImageProfile(userDetailsDTO.getPhoto(), activity, okHttpClient, new GetImageProfileCallback() {
+                                mainDashboard.getImageProfile(userDetailsDTO.getPhoto(), activity, new GetImageProfileCallback() {
                                     @Override
-                                    public void fail(Call call, IOException e) {
+                                    public void ioNetworkFail(Exception e) {
                                         progressBarImageProfile.setVisibility(View.GONE);
                                         wrapperImageProfile.setEnabled(true);
                                     }
@@ -106,6 +106,12 @@ public class UserAccountDetails {
                                     @Override
                                     public void success(Bitmap bitmap) {
                                         profileImage.setImageBitmap(bitmap);
+                                        progressBarImageProfile.setVisibility(View.GONE);
+                                        wrapperImageProfile.setEnabled(true);
+                                    }
+
+                                    @Override
+                                    public void endPointFaultResponse(Response response) {
                                         progressBarImageProfile.setVisibility(View.GONE);
                                         wrapperImageProfile.setEnabled(true);
                                     }

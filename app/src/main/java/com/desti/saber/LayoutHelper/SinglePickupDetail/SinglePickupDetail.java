@@ -80,4 +80,19 @@ public class SinglePickupDetail {
 
         return cell;
     }
+
+    public PdfPCell cell2(String value){
+        Font font = new Font(Font.FontFamily.HELVETICA, 9, Font.NORMAL);
+        Phrase phrase = new Phrase(value, font);
+        PdfPCell cell = new PdfPCell(phrase);
+
+        cell.setUseAscender(true);
+        cell.setPadding(5);
+        cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+        cell.setBackgroundColor(new BaseColor(247, 247, 247));
+        cell.setBorderWidth(0.2f);
+        cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+
+        return cell;
+    }
 }

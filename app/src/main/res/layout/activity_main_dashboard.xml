@@ -52,8 +52,10 @@
                 </LinearLayout>
 
                 <ImageView
+                        android:padding="5dp"
                         android:id="@+id/profileImage"
                         android:layout_gravity="end|center"
+                        android:scaleType="centerCrop"
                         android:layout_width="50dp"
                         android:layout_height="50dp"/>
 

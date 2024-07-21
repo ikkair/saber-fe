@@ -9,6 +9,15 @@ public class UserDetailsDTO {
     private String photo;
     private String balance;
     private String creation_date;
+    private boolean on_pick_up;
+
+    public boolean isOn_pick_up() {
+        return on_pick_up;
+    }
+
+    public void setOn_pick_up(boolean on_pick_up) {
+        this.on_pick_up = on_pick_up;
+    }
 
     public String getId() {
         return id;

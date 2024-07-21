@@ -54,7 +54,16 @@
 
             <androidx.appcompat.widget.AppCompatButton
                     android:layout_gravity="center"
-                    android:layout_margin="20dp"
+                    android:layout_margin="10dp"
+                    style="@style/popUpBtn"
+                    android:text="Pickup"
+                    android:id="@+id/pickupTrash"
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"/>
+
+            <androidx.appcompat.widget.AppCompatButton
+                    android:layout_gravity="center"
+                    android:layout_margin="10dp"
                     style="@style/popUpBtn"
                     android:text="TUTUP"
                     android:id="@+id/trashListCloseBtn"
@@ -63,7 +72,7 @@
 
             <androidx.appcompat.widget.AppCompatButton
                     android:layout_gravity="center"
-                    android:layout_margin="20dp"
+                    android:layout_margin="10dp"
                     style="@style/popUpBtn"
                     android:text="Cetak PDF"
                     android:id="@+id/pdfDonwloadTrashList"

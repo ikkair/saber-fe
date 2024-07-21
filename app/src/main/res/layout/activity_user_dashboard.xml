@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content">
+
+    <LinearLayout
+            android:id="@+id/pinPointLocClickable"
+            android:layout_marginBottom="20dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:orientation="horizontal"
+            android:background="@drawable/gradient_color_transparent_bg_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        <ImageView
+                android:id="@+id/locationIcon"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:layout_gravity="start|center"
+                android:layout_width="30dp"
+                android:layout_height="30dp"/>
+
+        <TextView
+                android:id="@+id/pinPointLocTitle"
+                android:layout_gravity="start|center"
+                style="@style/huge_tittle_text"
+                android:textColor="@color/white_transparent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/decoContainer"
+        android:layout_width="wrap_content"
+        android:orientation="vertical"
+        android:layout_height="wrap_content"/>
+
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        <TextView
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="15dp"
+                style="@style/huge_tittle_text_black"
+                android:text="@string/dashboard_title_menu_2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+        <FrameLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            <LinearLayout
+                    android:layout_gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                <LinearLayout
+                        android:id="@+id/withdrawLabelClickable"
+                        android:layout_margin="20dp"
+                        android:layout_gravity="center"
+                        android:orientation="vertical"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                    <ImageView
+                            style="@style/dashboard_label_icon"
+                            android:id="@+id/withdrawLabelIcon"/>
+
+                    <TextView
+                            style="@style/small_tittle_text_black"
+                            android:layout_gravity="center"
+                            android:text="@string/withdraw_label"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                        android:id="@+id/trashDeliverClickable"
+                        android:layout_margin="20dp"
+                        android:layout_gravity="center"
+                        android:orientation="vertical"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                    <ImageView
+                            android:id="@+id/trashDeliverIcon"
+                            style="@style/dashboard_label_icon"/>
+
+                    <TextView
+                            style="@style/small_tittle_text_black"
+                            android:layout_gravity="center"
+                            android:text="@string/trash_deliver_label"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </FrameLayout>
+
+        <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            <LinearLayout
+                    android:id="@+id/detailAccountClickable"
+                    android:layout_margin="20dp"
+                    android:layout_gravity="center"
+                    android:orientation="vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                <ImageView
+                        android:id="@+id/detailLabelIcon"
+                        style="@style/dashboard_label_icon"/>
+
+                <TextView
+                        style="@style/small_tittle_text_black"
+                        android:layout_gravity="center"
+                        android:text="@string/account_detail_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+
+            </LinearLayout>
+
+        </FrameLayout>
+
+    </LinearLayout>
+</LinearLayout>

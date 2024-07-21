@@ -23,7 +23,7 @@ import com.desti.saber.utils.GetUserDetailsCallback;
 import com.desti.saber.utils.IDRFormatCurr;
 import com.desti.saber.utils.ImageSetterFromStream;
 import com.desti.saber.utils.constant.ActivityStatusDetail;
-import com.desti.saber.utils.constant.GetImageProfileCallback;
+import com.desti.saber.LayoutHelper.UserDetails.GetImageProfileCallback;
 import com.desti.saber.utils.constant.PathUrl;
 import com.desti.saber.utils.constant.UserDetailKeys;
 import com.desti.saber.utils.dto.DataHistoricalResDTO;
@@ -77,16 +77,20 @@ public class WithdrawActivity extends AppCompatActivity {
         mainDashboard.getImageProfile(
             loginInfo.getString("photo", null),
             this,
-            new OkHttpClient(),
             new GetImageProfileCallback() {
                 @Override
-                public void fail(Call call, IOException e) {
+                public void ioNetworkFail(Exception e) {
                     e.printStackTrace();
                 }
 
                 @Override
                 public void success(Bitmap bitmap) {
                     profileImage.setImageBitmap(bitmap);
+                }
+
+                @Override
+                public void endPointFaultResponse(Response response) {
+                    failServerConnectToast.show();
                 }
             }
         );

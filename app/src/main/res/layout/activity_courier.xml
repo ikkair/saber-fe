@@ -1,9 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".CourierActivity">
+    android:layout_height="match_parent">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <LinearLayout
+        android:id="@+id/decoContainerCourier"
+        android:layout_width="wrap_content"
+        android:orientation="vertical"
+        android:layout_height="wrap_content"/>
+
+    <LinearLayout
+            android:background="@drawable/white_bg_with_shadow"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:paddingBottom="4dp"
+            android:layout_height="40dp">
+
+        <android.widget.Button
+                android:id="@+id/courierPickupTaskBtn"
+                android:background="@drawable/white_rs_btn"
+                style="@style/button_top_split"
+                android:text="Task Pickup"/>
+
+        <android.widget.Button
+                android:id="@+id/pickupLocationBtn"
+                android:background="@drawable/white_rs_btn"
+                style="@style/button_top_split"
+                android:text="Lokasi Pickup"/>
+
+        <android.widget.Button
+                android:id="@+id/courierProfileBtn"
+                android:background="@drawable/white_ls_btn"
+                android:text="Profile"
+                style="@style/button_top_split"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:id="@+id/rootContainerCourier"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+</LinearLayout>

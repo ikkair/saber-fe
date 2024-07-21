@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
             String viewXmlId = "image_btn_" + i;
             String imageName = "img_btn_" + i + ".png";
             int resourceId = getResources().getIdentifier(viewXmlId, "id", getPackageName());
-            System.out.println(resourceId);
+
             imageSetter.setAsImageDrawable(imageName, resourceId);
         }
 

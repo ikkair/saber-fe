@@ -3,12 +3,16 @@ package com.desti.saber;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Environment;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
-import com.desti.saber.LayoutHelper.PickupTrashesList.PickupTrashesList;
+import com.desti.saber.LayoutHelper.FailedNotif.FailServerConnectToast;
+import com.desti.saber.LayoutHelper.PickupTrashes.PickupOnClicked;
+import com.desti.saber.LayoutHelper.PickupTrashes.PickupTrashesList;
 import com.desti.saber.LayoutHelper.ProgressBar.ProgressBarHelper;
+import com.desti.saber.LayoutHelper.ReportDownload.ClickableReport;
 import com.desti.saber.LayoutHelper.ReportDownload.PDFCreator;
 import com.desti.saber.LayoutHelper.ReportDownload.ReportDownload;
 import com.desti.saber.LayoutHelper.SinglePickupDetail.SinglePickupDetail;
@@ -17,57 +21,56 @@ import com.desti.saber.LayoutHelper.UserDetails.UserDetails;
 import com.desti.saber.configs.OkHttpHandler;
 import com.desti.saber.utils.IDRFormatCurr;
 import com.desti.saber.utils.ImageSetterFromStream;
+import com.desti.saber.LayoutHelper.UserDetails.GetImageProfileCallback;
 import com.desti.saber.utils.constant.PathUrl;
 import com.desti.saber.utils.constant.UserDetailKeys;
-import com.desti.saber.utils.dto.PickupDetailDto;
-import com.desti.saber.utils.dto.ResponseGlobalJsonDTO;
-import com.desti.saber.utils.dto.TrashDetailDTO;
-import com.desti.saber.utils.dto.WithdrawResponseDTO;
+import com.desti.saber.utils.dto.*;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.itextpdf.text.Chunk;
-import com.itextpdf.text.Document;
-import com.itextpdf.text.Element;
-import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import okhttp3.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.util.*;
 import java.util.List;
-import java.util.UUID;
 
-public class UserAdminActivity {
+public class UserAdminActivity extends CommonObject {
 
     private String token;
     private String username;
     private String userId;
-    private final Activity activity;
-    private final ViewGroup viewGroup;
     private SharedPreferences loginInfo;
-    private final UserDetails userDetails;
     private LinearLayout rootViewContainer;
     private ReportDownload reportDownload;
     private ImageSetterFromStream imageSetterFromStream;
     OkHttpHandler okHttpHandler;
     private TextView noDataText;
     private TextView greetingText;
-
+    private FailServerConnectToast failServerConnectToast;
+    private Image defaultImageFault;
 
     public UserAdminActivity(Activity activity, ViewGroup viewGroup, UserDetails userDetails) {
-        this.activity = activity;
-        this.viewGroup = viewGroup;
-        this.userDetails = userDetails;
-        this.reportDownload = new ReportDownload(activity);
+        super(activity, viewGroup, userDetails);
+        this.reportDownload = new ReportDownload(getActivity());
+        this.failServerConnectToast = new FailServerConnectToast(getActivity());
+
+        try{
+            InputStream defaultImage = getActivity().getAssets().open("def_user_profile.png");
+            defaultImageFault = Image.getInstance(imageToByteArray(BitmapFactory.decodeStream(defaultImage)));
+        } catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     protected void onCreate() {
-        activity.getLayoutInflater().inflate(R.layout.activity_user_admin, viewGroup);
-        rootViewContainer = activity.findViewById(R.id.rootAdminContainerMenu);
-        imageSetterFromStream = new ImageSetterFromStream(activity);
-        noDataText = activity.findViewById(R.id.noData);
-        greetingText = activity.findViewById(R.id.adminGreetingText);
+        getActivity().getLayoutInflater().inflate(R.layout.activity_user_admin, getRootView());
+        rootViewContainer = getActivity().findViewById(R.id.rootAdminContainerMenu);
+        imageSetterFromStream = new ImageSetterFromStream(getActivity());
+        noDataText = getActivity().findViewById(R.id.noData);
+        greetingText = getActivity().findViewById(R.id.adminGreetingText);
         okHttpHandler = new OkHttpHandler();
         token = loginInfo.getString(UserDetailKeys.TOKEN_KEY, null);
         userId = loginInfo.getString(UserDetailKeys.USER_ID_KEY, null);
@@ -75,14 +78,13 @@ public class UserAdminActivity {
         reportDownload.setUserName(username);
         reportDownload.setUserId(userId);
 
-        Button trashPickupData = activity.findViewById(R.id.pickupTrashRequestDataBtn);
-        Button registerUserBtn = activity.findViewById(R.id.registerNewUserBtn);
-        Button trashInData = activity.findViewById(R.id.trashDataBtn);
+        Button trashPickupData = getActivity().findViewById(R.id.pickupTrashRequestDataBtn);
+        Button registerUserBtn = getActivity().findViewById(R.id.registerNewUserBtn);
         String greeting = "Hai.. ".concat(username.toUpperCase())
         .concat(" Selamat Datang Kembali, Dimenu SABER ADMIN");
-        Button userDataBtn = activity.findViewById(R.id.userDataBtn);
-        Button cashOut = activity.findViewById(R.id.cashOutDataBtn);
-        Button profileBtn = activity.findViewById(R.id.profileBtn);
+        Button userDataBtn = getActivity().findViewById(R.id.userDataBtn);
+        Button cashOut = getActivity().findViewById(R.id.cashOutDataBtn);
+        Button profileBtn = getActivity().findViewById(R.id.profileBtn);
         MainDashboard mainDashboard = new MainDashboard();
 
         greetingText.setText(greeting);
@@ -90,7 +92,7 @@ public class UserAdminActivity {
         profileBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                UserAccountDetails userAccountDetails = new UserAccountDetails(userDetails, activity, getLoginInfo());
+                UserAccountDetails userAccountDetails = new UserAccountDetails(getUserDetails(), getActivity(), getLoginInfo());
                 userAccountDetails.show(v);
             }
         });
@@ -115,16 +117,23 @@ public class UserAdminActivity {
                trashPickupRequest(v);
             }
         });
+
+        userDataBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                userDataOnClicked(v);
+            }
+        });
     }
 
     private void registerMenuOnClicked(View v){
         clearMenu();
-        activity.getLayoutInflater().inflate(R.layout.admin_register_user_menu, (ViewGroup) rootViewContainer);
+        getActivity().getLayoutInflater().inflate(R.layout.admin_register_user_menu, (ViewGroup) rootViewContainer);
 
         String[] roleList = {"Admin", "User", "Courier"};
-        Spinner roleTypeList = activity.findViewById(R.id.fieldInputRoleType);
-        Button registerUserBtn = activity.findViewById(R.id.admRegisterUserBtn);
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(activity, R.layout.trash_list_dialog_dropdown, roleList);
+        Spinner roleTypeList = getActivity().findViewById(R.id.fieldInputRoleType);
+        Button registerUserBtn = getActivity().findViewById(R.id.admRegisterUserBtn);
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(getActivity(), R.layout.trash_list_dialog_dropdown, roleList);
 
         roleTypeList.setAdapter(arrayAdapter);
         imageSetterFromStream.setAsImageDrawable("user_icon.png", R.id.userInputNameAdmIcon);
@@ -135,8 +144,8 @@ public class UserAdminActivity {
             @Override
             public void onClick(View v) {
                 RegisterActivity registerActivity = new RegisterActivity();
-                EditText fieldUsername = activity.findViewById(R.id.fieldInputNameAdmRegister);
-                EditText fieldEmail = activity.findViewById(R.id.fieldInputEmailAdmRegister);
+                EditText fieldUsername = getActivity().findViewById(R.id.fieldInputNameAdmRegister);
+                EditText fieldEmail = getActivity().findViewById(R.id.fieldInputEmailAdmRegister);
                 String roleSelected = roleList[roleTypeList.getSelectedItemPosition()];
                 String username = fieldUsername.getText().toString();
                 String email = fieldEmail.getText().toString();
@@ -150,7 +159,7 @@ public class UserAdminActivity {
                 requestPayload.put("email", email);
                 requestPayload.put("token", token);
 
-                registerActivity.onClickedButtonSignUpRegister(v, activity, requestPayload);
+                registerActivity.onClickedButtonSignUpRegister(v, getActivity(), requestPayload);
             }
         });
     }
@@ -161,10 +170,10 @@ public class UserAdminActivity {
         request.header("Authorization", "Bearer " + token);
         ProgressBarHelper.onProgress(v, true);
 
-        okHttpHandler.requestAsync(activity, request.build(), new OkHttpHandler.MyCallback() {
+        okHttpHandler.requestAsync(getActivity(), request.build(), new OkHttpHandler.MyCallback() {
             @Override
             public void onSuccess(Context context, Response response) {
-                activity.runOnUiThread(new Runnable() {
+                getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         ProgressBarHelper.onProgress(v, false);
@@ -175,7 +184,7 @@ public class UserAdminActivity {
                                 ResponseGlobalJsonDTO<WithdrawResponseDTO> globalJsonDTO = new Gson().fromJson(results, dtoTypeToken);
 
                                 if(globalJsonDTO.getData().length > 0){
-                                    View inflateCashOutContainer = activity.getLayoutInflater().inflate(R.layout.global_list_container, rootViewContainer);
+                                    View inflateCashOutContainer = getActivity().getLayoutInflater().inflate(R.layout.global_list_container, rootViewContainer);
                                     ViewGroup cashOutContainer = (ViewGroup) inflateCashOutContainer.findViewById(R.id.globalListContainer);
 
                                     reportDownload.setPdfName("Cash Out Transaction");
@@ -211,7 +220,7 @@ public class UserAdminActivity {
                                     });
 
                                     for(WithdrawResponseDTO withdrawResponseDTO : globalJsonDTO.getData()){
-                                        View detailsRootView = activity.getLayoutInflater().inflate(R.layout.single_cash_out_detail, cashOutContainer, false);
+                                        View detailsRootView = getActivity().getLayoutInflater().inflate(R.layout.single_cash_out_detail, cashOutContainer, false);
                                         TextView trxCashOutDate = detailsRootView.findViewById(R.id.trxCashOutUDate);
                                         TextView trxCashOutUserId = detailsRootView.findViewById(R.id.trxCashOutUserId);
                                         TextView trxCashOutAmount = detailsRootView.findViewById(R.id.trxCashOutAmount);
@@ -242,20 +251,171 @@ public class UserAdminActivity {
 
             @Override
             public void onFailure(Exception e) {
+                failServerConnectToast.show();
+            }
+        });
+    }
 
+    private void userDataOnClicked(View v){
+        clearMenu();
+
+        MainDashboard mainDashboard = new MainDashboard();
+        Request request = new Request.Builder().url(PathUrl.ROOT_PATH_USER).build();
+        ViewGroup globalList = (ViewGroup) getActivity().getLayoutInflater().inflate(R.layout.global_list_container, rootViewContainer, true);
+        ViewGroup listContainer =  globalList.findViewById(R.id.globalListContainer);
+
+        mainDashboard.setFailServerConnectToast(failServerConnectToast);
+
+        ProgressBarHelper.onProgress(v, true);
+        okHttpHandler.requestAsync(v.getContext(), request, new OkHttpHandler.MyCallback() {
+            @Override
+            public void onSuccess(Context context, Response response) {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ProgressBarHelper.onProgress(v, false);
+
+                        if(response.isSuccessful() && response.body() != null){
+                            try {
+                                String responseString = response.body().string();
+                                TypeToken<ResponseGlobalJsonDTO<UserDetailsDTO>> globalJsonDTO = new TypeToken<ResponseGlobalJsonDTO<UserDetailsDTO>>(){};
+                                ResponseGlobalJsonDTO<UserDetailsDTO> results = new Gson().fromJson(responseString, globalJsonDTO);
+                                UserDetailsDTO[] userDetailsDTOS = results.getData();
+                                HashMap<String, PdfPTable> pdfUserTable = new HashMap<>();
+
+
+                                for (UserDetailsDTO userDetailsDTO : userDetailsDTOS){
+                                    getActivity().runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            String uriGetPhoto = (userDetailsDTO.getPhoto() != null) ? "https://drive.usercontent.google.com/download?id=".concat(userDetailsDTO.getPhoto().replace("/view", "")) : null;
+                                            ViewGroup singleLayoutUserDetail = (ViewGroup) getActivity().getLayoutInflater().inflate(R.layout.single_user_detail_layout, listContainer, false);
+                                            ImageView imageView = singleLayoutUserDetail.findViewById(R.id.profileImageAdmin);
+                                            FrameLayout progressBar = singleLayoutUserDetail.findViewById(R.id.progressBarLoading);
+
+                                            ((TextView) singleLayoutUserDetail.findViewById(R.id.userDetailRole)).setText(userDetailsDTO.getRole());
+                                            ((TextView) singleLayoutUserDetail.findViewById(R.id.userDetailName)).setText(userDetailsDTO.getName());
+                                            ((TextView) singleLayoutUserDetail.findViewById(R.id.userDetailEmail)).setText(userDetailsDTO.getEmail());
+                                            ((TextView) singleLayoutUserDetail.findViewById(R.id.userDetailPhoneNumber)).setText(userDetailsDTO.getPhone());
+
+                                            if(uriGetPhoto != null){
+                                                mainDashboard.getImageProfile(
+                                                    userDetailsDTO.getPhoto(),
+                                                    getActivity(),
+                                                    new GetImageProfileCallback() {
+                                                        @Override
+                                                        public void ioNetworkFail(Exception e) {
+                                                            failedResponse();
+                                                            e.printStackTrace();
+                                                        }
+
+                                                        @Override
+                                                        public void success(Bitmap bitmap) {
+                                                            getActivity().runOnUiThread(new Runnable() {
+                                                                @Override
+                                                                public void run() {
+                                                                    pdfUserTable.put(userDetailsDTO.getId(), userDetail(userDetailsDTO, bitmap));
+                                                                    progressBar.setVisibility(View.GONE);
+                                                                    imageView.setImageBitmap(bitmap);
+                                                                }
+                                                            });
+                                                        }
+
+                                                        @Override
+                                                        public void endPointFaultResponse(Response response) {
+                                                            failedResponse();
+                                                        }
+
+                                                        private void failedResponse(){
+                                                            getActivity().runOnUiThread(new Runnable() {
+                                                                @Override
+                                                                public void run() {
+                                                                    pdfUserTable.put(userDetailsDTO.getId(), userDetail(userDetailsDTO, null));
+                                                                    progressBar.setVisibility(View.GONE);
+                                                                    imageSetterFromStream.setAsImageDrawable("def_user_profile.png", imageView);
+                                                                }
+                                                            });
+                                                        }
+                                                    }
+                                                );
+                                            } else {
+                                                pdfUserTable.put(userDetailsDTO.getId(), userDetail(userDetailsDTO, null));
+                                                progressBar.setVisibility(View.GONE);
+                                                imageSetterFromStream.setAsImageDrawable("def_user_profile.png", imageView);
+                                            }
+
+                                            listContainer.addView(singleLayoutUserDetail);
+                                        }
+                                    });
+                                }
+
+                                reportDownload.setPdfName("List Member");
+                                reportDownload.startReportOnlyClick(new ClickableReport() {
+                                    @Override
+                                    public void onClicked(View viewButton, ViewGroup rootView) {
+                                        if(pdfUserTable.size() != userDetailsDTOS.length){
+                                            Toast.makeText(getActivity(), "Report Tersedia Setelah Unduhan Selesai", Toast.LENGTH_LONG).show();
+                                        } else{
+                                            reportDownload.startReport(new PDFCreator() {
+                                                @Override
+                                                public void createReportPDF(Document document) throws Exception {
+                                                   Object[] pdfKeyTable = pdfUserTable.keySet().toArray();
+
+                                                    for (Object object : pdfKeyTable) {
+                                                        String pdfKey = object.toString();
+                                                        Font labelFont = new Font(Font.FontFamily.HELVETICA, 10, Font.BOLD);
+                                                        Paragraph trashListParagraph = new Paragraph("Detail Pengguna - ".concat(pdfKey), labelFont);
+
+                                                        trashListParagraph.setAlignment(Element.ALIGN_LEFT);
+                                                        trashListParagraph.setSpacingAfter(8f);
+
+                                                        document.add(trashListParagraph);
+                                                        document.add(pdfUserTable.get(pdfKey));
+                                                        document.add(Chunk.NEWLINE);
+                                                    }
+                                                }
+                                            });
+                                        }
+                                    }
+                                });
+                            }catch (Exception e){
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ProgressBarHelper.onProgress(v, false);
+                        failServerConnectToast.show();
+                    }
+                });
             }
         });
     }
 
     private void trashPickupRequest(View v){
         clearMenu();
+        baseTrashPickupRequest(v, okHttpHandler, null);
+    }
+
+    public void setRootViewContainer(LinearLayout rootViewContainer) {
+        this.rootViewContainer = rootViewContainer;
+    }
+
+    public void baseTrashPickupRequest(View v, OkHttpHandler okHttpHandler, BaseTrashPickupOnClick baseTrashPickupOnClick){
         Request request = new Request.Builder().get().url(PathUrl.ROOT_PATH_PICKUP).build();
 
         ProgressBarHelper.onProgress(v, true);
-        okHttpHandler.requestAsync(activity, request, new OkHttpHandler.MyCallback() {
+        okHttpHandler.requestAsync(getActivity(), request, new OkHttpHandler.MyCallback() {
             @Override
             public void onSuccess(Context context, Response response) {
-                activity.runOnUiThread(new Runnable() {
+                getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         ProgressBarHelper.onProgress(v, false);
@@ -268,14 +428,14 @@ public class UserAdminActivity {
                                 PickupDetailDto[] pickupDetailDto = globalJsonDTO.getData();
 
                                 if(pickupDetailDto.length > 0){
-                                    View inflatePickTrash = activity.getLayoutInflater().inflate(R.layout.global_list_container, rootViewContainer, true);
+                                    View inflatePickTrash = getActivity().getLayoutInflater().inflate(R.layout.global_list_container, rootViewContainer, true);
                                     LinearLayout globalContainer =  inflatePickTrash.findViewById(R.id.globalListContainer);
                                     List<PdfPTable> pdfPTableList = new ArrayList<>();
                                     List<String> labelForTableList = new ArrayList<>();
 
                                     for(PickupDetailDto singlePickupDetailDto : globalJsonDTO.getData()){
                                         if(singlePickupDetailDto.getStatus() != null && !singlePickupDetailDto.getStatus().equalsIgnoreCase("editing")){
-                                            SinglePickupDetail singlePickupDetail = new SinglePickupDetail(activity);
+                                            SinglePickupDetail singlePickupDetail = new SinglePickupDetail(getActivity());
                                             ViewGroup showPickupDetail = singlePickupDetail.showPickupDetail(globalContainer, singlePickupDetailDto);
 
                                             pdfPTableList.add(singlePickupDetail.pdfPTablePickupDetail(singlePickupDetailDto));
@@ -284,16 +444,16 @@ public class UserAdminActivity {
                                             showPickupDetail.setOnClickListener(new View.OnClickListener() {
                                                 @Override
                                                 public void onClick(View v) {
-                                                    activity.runOnUiThread(new Runnable() {
+                                                    getActivity().runOnUiThread(new Runnable() {
                                                         @Override
                                                         public void run() {
                                                             ProgressBarHelper.onProgress(v, true);
                                                             Request newReq = new Request.Builder().url(PathUrl.ROOT_PATH_PICKUP.concat("/").concat(singlePickupDetailDto.getId())).build();
 
-                                                            okHttpHandler.requestAsync(activity, newReq, new OkHttpHandler.MyCallback() {
+                                                            okHttpHandler.requestAsync(getActivity(), newReq, new OkHttpHandler.MyCallback() {
                                                                 @Override
                                                                 public void onSuccess(Context context, Response response) {
-                                                                    activity.runOnUiThread(new Runnable() {
+                                                                    getActivity().runOnUiThread(new Runnable() {
                                                                         @Override
                                                                         public void run() {
                                                                             ProgressBarHelper.onProgress(v, false);
@@ -302,10 +462,22 @@ public class UserAdminActivity {
                                                                                     String responseResults = response.body().string();
                                                                                     TypeToken<ResponseGlobalJsonDTO<TrashDetailDTO>> typeToken = new  TypeToken<ResponseGlobalJsonDTO<TrashDetailDTO>>(){};
                                                                                     ResponseGlobalJsonDTO<TrashDetailDTO> trashDetailDTOResponse = new Gson().fromJson(responseResults, typeToken);
-                                                                                    PickupTrashesList pickupTrashesList = new PickupTrashesList(activity);
+                                                                                    PickupTrashesList pickupTrashesList = new PickupTrashesList(getActivity());
 
                                                                                     pickupTrashesList.setReportDownload(reportDownload);
-                                                                                    pickupTrashesList.startPopUp(trashDetailDTOResponse.getData(), singlePickupDetailDto);
+                                                                                    pickupTrashesList.startPopUp(trashDetailDTOResponse.getData(), singlePickupDetailDto, new PickupOnClicked() {
+                                                                                        @Override
+                                                                                        public void pickOnClicked(View v) {
+                                                                                            if (baseTrashPickupOnClick != null) {
+                                                                                                baseTrashPickupOnClick.onClickPickupBtn(v, pickupTrashesList, singlePickupDetailDto);
+                                                                                            }
+                                                                                        }
+                                                                                    });
+                                                                                    pickupTrashesList.visibilityPickupButton(false);
+
+                                                                                    if(baseTrashPickupOnClick != null){
+                                                                                        baseTrashPickupOnClick.pickupPopUpList(pickupTrashesList);
+                                                                                    }
                                                                                 }catch (Exception e){
                                                                                     e.printStackTrace();
                                                                                 }
@@ -316,9 +488,10 @@ public class UserAdminActivity {
 
                                                                 @Override
                                                                 public void onFailure(Exception e) {
-                                                                    activity.runOnUiThread(new Runnable() {
+                                                                    getActivity().runOnUiThread(new Runnable() {
                                                                         @Override
                                                                         public void run() {
+                                                                            failServerConnectToast.show();
                                                                             ProgressBarHelper.onProgress(v, false);
                                                                         }
                                                                     });
@@ -359,7 +532,7 @@ public class UserAdminActivity {
 
             @Override
             public void onFailure(Exception e) {
-
+                failServerConnectToast.show();
             }
         });
     }
@@ -391,6 +564,39 @@ public class UserAdminActivity {
     }
 
     private PdfPCell valueTable(String valueName){
-        return reportDownload.addCustomCell(valueName, Element.ALIGN_LEFT, 12);
+        return reportDownload.addCustomCell(valueName, Element.ALIGN_LEFT, 10);
+    }
+
+    private PdfPTable userDetail(UserDetailsDTO userDetailsDTO, Bitmap bitmap){
+        PdfPTable userSinglePdf = new PdfPTable(3);
+        PdfPCell userSinglePdfCell =  new PdfPCell();
+
+        try{
+            Image image = Image.getInstance(imageToByteArray(bitmap));
+            userSinglePdfCell.addElement(image);
+        } catch (Exception e){
+            userSinglePdfCell.addElement(defaultImageFault);
+            e.printStackTrace();
+        } finally {
+            userSinglePdfCell.setRowspan(4);
+            userSinglePdf.addCell(userSinglePdfCell);
+            userSinglePdf.addCell(valueTable("Nama"));
+            userSinglePdf.addCell(valueTable(userDetailsDTO.getName()));
+            userSinglePdf.addCell(valueTable("Email"));
+            userSinglePdf.addCell(valueTable(userDetailsDTO.getEmail()));
+            userSinglePdf.addCell(valueTable("No Hp"));
+            userSinglePdf.addCell(valueTable(userDetailsDTO.getPhone()));
+            userSinglePdf.addCell(valueTable("Peran Akun"));
+            userSinglePdf.addCell(valueTable(userDetailsDTO.getRole()));
+        }
+
+        return  userSinglePdf;
+    }
+
+    private byte[] imageToByteArray(Bitmap bitmap){
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+
+        return  byteArrayOutputStream.toByteArray();
     }
 }

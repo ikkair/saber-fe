@@ -70,19 +70,33 @@ public class ReportDownload {
     }
 
     public void startReport(PDFCreator pdfCreator){
-        ViewGroup view = (ViewGroup) activity.getLayoutInflater().inflate(R.layout.download_report_layout, viewGroup);
-        Button button = view.findViewById(R.id.mainBtnReportDownload);
-        button.setOnClickListener(new View.OnClickListener() {
+        startReportOnlyClick(new ClickableReport() {
             @Override
-            public void onClick(View v) {
-                baseReport(pdfCreator, view);
+            public void onClicked(View viewButton, ViewGroup rootView) {
+                baseReport(pdfCreator, rootView);
+            }
+        });
+    }
+
+    public void startReportOnlyClick(ClickableReport clickableReport){
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                closeReport();
+
+                ViewGroup view = (ViewGroup) activity.getLayoutInflater().inflate(R.layout.download_report_layout, viewGroup);
+                Button button = view.findViewById(R.id.mainBtnReportDownload);
+                button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        clickableReport.onClicked(v, view);
+                    }
+                });
             }
         });
     }
 
     public void baseReport(PDFCreator pdfCreator, ViewGroup rootView){
-        closeReport();
-
         CustomFileChooser customFileChooser = new CustomFileChooser(activity);
         ObjectOnClick objectOnClick = new ObjectOnClick() {
             @Override

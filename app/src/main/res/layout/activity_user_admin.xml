@@ -24,11 +24,6 @@
 
                 <androidx.appcompat.widget.AppCompatButton
                     style="@style/adminButton"
-                    android:text="Data Sampah Masuk"
-                    android:id="@+id/trashDataBtn"/>
-
-                <androidx.appcompat.widget.AppCompatButton
-                    style="@style/adminButton"
                     android:text="Permintaan Pickup Sampah"
                     android:id="@+id/pickupTrashRequestDataBtn"/>
 

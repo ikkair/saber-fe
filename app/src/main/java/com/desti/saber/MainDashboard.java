@@ -14,13 +14,13 @@ import android.os.Bundle;
 import com.desti.saber.LayoutHelper.FailedNotif.FailServerConnectToast;
 import com.desti.saber.LayoutHelper.GreetingDecoDashboard.GreetingDecoDashboard;
 import com.desti.saber.LayoutHelper.UserDetails.UserDetails;
+import com.desti.saber.configs.OkHttpHandler;
 import com.desti.saber.utils.ImageSetterFromStream;
-import com.desti.saber.utils.constant.GetImageProfileCallback;
+import com.desti.saber.LayoutHelper.UserDetails.GetImageProfileCallback;
 import com.desti.saber.utils.constant.UserDetailKeys;
 import okhttp3.*;
-import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
+import java.io.InputStream;
 
 public class MainDashboard extends AppCompatActivity {
 
@@ -56,7 +56,9 @@ public class MainDashboard extends AppCompatActivity {
             greetingDecoDashboard.show();
             userAdminActivity.onCreate();
         } else if (userRole.equalsIgnoreCase("courier")) {
-            
+            UserCourierActivity userCourierActivity = new UserCourierActivity(this, mainDashboardContainer, userDetails);
+            userCourierActivity.setSharedPreferences(loginInfo);
+            userCourierActivity.onCreate();
         } else {
             System.exit(0);
         }
@@ -67,16 +69,20 @@ public class MainDashboard extends AppCompatActivity {
         getImageProfile(
             loginInfo.getString("photo", null),
             this,
-            new OkHttpClient(),
             new GetImageProfileCallback() {
                 @Override
-                public void fail(Call call, IOException e) {
+                public void ioNetworkFail(Exception e) {
                     failServerConnectToast.show();
                 }
 
                 @Override
                 public void success(Bitmap bitmap) {
                     setImageProfile(((Activity) getWindow().getContext()), bitmap);
+                }
+
+                @Override
+                public void endPointFaultResponse(Response response) {
+                    failServerConnectToast.show();
                 }
             }
         );
@@ -93,41 +99,45 @@ public class MainDashboard extends AppCompatActivity {
         });
     }
 
-    public void getImageProfile(String photoId, Activity activity, OkHttpClient okHttpClient, GetImageProfileCallback callback){
+    public void getImageProfile(String photoId, Activity activity, GetImageProfileCallback callback){
         if(photoId != null){
+            OkHttpHandler okHttpHandler = new OkHttpHandler();
             String uriGetPhoto = photoId.replace("/view", "");
             Request photoProfileRequest = new Request.Builder()
                     .url("https://drive.usercontent.google.com/download?id=".concat(uriGetPhoto))
                     .build();
 
-            okHttpClient.newCall(photoProfileRequest).enqueue(new Callback() {
+            okHttpHandler.requestAsync(activity, photoProfileRequest, new OkHttpHandler.MyCallback() {
                 @Override
-                public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                    activity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            failServerConnectToast.show();
-                            callback.fail(call, e);
-                        }
-                    });
-                }
-
-                @Override
-                public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                public void onSuccess(Context context, Response response) {
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             if (response.isSuccessful()) {
                                 if (response.body() != null) {
                                     try{
-                                        Bitmap bitmap = BitmapFactory.decodeStream(response.body().byteStream());
+                                        final InputStream responseStream = response.body().byteStream();
+                                        Bitmap bitmap = BitmapFactory.decodeStream(responseStream);
                                         callback.success(bitmap);
                                     }catch (Exception e){
                                         e.printStackTrace();
                                         Toast.makeText(activity, "Gagal Melakukan Pengambilan Foto Profile", Toast.LENGTH_LONG).show();
                                     }
                                 }
+                            } else {
+                                callback.endPointFaultResponse(response);
                             }
+                        }
+                    });
+                }
+
+                @Override
+                public void onFailure(Exception e) {
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            failServerConnectToast.show();
+                            callback.ioNetworkFail(e);
                         }
                     });
                 }
@@ -142,5 +152,9 @@ public class MainDashboard extends AppCompatActivity {
                 ((ImageView) activity.findViewById(R.id.profileImage)).setImageBitmap(imageProfile);
             }
         });
+    }
+
+    public void setFailServerConnectToast(FailServerConnectToast failServerConnectToast) {
+        this.failServerConnectToast = failServerConnectToast;
     }
 }
