@@ -18,24 +18,25 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <LinearLayout
+        <androidx.appcompat.widget.AppCompatButton
             android:layout_marginEnd="20dp"
             android:layout_gravity="center|start"
             android:background="@drawable/baseline_location_on_24"
-            android:layout_width="30dp"
-            android:layout_height="30dp"/>
+            android:layout_width="25dp"
+            android:layout_height="25dp"/>
 
         <TextView
+            android:textColor="@color/white"
+            android:textSize="11sp"
             android:layout_weight="1"
             android:layout_gravity="center"
             android:id="@+id/pickupLocationLabel"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            style="@style/small_title_14sp_white"/>
+            android:layout_height="wrap_content"/>
 
     </LinearLayout>
 
-    <LinearLayout
+    <FrameLayout
         android:padding="10dp"
         android:background="@drawable/white_rounded_bg_border"
         android:layout_gravity="center|bottom"
@@ -44,11 +45,26 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <LinearLayout style="@style/cashOutDetailsWrapper">
-            <TextView style="@style/cashOutDetails" android:text="Berat Sampah"/>
-            <TextView style="@style/cashOutDetails" android:id="@+id/trashDetailWeight"/>
-        </LinearLayout>
+        <androidx.appcompat.widget.AppCompatButton
+            android:textSize="11sp"
+            android:padding="10dp"
+            android:textColor="@color/white"
+            android:background="@drawable/blue_rounded_bg"
+            android:orientation="horizontal"
+            android:id="@+id/donePickup"
+            android:layout_gravity="center|start"
+            android:text="PICKUP SAMPAH"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"/>
 
-    </LinearLayout>
+        <androidx.appcompat.widget.AppCompatButton
+            android:orientation="horizontal"
+            android:id="@+id/centerLocPoint"
+            android:layout_gravity="center|end"
+            android:background="@drawable/baseline_my_location_24"
+            android:layout_width="30dp"
+            android:layout_height="30dp"/>
+
+    </FrameLayout>
 
 </FrameLayout>
