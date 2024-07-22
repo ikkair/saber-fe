@@ -44,6 +44,7 @@ public class UserAccountDetails {
         this.mainDashboard = new MainDashboard();
         this.userDetails = userDetails;
         this.activity = activity;
+        this.mainDashboard.setFailServerConnectToast(failServerConnectToast);
     }
 
     public void show(View buttonAtClicked){

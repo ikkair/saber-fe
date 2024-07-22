@@ -51,6 +51,7 @@ public class UserAdminActivity extends CommonObject {
     private TextView greetingText;
     private FailServerConnectToast failServerConnectToast;
     private Image defaultImageFault;
+    MainDashboard mainDashboard;
 
     public UserAdminActivity(Activity activity, ViewGroup viewGroup, UserDetails userDetails) {
         super(activity, viewGroup, userDetails);
@@ -85,7 +86,8 @@ public class UserAdminActivity extends CommonObject {
         Button userDataBtn = getActivity().findViewById(R.id.userDataBtn);
         Button cashOut = getActivity().findViewById(R.id.cashOutDataBtn);
         Button profileBtn = getActivity().findViewById(R.id.profileBtn);
-        MainDashboard mainDashboard = new MainDashboard();
+        mainDashboard = new MainDashboard();
+        mainDashboard.setFailServerConnectToast(failServerConnectToast);
 
         greetingText.setText(greeting);
 
@@ -259,7 +261,6 @@ public class UserAdminActivity extends CommonObject {
     private void userDataOnClicked(View v){
         clearMenu();
 
-        MainDashboard mainDashboard = new MainDashboard();
         Request request = new Request.Builder().url(PathUrl.ROOT_PATH_USER).build();
         ViewGroup globalList = (ViewGroup) getActivity().getLayoutInflater().inflate(R.layout.global_list_container, rootViewContainer, true);
         ViewGroup listContainer =  globalList.findViewById(R.id.globalListContainer);

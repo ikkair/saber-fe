@@ -74,6 +74,7 @@ public class UserActivity extends CommonObject{
         userId = getSharedPreferences().getString(UserDetailKeys.USER_ID_KEY, null);
         token = getSharedPreferences().getString(UserDetailKeys.TOKEN_KEY, null);
         failServerConnectToast = new FailServerConnectToast(getActivity());
+        mainDashboard.setFailServerConnectToast(failServerConnectToast);
         notFoundLoc = getActivity().getString(R.string.not_found_loc);
 
         ImageSetterFromStream isfs = new ImageSetterFromStream(getActivity());
@@ -164,6 +165,7 @@ public class UserActivity extends CommonObject{
                         try {
                             Projection proj = mapView.getProjection();
                             GeoPoint loc = (GeoPoint) proj.fromPixels((int) e.getX(), (int) e.getY());
+                            setGeoPoint(geoPoint);
                             getGeocoder(loc, popupWindow, markerPin, mapView);
                         } catch (IOException ex) {
                             ex.printStackTrace();
@@ -202,6 +204,7 @@ public class UserActivity extends CommonObject{
                                     if (addressList.size() > 0) {
                                         Address address = addressList.get(0);
                                         GeoPoint geoPointSearch = new GeoPoint(address.getLatitude(), address.getLongitude());
+                                        setGeoPoint(geoPoint);
                                         getGeocoder(geoPointSearch, popupWindow, markerPin, mapView);
                                     } else {
                                         Toast.makeText(popupWindow.getContentView().getContext(), "Lokasi Tidak Ditemukan", Toast.LENGTH_LONG).show();

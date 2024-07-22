@@ -60,11 +60,12 @@ public class WithdrawActivity extends AppCompatActivity {
         setContentView(R.layout.activity_withdraw);
 
         mainDashboard = new MainDashboard();
+        failServerConnectToast = new FailServerConnectToast(this);
         loginInfo = getSharedPreferences("LoginInfo", Context.MODE_PRIVATE);
         imageSetterFromStream = new ImageSetterFromStream(this);
         reportDownload = new ReportDownload(this);
         userDetails = new UserDetails(loginInfo.getString(UserDetailKeys.USER_ID_KEY, null));
-
+        mainDashboard.setFailServerConnectToast(failServerConnectToast);
 
         ImageView profileImage = findViewById(R.id.profileImage);
         Button balanceNavButton  = findViewById(R.id.balanceNavBtn);

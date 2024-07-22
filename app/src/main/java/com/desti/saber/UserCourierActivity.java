@@ -126,6 +126,7 @@ public class UserCourierActivity extends CommonObject{
             mapView.getController().setZoom(18.0);
             mapView.getController().setCenter(startPoint);
             mapView.getOverlays().add(roadOverlay);
+            mapView.setMultiTouchControls(true);
 
         }
     }
