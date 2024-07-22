@@ -149,10 +149,6 @@ public class PickupTrashesList {
     public void close(){
         if(popupWindow != null){
             popupWindow.dismiss();
-
-            if(reportDownload != null){
-                reportDownload.closeReport();
-            }
         }
     }
 

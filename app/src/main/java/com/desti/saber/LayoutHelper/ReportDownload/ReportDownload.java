@@ -240,8 +240,4 @@ public class ReportDownload {
         return cell;
     }
 
-    public void setToFront(){
-        closeReport();
-    }
-
 }
