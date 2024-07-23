@@ -3,6 +3,8 @@ package com.desti.saber;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.location.Location;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -15,7 +17,9 @@ import com.desti.saber.LayoutHelper.PickupTrashes.PickupTrashesList;
 import com.desti.saber.LayoutHelper.UserAccountDetails.UserAccountDetails;
 import com.desti.saber.LayoutHelper.UserDetails.UserDetails;
 import com.desti.saber.configs.OkHttpHandler;
+import com.desti.saber.utils.GPSLocationChanged;
 import com.desti.saber.utils.GPSTrackerHelper;
+import com.desti.saber.utils.constant.UserDetailKeys;
 import com.desti.saber.utils.dto.PickupDetailDto;
 import org.osmdroid.bonuspack.routing.OSRMRoadManager;
 import org.osmdroid.bonuspack.routing.Road;
@@ -103,31 +107,64 @@ public class UserCourierActivity extends CommonObject{
             getActivity().getLayoutInflater().inflate(R.layout.maps_pickup_location, rootContainer);
             TextView pickupLocation = getActivity().findViewById(R.id.pickupLocationLabel);
             GPSTrackerHelper gpsTrackerHelper = new GPSTrackerHelper(getActivity());
+            Button focusPosition = getActivity().findViewById(R.id.centerLocPoint);
             MapView mapView = getActivity().findViewById(R.id.mapsViewPickup);
-            RoadManager roadManager = new OSRMRoadManager(getActivity());
-            ArrayList<GeoPoint> waypoints = new ArrayList<GeoPoint>();
-            Marker markerPin = new Marker(mapView);
-            GeoPoint startPoint = new GeoPoint(
-                gpsTrackerHelper.getLatitude(),
-                gpsTrackerHelper.getLongitude()
-            );
-            GeoPoint endPoint = new GeoPoint(
-                Double.parseDouble(pickupDetailDto.getLatitude()),
-                Double.parseDouble(pickupDetailDto.getLongitude())
-            );
-            Road road = roadManager.getRoad(waypoints);
-            Polyline roadOverlay = RoadManager.buildRoadOverlay(road);
-
-            waypoints.add(startPoint);
-            waypoints.add(endPoint);
+            Marker markerPinStart = new Marker(mapView);
+            Marker makerPinEnd = new Marker(mapView);
 
             pickupLocation.setText(pickupDetailDto.getAddress());
-            markerPin.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
-            mapView.getController().setZoom(18.0);
-            mapView.getController().setCenter(startPoint);
-            mapView.getOverlays().add(roadOverlay);
-            mapView.setMultiTouchControls(true);
 
+            markerPinStart.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+            markerPinStart.setTitle(sharedPreferences.getString(UserDetailKeys.USERNAME_KEY, ""));
+
+            mapView.setMultiTouchControls(true);
+            mapView.getOverlays().add(markerPinStart);
+            mapView.getController().setZoom(18.0);
+
+            gpsTrackerHelper.onLocationChanged(new GPSLocationChanged() {
+                @Override
+                public void onLocationChanged(Location location) {
+                    GeoPoint endPoint = new GeoPoint(
+                        Double.parseDouble(pickupDetailDto.getLatitude()),
+                        Double.parseDouble(pickupDetailDto.getLongitude())
+                    );
+                    GeoPoint startPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
+                    RoadManager roadManager = new OSRMRoadManager(getActivity());
+                    ArrayList<GeoPoint> waypoints = new ArrayList<GeoPoint>();
+
+                    waypoints.add(startPoint);
+                    waypoints.add(endPoint);
+
+                    Polyline polyline= RoadManager.buildRoadOverlay(roadManager.getRoad(waypoints));
+
+                    polyline.setWidth(2);
+                    polyline.setColor(Color.RED);
+                    polyline.setGeodesic(true);
+                    polyline.usePath(true);
+
+                    mapView.getOverlays().add(polyline);
+                    markerPinStart.setPosition(startPoint);
+                    mapView.getController().setCenter(startPoint);
+                }
+            });
+
+            focusPosition.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    gpsTrackerHelper.onLocationChanged(new GPSLocationChanged() {
+                        @Override
+                        public void onLocationChanged(Location location) {
+                            GeoPoint newGeoPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
+
+                            markerPinStart.setPosition(newGeoPoint);
+                            mapView.getController().setCenter(newGeoPoint);
+                        }
+                    });
+
+                    mapView.getController().setZoom(20);
+                    Toast.makeText(getActivity(), "Diposisikan Ulang", Toast.LENGTH_LONG).show();
+                }
+            });
         }
     }
 

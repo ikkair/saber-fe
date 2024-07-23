@@ -8,53 +8,23 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 
 import java.util.Arrays;
 import java.util.List;
 
-public class GPSTrackerHelper implements LocationListener {
+public class GPSTrackerHelper{
 
     private String providerInfo;
     private Location location;
     protected LocationManager locationManager;
+    private final Activity activity;
 
     public GPSTrackerHelper(Activity activity) {
-
-        try {
-            int checkPermissionFineLoc = ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION);
-            int checkPermissionCoarse = ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION);
-            int permissionGrantedCode = PackageManager.PERMISSION_GRANTED;
-
-            if (checkPermissionFineLoc != permissionGrantedCode &&
-                checkPermissionCoarse != permissionGrantedCode) {
-                requestPermission(activity);
-            }else{
-
-                locationManager = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
-                boolean isPassiveEnable = locationManager.isProviderEnabled(LocationManager.PASSIVE_PROVIDER);
-                boolean isNetworkEnable = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-                boolean isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-
-                if (isPassiveEnable) {
-                    providerInfo = LocationManager.PASSIVE_PROVIDER;
-                }
-
-                if (isNetworkEnable) {
-                    providerInfo = LocationManager.NETWORK_PROVIDER;
-                }
-
-                if (isGpsEnabled) {
-                    providerInfo = LocationManager.GPS_PROVIDER;
-                }
-
-                locationManager.requestLocationUpdates(providerInfo,0,0, this);
-                location = locationManager.getLastKnownLocation(providerInfo);
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+        this.activity = activity;
+        onLocationChanged(null);
     }
 
     public double getLatitude() {
@@ -75,36 +45,6 @@ public class GPSTrackerHelper implements LocationListener {
         return providerInfo;
     }
 
-    @Override
-    public void onLocationChanged(@NonNull Location location) {
-
-    }
-
-    @Override
-    public void onLocationChanged(@NonNull List<Location> locations) {
-
-    }
-
-    @Override
-    public void onFlushComplete(int requestCode) {
-
-    }
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(@NonNull String provider) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(@NonNull String provider) {
-
-    }
-
     private void requestPermission(Activity activity){
         String[] permissionList = {
             Manifest.permission.ACCESS_COARSE_LOCATION,
@@ -118,4 +58,58 @@ public class GPSTrackerHelper implements LocationListener {
         );
     }
 
+    private void setLocation(Location location){
+        this.location = location;
+    }
+
+    public void onLocationChanged(GPSLocationChanged locationChanged){
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    int checkPermissionFineLoc = ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION);
+                    int checkPermissionCoarse = ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION);
+                    int permissionGrantedCode = PackageManager.PERMISSION_GRANTED;
+
+                    if (checkPermissionFineLoc != permissionGrantedCode &&
+                            checkPermissionCoarse != permissionGrantedCode) {
+                        requestPermission(activity);
+                    }else{
+                        locationManager = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
+
+                        if(locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+                            providerInfo = LocationManager.GPS_PROVIDER;
+                        } else if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)){
+                            providerInfo = LocationManager.NETWORK_PROVIDER;
+                        } else if (locationManager.isProviderEnabled(LocationManager.PASSIVE_PROVIDER)) {
+                            providerInfo = LocationManager.PASSIVE_PROVIDER;
+                        } else {
+                            Toast.makeText(activity, "Provider Tidak Ditemukan ".concat(providerInfo), Toast.LENGTH_LONG).show();
+                            return;
+                        }
+
+
+                        locationManager.requestLocationUpdates(providerInfo,0,0, new LocationListener(){
+                            @Override
+                            public void onLocationChanged(@NonNull Location location) {
+                                setLocation(location);
+                                if(locationChanged != null){
+                                    locationChanged.onLocationChanged(location);
+                                }
+                            }
+
+                            @Override
+                            public void onStatusChanged(String provider, int status, Bundle extras) {
+                                System.out.println(status);
+                            }
+                        });
+                        location = locationManager.getLastKnownLocation(providerInfo);
+                        Toast.makeText(activity, "Lokasi Ditemukan Menggunakan ".concat(providerInfo), Toast.LENGTH_LONG).show();
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
 }

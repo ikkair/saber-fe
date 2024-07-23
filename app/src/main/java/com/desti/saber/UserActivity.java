@@ -688,12 +688,18 @@ public class UserActivity extends CommonObject{
 
         addNewPickupIdBtn.setVisibility(View.GONE);
         ProgressBarHelper.onProgress( addNewPickupIdBtn, true);
+
+        String latitude = String.valueOf(geoPoint.getLatitude());
+        String longitude = String.valueOf(geoPoint.getLongitude());
         HashMap<String, String> requestList = new HashMap<>();
+
         requestList.put("address", editableLocVal);
         requestList.put("user_id", userId);
         requestList.put("time", pickUpDate);
-        requestList.put("latitude", String.valueOf(geoPoint.getLatitude()));
-        requestList.put("longitude", String.valueOf(geoPoint.getLongitude()));
+        requestList.put("latitude", latitude);
+        requestList.put("longitude", longitude);
+
+        System.out.println(latitude + " < == > " + longitude);
 
         String finalJsonPayload = new Gson().toJson(requestList);
         RequestBody requestBody = RequestBody.create(finalJsonPayload, MediaType.parse("application/json"));
@@ -720,14 +726,22 @@ public class UserActivity extends CommonObject{
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        ProgressBarHelper.onProgress( addNewPickupIdBtn, false);
+
                         if(response.isSuccessful()){
                             addNewPickupIdBtn.setVisibility(View.VISIBLE);
-                            ProgressBarHelper.onProgress( addNewPickupIdBtn, false);
                             window.dismiss();
                             Toast.makeText(getActivity(), "Pikcup Id Berhasil Dibuat, Tunggu Sesaat..", Toast.LENGTH_SHORT).show();
 
                             if(trashDeliverOnClickBtn != null){
                                 trashDeliverOnClick(trashDeliverOnClickBtn);
+                            }
+                        } else {
+                            Toast.makeText(getActivity(), "Pikcup Id Gagal Dibuat", Toast.LENGTH_SHORT).show();
+                            try {
+                                System.out.println(response.body().string());
+                            } catch (IOException e) {
+                                e.printStackTrace();
                             }
                         }
                     }
