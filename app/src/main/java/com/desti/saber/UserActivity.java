@@ -325,7 +325,7 @@ public class UserActivity extends CommonObject{
         }
 
         disableBackPress = true;
-        ProgressBarHelper.onProgress( view, true);
+        ProgressBarHelper.onProgress(getActivity(), view, true);
         OkHttpClient okHttpClient = new OkHttpClient();
         Request getAllPickup = new Request.Builder().get().url(PathUrl.ROOT_PATH_PICKUP).build();
 
@@ -336,7 +336,7 @@ public class UserActivity extends CommonObject{
                     @Override
                     public void run() {
                         disableBackPress = false;
-                        ProgressBarHelper.onProgress( view, false);
+                        ProgressBarHelper.onProgress(getActivity(), view, false);
                         failServerConnectToast.show();
                     }
                 });
@@ -347,7 +347,7 @@ public class UserActivity extends CommonObject{
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        ProgressBarHelper.onProgress( view, false);
+                        ProgressBarHelper.onProgress(getActivity(), view, false);
                         try {
                             if (response.isSuccessful() || response.code() == 404) {
                                 if (response.body() != null) {
@@ -527,7 +527,7 @@ public class UserActivity extends CommonObject{
                         .url(PathUrl.ROOT_PATH_PICKUP + "/" +  pickupIdList.getSelectedItem().toString()).build();
 
                         cancelEditPickId.setVisibility(View.GONE);
-                        ProgressBarHelper.onProgress( v, true);
+                        ProgressBarHelper.onProgress(getActivity(), v, true);
                         okHttpClient.newCall(requestCreatePickupId).enqueue(new Callback() {
                             @Override
                             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -535,7 +535,7 @@ public class UserActivity extends CommonObject{
                                     @Override
                                     public void run() {
                                         cancelEditPickId.setVisibility(View.VISIBLE);
-                                        ProgressBarHelper.onProgress( v, false);
+                                        ProgressBarHelper.onProgress(getActivity(), v, false);
 
                                         if(response.isSuccessful()){
                                             PickupDetailDto newDetailsPickupId = pickupIdKey.get(pickupIdList.getSelectedItem());
@@ -556,7 +556,7 @@ public class UserActivity extends CommonObject{
                                     @Override
                                     public void run() {
                                         cancelEditPickId.setVisibility(View.VISIBLE);
-                                        ProgressBarHelper.onProgress( v, false);
+                                        ProgressBarHelper.onProgress(getActivity(), v, false);
                                     }
                                 });
                             }
@@ -572,7 +572,7 @@ public class UserActivity extends CommonObject{
                 disableEditText(pickupIdList, false);
                 editPickupId.setVisibility(View.GONE);
                 requestPickupTrash.setVisibility(View.GONE);
-                ProgressBarHelper.onProgress( v, true);
+                ProgressBarHelper.onProgress(getActivity(), v, true);
                 Request request = new Request.Builder().url(PathUrl.ROOT_PATH_TRASH_TYPE).get().build();
                 okHttpClient.newCall(request).enqueue(new Callback() {
                     @Override
@@ -583,7 +583,7 @@ public class UserActivity extends CommonObject{
                                 disableEditText(pickupIdList, true);
                                 editPickupId.setVisibility(View.VISIBLE);
                                 requestPickupTrash.setVisibility(View.VISIBLE);
-                                ProgressBarHelper.onProgress( v, false);
+                                ProgressBarHelper.onProgress(getActivity(), v, false);
                             }
                         });
                         failServerConnectToast.show();
@@ -606,7 +606,7 @@ public class UserActivity extends CommonObject{
                                 disableEditText(pickupIdList, true);
                                 editPickupId.setVisibility(View.VISIBLE);
                                 requestPickupTrash.setVisibility(View.VISIBLE);
-                                ProgressBarHelper.onProgress( v, false);
+                                ProgressBarHelper.onProgress(getActivity(), v, false);
                             }
                         });
                     }
@@ -620,7 +620,7 @@ public class UserActivity extends CommonObject{
                 editPickupId.setVisibility(View.GONE);
                 addNewTrash.setVisibility(View.GONE);
                 disableEditText(pickupIdList, false);
-                ProgressBarHelper.onProgress( v, true);
+                ProgressBarHelper.onProgress(getActivity(), v, true);
 
                 HashMap<String, String> requestList = new HashMap<>();
                 requestList.put("status", "waiting");
@@ -642,7 +642,7 @@ public class UserActivity extends CommonObject{
                                 editPickupId.setVisibility(View.VISIBLE);
                                 addNewTrash.setVisibility(View.VISIBLE);
                                 disableEditText(pickupIdList, true);
-                                ProgressBarHelper.onProgress( v, false);
+                                ProgressBarHelper.onProgress(getActivity(), v, false);
 
                                 Toast.makeText(getActivity(), "Gagal Melakukan Request Pickup Sampah", Toast.LENGTH_LONG).show();
                             }
@@ -661,7 +661,7 @@ public class UserActivity extends CommonObject{
                                     editPickupId.setVisibility(View.VISIBLE);
                                     addNewTrash.setVisibility(View.VISIBLE);
                                     disableEditText(pickupIdList, true);
-                                    ProgressBarHelper.onProgress( v, false);
+                                    ProgressBarHelper.onProgress(getActivity(), v, false);
 
                                     if(response.code() == 403){
                                         Toast.makeText(getActivity(), "Silahkan Tambahkan Sampah Terlebih Dahulu", Toast.LENGTH_LONG).show();
@@ -687,7 +687,7 @@ public class UserActivity extends CommonObject{
         }
 
         addNewPickupIdBtn.setVisibility(View.GONE);
-        ProgressBarHelper.onProgress( addNewPickupIdBtn, true);
+        ProgressBarHelper.onProgress(getActivity(), addNewPickupIdBtn, true);
 
         String latitude = String.valueOf(geoPoint.getLatitude());
         String longitude = String.valueOf(geoPoint.getLongitude());
@@ -715,7 +715,7 @@ public class UserActivity extends CommonObject{
                     @Override
                     public void run() {
                         addNewPickupIdBtn.setVisibility(View.VISIBLE);
-                        ProgressBarHelper.onProgress( addNewPickupIdBtn, false);
+                        ProgressBarHelper.onProgress(getActivity(), addNewPickupIdBtn, false);
                         failServerConnectToast.show();
                     }
                 });
@@ -726,7 +726,7 @@ public class UserActivity extends CommonObject{
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        ProgressBarHelper.onProgress( addNewPickupIdBtn, false);
+                        ProgressBarHelper.onProgress(getActivity(), addNewPickupIdBtn, false);
 
                         if(response.isSuccessful()){
                             addNewPickupIdBtn.setVisibility(View.VISIBLE);
@@ -874,7 +874,7 @@ public class UserActivity extends CommonObject{
         }
 
         cancelBtn.setVisibility(View.GONE);
-        ProgressBarHelper.onProgress( postBtn, true);
+        ProgressBarHelper.onProgress(getActivity(), postBtn, true);
 
         File trashPhotoDetails = new File(trashPathPhotoLoc);
         RequestBody requestBody = new MultipartBody.Builder()
@@ -905,7 +905,7 @@ public class UserActivity extends CommonObject{
                     @Override
                     public void run() {
                         cancelBtn.setVisibility(View.VISIBLE);
-                        ProgressBarHelper.onProgress( postBtn, false);
+                        ProgressBarHelper.onProgress(getActivity(), postBtn, false);
                         Toast.makeText(
                         getActivity().getApplicationContext(),
                             R.string.err_network,
@@ -921,7 +921,7 @@ public class UserActivity extends CommonObject{
                     @Override
                     public void run() {
                         cancelBtn.setVisibility(View.VISIBLE);
-                        ProgressBarHelper.onProgress( postBtn, false);
+                        ProgressBarHelper.onProgress(getActivity(), postBtn, false);
 
                         if(response.isSuccessful()){
                             trashPathPhotoLoc = null;

@@ -51,7 +51,7 @@ public class UserAccountDetails {
         String password = sharedPreferences.getString(UserDetailKeys.PASSWORD_KEY, null);
         String token = sharedPreferences.getString(UserDetailKeys.TOKEN_KEY, null);
         OkHttpClient okHttpClient = new OkHttpClient();
-        ProgressBarHelper.onProgress(buttonAtClicked, true);
+        ProgressBarHelper.onProgress(activity, buttonAtClicked, true);
 
         userDetails.get(new GetUserDetailsCallback() {
             @Override
@@ -59,7 +59,7 @@ public class UserAccountDetails {
                 activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        ProgressBarHelper.onProgress( buttonAtClicked, false);
+                        ProgressBarHelper.onProgress(activity, buttonAtClicked, false);
                         failServerConnectToast.show();
                     }
                 });
@@ -70,7 +70,7 @@ public class UserAccountDetails {
                 activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        ProgressBarHelper.onProgress( buttonAtClicked, false);
+                        ProgressBarHelper.onProgress(activity, buttonAtClicked, false);
                         if (userDetailsDTO != null) {
                             View inflateProfileDetail = activity.getLayoutInflater().inflate(R.layout.profile_detail_layout, null);
                             PopupWindow popupWindow = new PopupWindow(inflateProfileDetail, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
@@ -231,7 +231,7 @@ public class UserAccountDetails {
                                                     .url(PathUrl.ROOT_PATH_USER)
                                                     .build();
 
-                                            ProgressBarHelper.onProgress( v, true);
+                                            ProgressBarHelper.onProgress(activity, v, true);
                                             cancelEditProfile.setVisibility(View.GONE);
                                             okHttpClient.newCall(editUsersDetails).enqueue(new Callback() {
                                                 @Override
@@ -239,7 +239,7 @@ public class UserAccountDetails {
                                                     activity.runOnUiThread(new Runnable() {
                                                         @Override
                                                         public void run() {
-                                                            ProgressBarHelper.onProgress( v, false);
+                                                            ProgressBarHelper.onProgress(activity, v, false);
                                                             failServerConnectToast.show();
                                                             cancelEditProfile.setVisibility(View.VISIBLE);
                                                             e.printStackTrace();
@@ -253,7 +253,7 @@ public class UserAccountDetails {
                                                         @Override
                                                         public void run() {
                                                             cancelEditProfile.setVisibility(View.VISIBLE);
-                                                            ProgressBarHelper.onProgress( v, false);
+                                                            ProgressBarHelper.onProgress(activity, v, false);
 
                                                             if(response.isSuccessful()){
                                                                 Toast.makeText(activity,"Sukses Melakukan Update Profile", Toast.LENGTH_LONG).show();

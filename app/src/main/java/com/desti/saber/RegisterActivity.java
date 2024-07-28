@@ -2,7 +2,6 @@ package com.desti.saber;
 
 import android.app.Activity;
 import android.os.StrictMode;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
@@ -31,7 +30,6 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 import java.util.HashMap;
-import java.util.List;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -116,14 +114,14 @@ public class RegisterActivity extends AppCompatActivity {
            request.header("Authorization", "Bearer " + payload.get("token"));
         }
 
-        ProgressBarHelper.onProgress( view, true);
+        ProgressBarHelper.onProgress(activity, view, true);
         okHttpHandler.requestAsync(this, request.build(), new OkHttpHandler.MyCallback() {
             @Override
             public void onSuccess(Context context, Response response) {
                 activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        ProgressBarHelper.onProgress(view, false);
+                        ProgressBarHelper.onProgress(activity, view, false);
                         String results = null;
 
                         if(response != null){
@@ -159,7 +157,7 @@ public class RegisterActivity extends AppCompatActivity {
                 activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        ProgressBarHelper.onProgress( view, false);
+                        ProgressBarHelper.onProgress(activity, view, false);
                         Toast.makeText(activity, e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });

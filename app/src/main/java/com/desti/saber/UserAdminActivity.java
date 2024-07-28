@@ -44,12 +44,11 @@ public class UserAdminActivity extends CommonObject {
     private String userId;
     private SharedPreferences loginInfo;
     private LinearLayout rootViewContainer;
-    private ReportDownload reportDownload;
+    private final ReportDownload reportDownload;
     private ImageSetterFromStream imageSetterFromStream;
-    OkHttpHandler okHttpHandler;
+    private OkHttpHandler okHttpHandler;
     private TextView noDataText;
-    private TextView greetingText;
-    private FailServerConnectToast failServerConnectToast;
+    private final FailServerConnectToast failServerConnectToast;
     private Image defaultImageFault;
     MainDashboard mainDashboard;
 
@@ -71,7 +70,7 @@ public class UserAdminActivity extends CommonObject {
         rootViewContainer = getActivity().findViewById(R.id.rootAdminContainerMenu);
         imageSetterFromStream = new ImageSetterFromStream(getActivity());
         noDataText = getActivity().findViewById(R.id.noData);
-        greetingText = getActivity().findViewById(R.id.adminGreetingText);
+        TextView greetingText = getActivity().findViewById(R.id.adminGreetingText);
         okHttpHandler = new OkHttpHandler();
         token = loginInfo.getString(UserDetailKeys.TOKEN_KEY, null);
         userId = loginInfo.getString(UserDetailKeys.USER_ID_KEY, null);
@@ -170,7 +169,7 @@ public class UserAdminActivity extends CommonObject {
         clearMenu();
         Request.Builder request = new Request.Builder().url(PathUrl.ROOT_PATH_WITHDRAW).get();
         request.header("Authorization", "Bearer " + token);
-        ProgressBarHelper.onProgress(v, true);
+        ProgressBarHelper.onProgress(getActivity(), v, true);
 
         okHttpHandler.requestAsync(getActivity(), request.build(), new OkHttpHandler.MyCallback() {
             @Override
@@ -178,7 +177,7 @@ public class UserAdminActivity extends CommonObject {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        ProgressBarHelper.onProgress(v, false);
+                        ProgressBarHelper.onProgress(getActivity(), v, false);
                         if(response.isSuccessful() && response.body() != null){
                             try {
                                 String results = response.body().string();
@@ -267,14 +266,14 @@ public class UserAdminActivity extends CommonObject {
 
         mainDashboard.setFailServerConnectToast(failServerConnectToast);
 
-        ProgressBarHelper.onProgress(v, true);
+        ProgressBarHelper.onProgress(getActivity(), v, true);
         okHttpHandler.requestAsync(v.getContext(), request, new OkHttpHandler.MyCallback() {
             @Override
             public void onSuccess(Context context, Response response) {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        ProgressBarHelper.onProgress(v, false);
+                        ProgressBarHelper.onProgress(getActivity(), v, false);
 
                         if(response.isSuccessful() && response.body() != null){
                             try {
@@ -392,7 +391,7 @@ public class UserAdminActivity extends CommonObject {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        ProgressBarHelper.onProgress(v, false);
+                        ProgressBarHelper.onProgress(getActivity(), v, false);
                         failServerConnectToast.show();
                     }
                 });
@@ -402,24 +401,31 @@ public class UserAdminActivity extends CommonObject {
 
     private void trashPickupRequest(View v){
         clearMenu();
-        baseTrashPickupRequest(v, okHttpHandler, null);
+        List<String> pickupStatus = new ArrayList<>();
+
+        pickupStatus.add("success");
+        pickupStatus.add("waiting");
+        pickupStatus.add("failed");
+        pickupStatus.add("courier_pick_up_process");
+
+        baseTrashPickupRequest(v, okHttpHandler, pickupStatus, null);
     }
 
     public void setRootViewContainer(LinearLayout rootViewContainer) {
         this.rootViewContainer = rootViewContainer;
     }
 
-    public void baseTrashPickupRequest(View v, OkHttpHandler okHttpHandler, BaseTrashPickupOnClick baseTrashPickupOnClick){
+    public void baseTrashPickupRequest(View v, OkHttpHandler okHttpHandler, List<String> pickupStatus, BaseTrashPickupOnClick baseTrashPickupOnClick){
         Request request = new Request.Builder().get().url(PathUrl.ROOT_PATH_PICKUP).build();
 
-        ProgressBarHelper.onProgress(v, true);
+        ProgressBarHelper.onProgress(getActivity(), v, true);
         okHttpHandler.requestAsync(getActivity(), request, new OkHttpHandler.MyCallback() {
             @Override
             public void onSuccess(Context context, Response response) {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        ProgressBarHelper.onProgress(v, false);
+                        ProgressBarHelper.onProgress(getActivity(), v, false);
 
                         try{
                             if(response.isSuccessful() && response.body() != null){
@@ -435,7 +441,7 @@ public class UserAdminActivity extends CommonObject {
                                     List<String> labelForTableList = new ArrayList<>();
 
                                     for(PickupDetailDto singlePickupDetailDto : globalJsonDTO.getData()){
-                                        if(singlePickupDetailDto.getStatus() != null && !singlePickupDetailDto.getStatus().equalsIgnoreCase("editing")){
+                                        if(pickupStatus.contains(singlePickupDetailDto.getStatus())){
                                             SinglePickupDetail singlePickupDetail = new SinglePickupDetail(getActivity());
                                             ViewGroup showPickupDetail = singlePickupDetail.showPickupDetail(globalContainer, singlePickupDetailDto);
 
@@ -448,7 +454,7 @@ public class UserAdminActivity extends CommonObject {
                                                     getActivity().runOnUiThread(new Runnable() {
                                                         @Override
                                                         public void run() {
-                                                            ProgressBarHelper.onProgress(v, true);
+                                                            ProgressBarHelper.onProgress(getActivity(), v, true);
                                                             Request newReq = new Request.Builder().url(PathUrl.ROOT_PATH_PICKUP.concat("/").concat(singlePickupDetailDto.getId())).build();
 
                                                             okHttpHandler.requestAsync(getActivity(), newReq, new OkHttpHandler.MyCallback() {
@@ -457,7 +463,7 @@ public class UserAdminActivity extends CommonObject {
                                                                     getActivity().runOnUiThread(new Runnable() {
                                                                         @Override
                                                                         public void run() {
-                                                                            ProgressBarHelper.onProgress(v, false);
+                                                                            ProgressBarHelper.onProgress(getActivity(), v, false);
                                                                             if(response.isSuccessful() && response.body() != null){
                                                                                 try {
                                                                                     String responseResults = response.body().string();
@@ -493,7 +499,7 @@ public class UserAdminActivity extends CommonObject {
                                                                         @Override
                                                                         public void run() {
                                                                             failServerConnectToast.show();
-                                                                            ProgressBarHelper.onProgress(v, false);
+                                                                            ProgressBarHelper.onProgress(getActivity(), v, false);
                                                                         }
                                                                     });
                                                                 }

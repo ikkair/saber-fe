@@ -203,7 +203,7 @@ public class WithdrawActivity extends AppCompatActivity {
                                     parentSingleList.setActivityStatus(String.valueOf(ActivityStatusDetail.values()[historicalDTO.getActivityStatus()]), new OnClickActionSingleListActivity() {
                                         @Override
                                         public void onClick(View view) {
-                                            ProgressBarHelper.onProgress(  view, true);
+                                            ProgressBarHelper.onProgress(activity, view, true);
                                             Request request = new Request.Builder()
                                             .header(
                                             "Authorization",
@@ -217,7 +217,7 @@ public class WithdrawActivity extends AppCompatActivity {
                                                     WithdrawActivity.this.runOnUiThread(new Runnable() {
                                                         @Override
                                                         public void run() {
-                                                            ProgressBarHelper.onProgress(  view, false);
+                                                            ProgressBarHelper.onProgress(activity, view, false);
                                                             Toast.makeText(getApplicationContext(), "Gagal Melakukan Penghapusan Histroy, periksa Internet", Toast.LENGTH_LONG).show();
                                                         }
                                                     });
@@ -232,7 +232,7 @@ public class WithdrawActivity extends AppCompatActivity {
                                                             if(response.isSuccessful()){
                                                                 rootParentTrxList.removeView(parentSingleList);
                                                             }else{
-                                                                ProgressBarHelper.onProgress(  view, false);
+                                                                ProgressBarHelper.onProgress(activity, view, false);
                                                                 message = "Gagal Melakukan Penghapusan Histroy";
                                                             }
                                                             Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();

@@ -4,5 +4,7 @@ public enum ActivityStatusDetail {
     MENUNGGU,
     DALAM_PROSES,
     SUKSES,
-    GAGAL
+    GAGAL,
+    DALAM_PERJALANAN,
+    SELESAI
 }

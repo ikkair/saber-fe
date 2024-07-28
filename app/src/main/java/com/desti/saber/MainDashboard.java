@@ -157,4 +157,9 @@ public class MainDashboard extends AppCompatActivity {
     public void setFailServerConnectToast(FailServerConnectToast failServerConnectToast) {
         this.failServerConnectToast = failServerConnectToast;
     }
+
+    @Override
+    public void onBackPressed() {
+
+    }
 }

@@ -36,6 +36,7 @@ public class PickupTrashesList {
     private final OkHttpHandler okHttpHandler;
     private ReportDownload reportDownload;
     private Button pickupButtonTask;
+    private String pickupType;
 
     public PickupTrashesList(Activity activity) {
         this.activity = activity;
@@ -157,8 +158,8 @@ public class PickupTrashesList {
         String amount = String.valueOf((int) (trashDetailDTO.getAmount()* trashDetailDTO.getWeight_kg()));
         String uriGetPhoto = (trashDetailDTO.getPhoto() != null) ? "https://drive.usercontent.google.com/download?id=".concat(trashDetailDTO.getPhoto().replace("/view", "")) : "";
         Request trashImageReq = new Request.Builder().url(uriGetPhoto).build();
+        FrameLayout progressBar = view.findViewById(R.id.progressBarLoading);
         ImageView trashImage = view.findViewById(R.id.trashDetailImage);
-        final InputStream[] imageInputStreamTrash = new InputStream[1];
 
         ((TextView) view.findViewById(R.id.trashDetailWeight)).setText(String.valueOf(trashDetailDTO.getWeight_kg()));
         ((TextView) view.findViewById(R.id.trashDetailType)).setText(trashDetailDTO.getType());
@@ -166,44 +167,48 @@ public class PickupTrashesList {
         ((TextView) view.findViewById(R.id.trashDetailsDesc)).setText(trashDetailDTO.getDescription());
 
         rootListLayout.addView(view);
-        okHttpHandler.requestAsync(activity, trashImageReq, new OkHttpHandler.MyCallback() {
 
-            private FrameLayout progressBar = view.findViewById(R.id.progressBarLoading);
+        if(trashDetailDTO.getPhoto() != null){
+            okHttpHandler.requestAsync(activity, trashImageReq, new OkHttpHandler.MyCallback() {
 
-            @Override
-            public void onSuccess(Context context, Response response) {
-                activity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        progressBar.setVisibility(View.GONE);
-                        if(response != null && response.body() != null && response.isSuccessful()){
-                            try{
-                                byte[] byteResponse = response.body().bytes();
+                @Override
+                public void onSuccess(Context context, Response response) {
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            progressBar.setVisibility(View.GONE);
+                            if(response != null && response.body() != null && response.isSuccessful()){
+                                try{
+                                    byte[] byteResponse = response.body().bytes();
 
-                                successImage.success(new ByteArrayInputStream(byteResponse));
-                                trashImage.setImageDrawable(Drawable.createFromStream(new ByteArrayInputStream(byteResponse), null));
-                            }catch (Exception e){
+                                    successImage.success(new ByteArrayInputStream(byteResponse));
+                                    trashImage.setImageDrawable(Drawable.createFromStream(new ByteArrayInputStream(byteResponse), null));
+                                }catch (Exception e){
+                                    successImage.success(null);
+                                    e.printStackTrace();
+                                }
+                            } else {
                                 successImage.success(null);
-                                e.printStackTrace();
                             }
-                        } else {
+                        }
+                    });
+                }
+
+                @Override
+                public void onFailure(Exception e) {
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            progressBar.setVisibility(View.GONE);
                             successImage.success(null);
                         }
-                    }
-                });
-            }
-
-            @Override
-            public void onFailure(Exception e) {
-                activity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        progressBar.setVisibility(View.GONE);
-                        successImage.success(null);
-                    }
-                });
-            }
-        });
+                    });
+                }
+            });
+        } else {
+            progressBar.setVisibility(View.GONE);
+            successImage.success(null);
+        }
     }
 
     public ReportDownload getReportDownload() {

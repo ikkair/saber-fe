@@ -11,5 +11,7 @@ public class PathUrl {
     public static final String ENP_REGISTER_USER = ROOT_PATH_USER + "/register";
     public static final String ENP_LOGIN_USER = ROOT_PATH_USER + "/login";
     public static final String ENP_USER_ACTIVITY = ROOT_HOST + "/historicalActivity";
+    public static final String ROOT_PATH_PICKUP_PROGRESS = ROOT_HOST + "/pickups/pickup_progress";
+    public static final String ROOT_PATH_PICKUP_FINAL_PICKUP = ROOT_HOST + "/pickups/final_pickup";
 }
 

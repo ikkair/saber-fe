@@ -433,14 +433,14 @@ public class BankTransferActivity extends AppCompatActivity {
                                     .header("Authorization", "Bearer " + token)
                                     .url(PathUrl.ROOT_PATH_WITHDRAW).post(requestBody).build();
 
-                                    ProgressBarHelper.onProgress( view, true);
+                                    ProgressBarHelper.onProgress(BankTransferActivity.this, view, true);
                                     okHttpClient.newCall(request).enqueue(new Callback() {
                                         @Override
                                         public void onFailure(@NotNull Call call, @NotNull IOException e) {
                                             BankTransferActivity.this.runOnUiThread(new Runnable() {
                                                 @Override
                                                 public void run() {
-                                                    ProgressBarHelper.onProgress( view, false);
+                                                    ProgressBarHelper.onProgress(BankTransferActivity.this, view, false);
                                                     Toast.makeText(getApplicationContext(),"Silahkan Periksa Sambungan Internet, Pemindahan Dana Gagal", Toast.LENGTH_LONG).show();
                                                 }
                                             });
@@ -451,7 +451,7 @@ public class BankTransferActivity extends AppCompatActivity {
                                             BankTransferActivity.this.runOnUiThread(new Runnable() {
                                                 @Override
                                                 public void run() {
-                                                    ProgressBarHelper.onProgress( view, false);
+                                                    ProgressBarHelper.onProgress(BankTransferActivity.this, view, false);
                                                     if(response.isSuccessful()) {
                                                         CustomWindowPopUp popUp = new CustomWindowPopUp(getLayoutInflater(), getResources());
                                                         popUp.setMessages(R.string.success_trf_notification);

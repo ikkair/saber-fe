@@ -100,7 +100,11 @@ public class GPSTrackerHelper{
 
                             @Override
                             public void onStatusChanged(String provider, int status, Bundle extras) {
-                                System.out.println(status);
+                               if(status == 1 && locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)){
+                                   providerInfo = LocationManager.NETWORK_PROVIDER;
+                               } else {
+                                   providerInfo = LocationManager.GPS_PROVIDER;
+                               }
                             }
                         });
                         location = locationManager.getLastKnownLocation(providerInfo);
