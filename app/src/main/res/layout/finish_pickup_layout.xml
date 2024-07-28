@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        android:background="@color/transparent_blue_dark"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+      android:orientation="vertical"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_margin="20dp"
+        android:padding="10dp"
+        android:background="@drawable/white_rounded_bg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/rootSinglePickupDetail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|center"
+            android:orientation="horizontal"/>
+
+        <Space android:layout_width="match_parent" android:layout_height="30dp"/>
+
+        <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            <LinearLayout
+                    android:visibility="gone"
+                    android:layout_gravity="center|end"
+                    android:orientation="horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                <TextView
+                        android:layout_gravity="center"
+                        android:text="Check All"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+
+                <CheckBox
+                        android:id="@+id/checkAllTrash"
+                        android:layout_gravity="center"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"/>
+
+            </LinearLayout>
+
+        </FrameLayout>
+
+        <Space android:layout_width="match_parent" android:layout_height="10dp"/>
+
+        <include layout="@layout/global_list_container"/>
+
+        <Space android:layout_width="match_parent" android:layout_height="10dp"/>
+
+        <LinearLayout
+                android:orientation="horizontal"
+                android:layout_gravity="center_horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+            <androidx.appcompat.widget.AppCompatButton
+                    android:text="TUTUP"
+                    android:layout_margin="10dp"
+                    android:id="@+id/closeFinishPickup"
+                    android:layout_gravity="center_horizontal|center_vertical"
+                    style="@style/popUpBtn"/>
+
+            <androidx.appcompat.widget.AppCompatButton
+                    android:text="PICKUP"
+                    android:layout_margin="10dp"
+                    android:id="@+id/finishPickup"
+                    android:layout_gravity="center_horizontal|center_vertical"
+                    style="@style/popUpBtn"/>
+
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>
