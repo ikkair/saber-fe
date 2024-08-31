@@ -169,14 +169,14 @@ public class BankTransferActivity extends AppCompatActivity {
                 });
 
                 //section for call endpoint and looping the latest bank trx hist
-                for(int i =0; i < 100; i++){
+                for(int i =0; i < 10; i++){
                     int test = i;
                     SingleArchiveBeneficiaryBankList bankList = new SingleArchiveBeneficiaryBankList(getApplicationContext());
-                    bankList.setSingleListBankArchive(null, "Sonia Mantep " + test,
+                    bankList.setSingleListBankArchive(null, "Desti" + test,
                         new OnClickArchiveBankBeneficiary() {
                             @Override
                             public void onClick() {
-                                Toast.makeText(getApplicationContext(), "Burung Kang Ibing Ada " + test, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(), "Mock Data" + test, Toast.LENGTH_SHORT).show();
                             }
                         }
                     );
